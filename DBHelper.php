@@ -64,9 +64,21 @@ class DBHelper{
 			}else if (!($this->listsections->bind_result($term,$callNumber,$coursePrefix,$courseNumber,$courseName,$lecturer,$available,$credithours,$session,$days,$startTime,$endTime,$castaken,$casreq,$dastaken,$dasreq,$totaltaken,$totalreq,$totalallowed,$building,$room,$sch,$currprog))){
 				echo "Binding results failed: (" . $this->listsections->errno . ") " . $this->listsections->error;
 			}else{
+				$cNo = 0;
+				$section = null;
 				while ($this->listsections->fetch() && !($this->dbconn->errno)){
-					//$name, $prefix, $number, $callNo, $availability, $credit, $teacher
-					$sectionListing[] = new Section($courseName,$coursePrefix,$courseNumber,$callNumber,$available,$credithours,$lecturer);
+					if ($callNumber != $cNo){
+						$section = new Section($courseName,$coursePrefix,$courseNumber,$callNumber,$available,$credithours,$lecturer);
+						$sectionListing[] = $section;
+						$cNo = $callNumber;
+					}
+					if (!(days === "AR" || days === "VR")){
+						$dys = preg_split(" ",$days,-1, PREG_SPLIT_NO_EMPTY);
+						foreach ($dys as $singleday){
+							$mtg = new Meeting($callNumber,$singleday,$startTime,$endTime);
+							$section->addMeeting(mtg);
+						}
+					}
 				}
 				if ($this->dbconn->errno){
 					echo "Fetch failed (DB): (" . $this->dbconn->errno . ") " . $this->dbconn->error;
