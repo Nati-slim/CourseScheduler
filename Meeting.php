@@ -12,7 +12,6 @@ class Meeting{
 		$this->startTime = $stime;
 		$this->endTime = $etime;
 		$this->callNumber = $number;
-		echo "Meeting constructor called." ."\n";
 	}
 
 	function getDay(){

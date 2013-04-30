@@ -19,7 +19,6 @@ class Section{
 		$this->courseCredit = (double) $credit;
 		$this->lecturer = (string) $teacher;
 		$this->meetings = array();
-		echo "Section constructor called." ."\n";
 	}
 
 	function getCourseNumber(){

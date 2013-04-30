@@ -1,10 +1,14 @@
 <?php
+//place this file in a directory not accessible over the internet
 require_once("../credentials.inc");
+require_once("Course.php");
+require_once("Section.php");
+require_once("Meeting.php");
 class DBHelper{
 	private $listcourses;
 	private $listsections;
 
-//$host, $dbname, $user, $pass
+	//Default constructor
 	function __construct(){
 		try {
 			$this->dbconn = new mysqli(DB_HOST,DB_USER,DB_PASSWORD,DB_NAME);
@@ -19,6 +23,8 @@ class DBHelper{
 		}
 	}
 
+	//Retrieve a record from the table
+	//and returns a course object
 	function getCourses($id,$prefix,$number){
 		try{
 			if (!($this->listcourses)){
@@ -34,13 +40,14 @@ class DBHelper{
 				echo "Fetch failed (STMT): (" . $this->listcourses->errno . ") " . $this->listcourses->error;
 			}else if ($requirementId){
 				//YAY!
-				echo "Found: " . $requirementId . " " . $coursePrefix . " " . $courseNumber;
+				$course = new Course($coursePrefix,$courseNumber);
 				$this->listcourses->close();
 			}
-
+			return $course;
 		}catch(Exception $e){
 			echo $e->getMessage();
 		}
+		return null;
 	}
 }
 ?>

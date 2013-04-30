@@ -1,4 +1,5 @@
 <?php
+
 class Course{
 	private $courseNumber;
 	private $coursePrefix;
@@ -8,7 +9,6 @@ class Course{
 		$this->coursePrefix   = (string) $prefix; // It's good practice to use type-casting.
 		$this->courseNumber   = (string) $number;
 		$this->sectionListings = array();
-		echo "Course constructor called." ."\n";
 	}
 
 	function getCourseNumber(){
