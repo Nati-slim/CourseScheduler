@@ -1,8 +1,8 @@
 <?php
 class Course{
-	var $courseNumber;
-	var $coursePrefix;
-	var $sectionListings;
+	private $courseNumber;
+	private $coursePrefix;
+	private $sectionListings;
 
 	function __construct($prefix, $number){
 		$this->coursePrefix   = (string) $prefix; // It's good practice to use type-casting.
@@ -11,17 +11,16 @@ class Course{
 		echo "Course constructor called." ."\n";
 	}
 
-
 	function getCourseNumber(){
-		return $courseNumber;
+		return $this->courseNumber;
 	}
 
 	function getCoursePrefix(){
-		return $coursePrefix;
+		return $this->coursePrefix;
 	}
 
 	function getCourseListings(){
-		return $sectionListings;
+		return $this->sectionListings;
 	}
 
 	function addSection($sec){

@@ -1,13 +1,13 @@
 <?php
 class Section{
-	var $courseNumber;
-	var $coursePrefix;
-	var $lecturer;
-	var $callNumber;
-	var $status;
-	var $courseName;
-	var $courseCredit;
-	var $meetings;
+	private $courseNumber;
+	private $coursePrefix;
+	private $lecturer;
+	private $callNumber;
+	private $status;
+	private $courseName;
+	private $courseCredit;
+	private $meetings;
 
 
 	function __construct($name, $prefix, $number, $callNo, $availability, $credit, $teacher){
@@ -23,35 +23,35 @@ class Section{
 	}
 
 	function getCourseNumber(){
-		return $courseNumber;
+		return $this->courseNumber;
 	}
 
 	function getCoursePrefix(){
-		return $coursePrefix;
+		return $this->coursePrefix;
 	}
 
 	function getLecturer(){
-		return $lecturer;
+		return $this->lecturer;
 	}
 
 	function getCallNumber(){
-		return $callNumber;
+		return $this->callNumber;
 	}
 
 	function getStatus(){
-		return $status;
+		return $this->status;
 	}
 
 	function getCourseName(){
-		return $courseName;
+		return $this->courseName;
 	}
 
 	function getCourseCredit(){
-		return $courseCredit;
+		return $this->courseCredit;
 	}
 
 	function getMeetings(){
-		return $meetings;
+		return $this->meetings;
 	}
 
 	function addMeeting($mtg){

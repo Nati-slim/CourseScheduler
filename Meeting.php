@@ -1,10 +1,10 @@
 <?php
 class Meeting{
-	var $day;
-	var $time;
-	var $startTime;
-	var $endTime;
-	var $callNumber;
+	private $day;
+	private $time;
+	private $startTime;
+	private $endTime;
+	private $callNumber;
 
 	function __construct($number, $dy, $stime, $etime){
 		$this->day = $dy;
@@ -16,23 +16,23 @@ class Meeting{
 	}
 
 	function getDay(){
-		return $day;
+		return $this->day;
 	}
 
 	function getCallNumber(){
-		return $callNumber;
+		return $this->callNumber;
 	}
 
 	function getStartTime(){
-		return $startTime;
+		return $this->startTime;
 	}
 
 	function getEndTime(){
-		return $getEndTime;
+		return $this->getEndTime;
 	}
 
 	function getStartHour(){
-		$hr = (int)substr($startTime,0,2);
+		$hr = (int)substr($this->startTime,0,2);
 		if (getStartAMPM() === 'P' && $hr != 12){
 			$hr += 12;
 		}
@@ -40,11 +40,11 @@ class Meeting{
 	}
 
 	function getStartMinute(){
-		return (int)substr($startTime,2,4);
+		return (int)substr($this->startTime,2,4);
 	}
 
 	function getEndHour(){
-		$hr = (int)substr($endTime,0,2);
+		$hr = (int)substr($this->endTime,0,2);
 		if (getEndAMPM() === 'P' && $hr != 12){
 			$hr += 12;
 		}
@@ -52,15 +52,15 @@ class Meeting{
 	}
 
 	function getEndMinute(){
-		return $callNumber;
+		return $this->callNumber;
 	}
 
 	function getStartAMPM(){
-		return $startTime[strlen($startTime)-1];
+		return $this->startTime[strlen($this->startTime)-1];
 	}
 
 	function getEndAMPM(){
-		return $endTime[strlen($endTime)-1];
+		return $this->endTime[strlen($this->endTime)-1];
 	}
 }
 ?>
