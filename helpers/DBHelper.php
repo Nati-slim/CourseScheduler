@@ -55,7 +55,6 @@ class DBHelper{
 				if ($stored){
 					$recordcount = $this->listcourses->num_rows;
 					$fieldcount = $this->listcourses->field_count;
-					printf("Number of rows: %d.\n", $recordcount);
 					while($this->listcourses->fetch()){
 						$course = new Course($coursePrefix,$courseNumber);
 						$sections = $this->getSections($coursePrefix,$courseNumber);
@@ -180,16 +179,62 @@ class DBHelper{
 	}
 
 	/**
-	 *
-	 *
+	 * Retrieve a single record (Section object) from the StaticReport
+	 * table. Returns null if no such record exists.
 	 * @return Section object
 	 */
 	function getSingleSection($callNumber){
 		try{
-
+			$section = null;
+			if (!($this->singlesection)){
+				echo "Prepare failed: (" . $this->dbconn->errno . ") " . $this->dbconn->error;
+			}else if (!($this->singlesection->bind_param("i",$callNumber))){
+				echo "Binding parameters failed: (" . $this->singlesection->errno . ") " . $this->singlesection->error;
+			}else if (!($this->singlesection->execute())){
+				echo "Execute failed: (" . $this->singlesection->errno . ") " . $this->singlesection->error;
+			}else if (!($this->singlesection->execute())){
+				echo "Execute failed: (" . $this->singlesection->errno . ") " . $this->singlesection->error;
+			}else if (!($this->singlesection->bind_result($term,$callNumber,$coursePrefix,$courseNumber,$courseName,$lecturer,$available,$credithours,$session,$days,$startTime,$endTime,$castaken,$casreq,$dastaken,$dasreq,$totaltaken,$totalreq,$totalallowed,$building,$room,$sch,$currprog))){
+				echo "Binding results failed: (" . $this->singlesection->errno . ") " . $this->singlesection->error;
+			}else{
+				$cNo = 0;
+				while ($this->singlesection->fetch() && !($this->dbconn->errno)){
+					//Code to merge the class meetings into one section
+					if ($callNumber != $cNo){
+						$section = new Section($courseName,$coursePrefix,$courseNumber,$callNumber,$available,$credithours,$lecturer);
+						$section->setBuildingNumber($building);
+						$section->setRoomNumber($room);
+						$cNo = $callNumber;
+					}
+					//Avoid the funky days
+					if (strcmp($days,"AR") != 0 && strcmp($days,"VR") != 0){
+						$dys = explode(" ",$days);
+						foreach ($dys as $singleday){
+							//Ensure no empty day strings
+							if (strlen($singleday) > 0){
+								$mtg = new Meeting($callNumber,$singleday,$startTime,$endTime);
+								$section->addMeeting($mtg);
+							}
+						}
+						$this->errorMessage = "";
+					}else{
+						echo "No match found.\n";
+						$this->errorMessage = "Found one of those funky VR or AR thingies.";
+					}
+				}
+				if ($this->dbconn->errno){
+					echo "Fetch failed (DB): (" . $this->dbconn->errno . ") " . $this->dbconn->error;
+					echo "Fetch failed (STMT): (" . $this->singlesection->errno . ") " . $this->singlesection->error;
+					$this->errorMessage = "Db error.";
+				}else{
+					$this->errorMessage = "No section found.";
+				}
+			}
+			return $section;
 		}catch(Exception $e){
 			echo $e->getMessage();
 		}
+		return null;
 	}
 
 	/**
