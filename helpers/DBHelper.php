@@ -7,6 +7,7 @@ require_once("Meeting.php");
 class DBHelper{
 	private $listcourses;
 	private $listsections;
+	private $errorMessage;
 
 	//Default constructor
 	function __construct(){
@@ -99,6 +100,23 @@ class DBHelper{
 			echo $e->getMessage();
 		}
 		return null;
+	}
+
+	/**
+	 * Returns the error Message string.
+	 * @return String $errorMessage
+	 */
+	public function getErrorMessage(){
+		return $this->errorMessage;
+	}
+
+	/**
+	 * Sets the error Message string.
+	 * @param String $err Set the error message
+	 * @return void
+	 */
+	public function setErrorMessage($err){
+		$this->errorMessage = $err;
 	}
 }
 ?>

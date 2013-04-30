@@ -21,6 +21,7 @@ class Section{
 	private $buildingNumber;
 	private $roomNumber;
 	private $meetings;
+	public $errorMessage;
 
 	/**
 	 * Public constructor for the Section object
@@ -33,16 +34,21 @@ class Section{
 	 * @param String $lecturer e.g. PERDISCI
 	 */
 	function __construct($name, $prefix, $number, $callNo, $availability, $credit, $teacher){
-		$this->courseName = (string) $name;
-		$this->coursePrefix   = (string) $prefix;
-		$this->courseNumber   = (string) $number;
-		$this->callNumber = (int) $callNo;
-		$this->status = (string) $availability;
-		$this->courseCredit = (double) $credit;
-		$this->lecturer = (string) $teacher;
-		$this->meetings = array();
-		$this->buildingNumber = -1;
-		$this->roomNumber = "";
+		try{
+			$this->courseName = (string) $name;
+			$this->coursePrefix   = (string) $prefix;
+			$this->courseNumber   = (string) $number;
+			$this->callNumber = (int) $callNo;
+			$this->status = (string) $availability;
+			$this->courseCredit = (double) $credit;
+			$this->lecturer = (string) $teacher;
+			$this->meetings = array();
+			$this->buildingNumber = -1;
+			$this->roomNumber = "";
+			$this->errorMessage = "";
+		}catch(Exception $e){
+			echo "Error instantiating section object: " . $e->getMessage() . "\n";
+		}
 	}
 
 	/**
@@ -119,8 +125,10 @@ class Section{
 	public function setBuildingNumber($bldgNumber){
 		if (gettype($bldgNumber) == "integer"){
 			$this->buildingNumber = $bldgNumber;
+			$errorMessage = "";
 			return true;
 		}
+		$errorMessage = "Type of building number is integer.";
 		return false;
 	}
 
@@ -155,12 +163,36 @@ class Section{
 	 */
 	public function addMeeting($mtg){
 		if (gettype($mtg == "object") && $mtg != null){
-			if (!(strcasecmp($mtg->getDay(),"AR") == 0 || strcasecmp($mtg->getDay(),"VR") == 0)){
-				$this->meetings[] = $mtg;
-				return true;
+			if ($mtg->getCallNumber() == $this->callNumber){
+				if (!(strcasecmp($mtg->getDay(),"AR") == 0 || strcasecmp($mtg->getDay(),"VR") == 0)){
+					$this->meetings[] = $mtg;
+					$errorMessage = "";
+					return true;
+				}
+			}else{
+				$errorMessage = "Please add a meeting number with the correct call number that matches the section.";
 			}
+		}else{
+			$errorMessage = "Create a meeting object first and then, add the object to the section.";
 		}
 		return false;
+	}
+
+	/**
+	 * Returns the error Message string.
+	 * @return String $errorMessage
+	 */
+	public function getErrorMessage(){
+		return $this->errorMessage;
+	}
+
+	/**
+	 * Sets the error Message string.
+	 * @param String $err Set the error message
+	 * @return void
+	 */
+	public function setErrorMessage($err){
+		$this->errorMessage = $err;
 	}
 }
 ?>

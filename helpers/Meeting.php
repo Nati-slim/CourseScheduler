@@ -13,6 +13,7 @@ class Meeting{
 	private $startTime;
 	private $endTime;
 	private $callNumber;
+	private $errorMessage;
 
 	/**
 	 * Constructor for the Meeting class
@@ -22,11 +23,15 @@ class Meeting{
 	 * @param String $etime end time of the class meeting e.g. 0845A
 	 */
 	function __construct($number, $dy, $stime, $etime){
-		$this->day = (string)$dy[0];
-		$this->time = (string) ($stime . "-" . $etime);
-		$this->startTime = (string)$stime;
-		$this->endTime = (string)$etime;
-		$this->callNumber = (int)$number;
+		try{
+			$this->day = (string)$dy[0];
+			$this->time = (string) ($stime . "-" . $etime);
+			$this->startTime = (string)$stime;
+			$this->endTime = (string)$etime;
+			$this->callNumber = (int)$number;
+		}catch(Exception $e){
+			echo "Error instantiating meeting object: " . $e->getMessage() . "\n";
+		}
 	}
 
 	/**
@@ -157,6 +162,23 @@ class Meeting{
 		}else{
 			return "Z";
 		}
+	}
+
+	/**
+	 * Returns the error Message string.
+	 * @return String $errorMessage
+	 */
+	public function getErrorMessage(){
+		return $this->errorMessage;
+	}
+
+	/**
+	 * Sets the error Message string.
+	 * @param String $err Set the error message
+	 * @return void
+	 */
+	public function setErrorMessage($err){
+		$this->errorMessage = $err;
 	}
 }
 ?>
