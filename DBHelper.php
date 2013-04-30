@@ -51,7 +51,8 @@ class DBHelper{
 		return null;
 	}
 
-	//Return the sections for the coursePrefix & courseNumber;
+	//Return the sections for the coursePrefix & courseNumber
+	//with the class meetings stuffed inside.
 	function getSections($prefix,$number){
 		try{
 			$sectionListing = array();
@@ -67,17 +68,24 @@ class DBHelper{
 				$cNo = 0;
 				$section = null;
 				while ($this->listsections->fetch() && !($this->dbconn->errno)){
+					//Code to merge the class meetings into one section
 					if ($callNumber != $cNo){
 						$section = new Section($courseName,$coursePrefix,$courseNumber,$callNumber,$available,$credithours,$lecturer);
 						$sectionListing[] = $section;
 						$cNo = $callNumber;
 					}
-					if (!(days === "AR" || days === "VR")){
-						$dys = preg_split(" ",$days,-1, PREG_SPLIT_NO_EMPTY);
+					//Avoid the funky days
+					if (strcmp($days,"AR") != 0 && strcmp($days,"VR") != 0){
+						$dys = explode(" ",$days);
 						foreach ($dys as $singleday){
-							$mtg = new Meeting($callNumber,$singleday,$startTime,$endTime);
-							$section->addMeeting(mtg);
+							//Ensure no empty day strings
+							if (strlen($singleday) > 0){
+								$mtg = new Meeting($callNumber,$singleday,$startTime,$endTime);
+								$section->addMeeting($mtg);
+							}
 						}
+					}else{
+						echo "No match found.\n";
 					}
 				}
 				if ($this->dbconn->errno){
@@ -85,8 +93,8 @@ class DBHelper{
 					echo "Fetch failed (STMT): (" . $this->listsections->errno . ") " . $this->listsections->error;
 				}
 			}
+			$this->listsections->close();
 			return $sectionListing;
-
 		}catch(Exception $e){
 			echo $e->getMessage();
 		}
