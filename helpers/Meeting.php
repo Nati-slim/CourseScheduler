@@ -22,11 +22,11 @@ class Meeting{
 	 * @param String $etime end time of the class meeting e.g. 0845A
 	 */
 	function __construct($number, $dy, $stime, $etime){
-		$this->day = $dy[0];
-		$this->time = $stime . "-" . $etime;
-		$this->startTime = $stime;
-		$this->endTime = $etime;
-		$this->callNumber = $number;
+		$this->day = (string)$dy[0];
+		$this->time = (string) ($stime . "-" . $etime);
+		$this->startTime = (string)$stime;
+		$this->endTime = (string)$etime;
+		$this->callNumber = (int)$number;
 	}
 
 	/**
@@ -66,7 +66,7 @@ class Meeting{
 	 * @return String $endTime
 	 */
 	public function getEndTime(){
-		return $this->getEndTime;
+		return $this->endTime;
 	}
 
 	/**
@@ -79,7 +79,7 @@ class Meeting{
 		if (strlen($this->startTime) == 5){
 			$hr = (int)substr($this->startTime,0,2);
 			//Converting to 24hr form
-			if ($this->getStartAMPM() == "P" && $hr != 12){
+			if ($this->startTime[strlen($this->startTime)-1] == "P" && $hr != 12){
 				$hr += 12;
 			}
 		}else{
@@ -109,7 +109,7 @@ class Meeting{
 	public function getEndHour(){
 		if (strlen($this->endTime) == 5){
 			$hr = (int)substr($this->endTime,0,2);
-			if ($this->getEndAMPM() == "P" && $hr != 12){
+			if ($this->endTime[strlen($this->endTime)-1] == "P" && $hr != 12){
 				$hr += 12;
 			}
 		}else{
