@@ -29,6 +29,7 @@ class Meeting{
 			$this->startTime = (string)$stime;
 			$this->endTime = (string)$etime;
 			$this->callNumber = (int)$number;
+			$this->errorMessage = "";
 		}catch(Exception $e){
 			echo "Error instantiating meeting object: " . $e->getMessage() . "\n";
 		}

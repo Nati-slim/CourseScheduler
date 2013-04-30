@@ -57,14 +57,15 @@ class Course{
 		if (gettype($sec) == "object" && $sec != null){
 			//verify coursePrefix and courseNumbers match the course objects.
 			if (strcasecmp($sec->getCoursePrefix(),$this->coursePrefix) == 0 && strcasecmp($sec->getCourseNumber(),$this->courseNumber) == 0){
+				//echo "Adding " . print_r($sec,true). "\n";
 				$this->sectionListings[] = $sec;
-				$errorMessage = "";
+				$this->errorMessage = "";
 				return true;
 			}else{
-				$errorMessage = "Please add only section objects that belong to this course  prefix and course number.";
+				$this->errorMessage = "Please add only section objects that belong to this course  prefix and course number.";
 			}
 		}else{
-			$errorMessage = "Please create a section object first before adding items to the course list of sections.";
+			$this->errorMessage = "Please create a section object first before adding items to the course list of sections.";
 		}
 		return false;
 	}

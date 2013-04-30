@@ -170,10 +170,10 @@ class Section{
 					return true;
 				}
 			}else{
-				$errorMessage = "Please add a meeting number with the correct call number that matches the section.";
+				$this->errorMessage = "Please add a meeting number with the correct call number that matches the section.";
 			}
 		}else{
-			$errorMessage = "Create a meeting object first and then, add the object to the section.";
+			$this->errorMessage = "Create a meeting object first and then, add the object to the section.";
 		}
 		return false;
 	}
