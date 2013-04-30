@@ -38,18 +38,29 @@ class DBHelper{
 				echo "Execute failed: (" . $this->listcourses->errno . ") " . $this->listcourses->error;
 			}else if (!($this->listcourses->bind_result($requirementId,$coursePrefix,$courseNumber))){
 				echo "Binding results failed: (" . $this->listcourses->errno . ") " . $this->listcourses->error;
-			}else if (!($this->listcourses->fetch()) && $this->dbconn->errno){
+			}else if (!($this->listcourses->store_result()) && $this->dbconn->errno){
+				//switched from using fetch() to store_result() because of mysql error 2014 about commands being out of sync
+				//storeresult buffers the fetched data
 				echo "Fetch failed (DB): (" . $this->dbconn->errno . ") " . $this->dbconn->error;
 				echo "Fetch failed (STMT): (" . $this->listcourses->errno . ") " . $this->listcourses->error;
 			}else if ($requirementId){
 				//YAY!
 				$course = new Course($coursePrefix,$courseNumber);
-				$this->listcourses->close();
+				$sections = $this->getSections($coursePrefix,$courseNumber);
+				if ($sections != null){
+					foreach($sections as $section){
+						if (!($course->addSection($section))){
+							echo "Problem adding section to course object - " . $course->getErrorMessage() . "\n";
+						}
+					}
+				}
 			}
+			$this->listcourses->close();
 			return $course;
 		}catch(Exception $e){
 			echo $e->getMessage();
 		}
+		$this->listcourses->close();
 		return null;
 	}
 
@@ -104,6 +115,7 @@ class DBHelper{
 		}catch(Exception $e){
 			echo $e->getMessage();
 		}
+		$this->listsections->close();
 		return null;
 	}
 
