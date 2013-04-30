@@ -17,6 +17,7 @@ class DBHelper{
 			}else{
 				//echo $this->dbconn->host_info . "\n";
 				$this->listcourses = $this->dbconn->prepare("SELECT * from Requirements where requirementId = ? and coursePrefix = ? and courseNumber = ?");
+				$this->listsections = $this->dbconn->prepare("SELECT * from StaticReport where coursePrefix = ? and courseNumber = ?");
 			}
 		} catch(PDOException $e) {
 			echo 'ERROR: ' . $e->getMessage();
@@ -44,6 +45,36 @@ class DBHelper{
 				$this->listcourses->close();
 			}
 			return $course;
+		}catch(Exception $e){
+			echo $e->getMessage();
+		}
+		return null;
+	}
+
+	//Return the sections for the coursePrefix & courseNumber;
+	function getSections($prefix,$number){
+		try{
+			$sectionListing = array();
+			if (!($this->listsections)){
+				echo "Prepare failed: (" . $this->dbconn->errno . ") " . $this->dbconn->error;
+			}else if (!($this->listsections->bind_param("ss",$prefix,$number))){
+				echo "Binding parameters failed: (" . $this->listsections->errno . ") " . $this->listsections->error;
+			}else if (!($this->listsections->execute())){
+				echo "Execute failed: (" . $this->listsections->errno . ") " . $this->listsections->error;
+			}else if (!($this->listsections->bind_result($term,$callNumber,$coursePrefix,$courseNumber,$courseName,$lecturer,$available,$credithours,$session,$days,$startTime,$endTime,$castaken,$casreq,$dastaken,$dasreq,$totaltaken,$totalreq,$totalallowed,$building,$room,$sch,$currprog))){
+				echo "Binding results failed: (" . $this->listsections->errno . ") " . $this->listsections->error;
+			}else{
+				while ($this->listsections->fetch() && !($this->dbconn->errno)){
+					//$name, $prefix, $number, $callNo, $availability, $credit, $teacher
+					$sectionListing[] = new Section($courseName,$coursePrefix,$courseNumber,$callNumber,$available,$credithours,$lecturer);
+				}
+				if ($this->dbconn->errno){
+					echo "Fetch failed (DB): (" . $this->dbconn->errno . ") " . $this->dbconn->error;
+					echo "Fetch failed (STMT): (" . $this->listsections->errno . ") " . $this->listsections->error;
+				}
+			}
+			return $sectionListing;
+
 		}catch(Exception $e){
 			echo $e->getMessage();
 		}
