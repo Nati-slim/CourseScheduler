@@ -123,13 +123,12 @@ class Section{
 	 * @return boolean
 	 */
 	public function setBuildingNumber($bldgNumber){
-		if (gettype($bldgNumber) == "integer"){
-			$this->buildingNumber = $bldgNumber;
-			$errorMessage = "";
-			return true;
+		try{
+			$this->buildingNumber = (int)$bldgNumber;
+			$this->errorMessage = "";
+		}catch(Exception $e){
+			$this->errorMessage = "Unable to cast building number to integer.";
 		}
-		$errorMessage = "Type of building number is integer.";
-		return false;
 	}
 
 	/**
@@ -166,7 +165,7 @@ class Section{
 			if ($mtg->getCallNumber() == $this->callNumber){
 				if (!(strcasecmp($mtg->getDay(),"AR") == 0 || strcasecmp($mtg->getDay(),"VR") == 0)){
 					$this->meetings[] = $mtg;
-					$errorMessage = "";
+					$this->errorMessage = "";
 					return true;
 				}
 			}else{

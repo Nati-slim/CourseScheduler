@@ -20,6 +20,7 @@ class DBHelper{
 				$this->listcourses = $this->dbconn->prepare("SELECT * from Requirements where requirementId = ? and coursePrefix = ? and courseNumber = ?");
 				$this->listsections = $this->dbconn->prepare("SELECT * from StaticReport where coursePrefix = ? and courseNumber = ?");
 			}
+			$this->errorMessage = "";
 		} catch(PDOException $e) {
 			echo 'ERROR: ' . $e->getMessage();
 		}
@@ -72,6 +73,8 @@ class DBHelper{
 					//Code to merge the class meetings into one section
 					if ($callNumber != $cNo){
 						$section = new Section($courseName,$coursePrefix,$courseNumber,$callNumber,$available,$credithours,$lecturer);
+						$section->setBuildingNumber($building);
+						$section->setRoomNumber($room);
 						$sectionListing[] = $section;
 						$cNo = $callNumber;
 					}
@@ -85,8 +88,10 @@ class DBHelper{
 								$section->addMeeting($mtg);
 							}
 						}
+						$this->errorMessage = "";
 					}else{
 						echo "No match found.\n";
+						$this->errorMessage = "Found one of those funky VR or AR thingies.";
 					}
 				}
 				if ($this->dbconn->errno){

@@ -27,4 +27,6 @@
 	"\n courseStatus: " . $csci1302->getStatus() . "\n courseLecturer: " . $csci1302->getLecturer() .
 	"\n courseBuilding: " . $csci1302->getBuildingNumber() . "\n courseRoomNumber: " . $csci1302->getRoomNumber()
 	."\n";
+
+	print_r($csci1302);
 ?>
