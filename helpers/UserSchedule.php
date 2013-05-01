@@ -35,11 +35,12 @@ class UserSchedule{
 	 * @return boolean
 	 */
 	function addSection($newSection){
-		$key = array_search($newSection->getCallNumber(),$this->schedule);
-		if ($key != false){
+		$key = array_key_exists($newSection->getCallNumber(),$this->schedule);
+		//If key is not already in user's list, check for possible conflicts
+		if ($key == false){
 			foreach($this->schedule as $currentSection){
-				if (isConflict($newSection->getMeetings(),$currentSection->getMeetings())){
-					$this->errorMessage = "Conflict detected with existing section " . print_r($currentSection,true) . "\n";
+				if ($this->isConflict($newSection->getMeetings(),$currentSection->getMeetings())){
+					$this->errorMessage = "Conflict detected with existing section " . $currentSection->getCallNumber() . "\n";
 					return false;
 				}
 			}
@@ -47,7 +48,7 @@ class UserSchedule{
 			$this->schedule[$newSection->getCallNumber()] = $newSection;
 			return true;
 		}else{
-			$this->errorMessage = $callNumber . " not in the user's schedule.";
+			$this->errorMessage = "Section " . $newSection->getCallNumber() . " already present in user's schedule.";
 		}
 		return false;
 	}
@@ -72,9 +73,9 @@ class UserSchedule{
 			//Obtain the meeting objects corresponding to that key
 			foreach ($results as $key){
 				$currMtg = $currentMeetings[$key];
-				$newMtg = $newMeetings[$skey];
+				$newMtg = $newMeetings[$key];
 				//Check overlap of the meeting times
-				if (isOverlap($newMtg,$currMtg)){
+				if ($this->isOverlap($newMtg,$currMtg)){
 					return true;
 				}
 			}
@@ -103,8 +104,8 @@ class UserSchedule{
 		$hr1end = $newMtgObj->getEndHour();
 		$min1end = $newMtgObj->getEndMinute();
 		//get the start and end times for the second parameter
-		$hr2start = $currMtgObj->getEndHour();
-		$min2start = $currMtgObj->getEndMinute();
+		$hr2start = $currMtgObj->getStartHour();
+		$min2start = $currMtgObj->getStartMinute();
 		$hr2end = $currMtgObj->getEndHour();
 		$min2end = $currMtgObj->getEndMinute();
 
@@ -134,6 +135,23 @@ class UserSchedule{
 	 */
 	function getUserId(){
 		return $this->userid;
+	}
+
+	/**
+	 * Returns the error Message string.
+	 * @return String $errorMessage
+	 */
+	public function getErrorMessage(){
+		return $this->errorMessage;
+	}
+
+	/**
+	 * Sets the error Message string.
+	 * @param String $err Set the error message
+	 * @return void
+	 */
+	public function setErrorMessage($err){
+		$this->errorMessage = $err;
 	}
 }
 ?>
