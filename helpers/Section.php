@@ -193,5 +193,35 @@ class Section{
 	public function setErrorMessage($err){
 		$this->errorMessage = $err;
 	}
+
+	/**
+	 * Return a string version of the Section object
+	 * which should be valid JSON output for use in drawing the schedule
+	 * @return String $output valid JSON representation of the Section object
+	 */
+	public function toJSON(){
+		$output = "{\"courseName\":\"" . $this->courseName . "\",";
+		$output .= "\"coursePrefix\": \"" . $this->coursePrefix. "\",";
+		$output .= "\"courseNumber\":\"" . $this->courseNumber . "\",";
+		$output .= "\"courseLecturer\":\"" . $this->lecturer . "\",";
+		$output .= "\"courseCredit\":" . $this->courseCredit . ",";
+		$output .= "\"callNumber\":" . $this->callNumber . ",";
+		$output .= "\"status\":\"" . $this->status . "\",";
+		$output .= "\"building\":" . $this->buildingNumber . ",";
+		$output .= "\"room\":\"" . $this->roomNumber . "\",";
+		$output .= "\"meetings\": {";
+		$len = strlen($output);
+		foreach($this->meetings as $mtg){
+			$output .= "\"" . $mtg->getDay() . "\": \"" . $mtg->getMeetingTime() . "\",";
+		}
+		$output = substr($output,0,strlen($output)-1);
+		if ($len < strlen($output)){
+			$output .= "}";
+		}else{
+			$output .= "{}";
+		}
+		$output .= "}";
+		return $output;
+	}
 }
 ?>

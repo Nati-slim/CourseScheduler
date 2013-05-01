@@ -80,4 +80,5 @@
 	if ($schedule->isOverlap($mtg11,$mtg18)){
 		echo "mtg11/mtg18 Overlap detected between " . $mtg11->getMeetingTime() . " and " . $mtg18->getMeetingTime() . "\n";
 	}
+	echo $schedule->toJSON();
 ?>

@@ -1,6 +1,6 @@
 <?php
 //place this file in a directory not accessible over the internet
-require_once("../../credentials.inc");
+require_once("../../../../creds/credentials.inc");
 require_once("Course.php");
 require_once("Section.php");
 require_once("Meeting.php");

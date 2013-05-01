@@ -153,5 +153,23 @@ class UserSchedule{
 	public function setErrorMessage($err){
 		$this->errorMessage = $err;
 	}
+
+	/**
+	 * Return a string version of the UserSchedule object
+	 * which should be valid JSON output for use in drawing the schedule
+	 * @return String $output valid JSON representation of the object
+	 */
+	public function toJSON(){
+		$output = "{";
+		$len = 1;
+		foreach($this->schedule as $item){
+			$output .= "\"" . $item->getCallNumber() . "\":" . $item->toJSON() . ",";
+		}
+		if (strlen($output) > 1){
+			$output = substr($output,0,strlen($output)-1);
+		}
+		$output .= "}";
+		return $output;
+	}
 }
 ?>
