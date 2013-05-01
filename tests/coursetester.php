@@ -34,5 +34,5 @@
 	$badsection = new Section("Systems Programming","CSCI","1730",22234,"Full",4.0,"Chris Plaue");
 	$val = $csci->addSection($badsection);
 	echo "Error: " . $csci->getErrorMessage() . " val = " . $val . "\n";
-	//var_dump($csci);
+	var_dump($csci);
 ?>

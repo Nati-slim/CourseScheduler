@@ -164,7 +164,7 @@ class Section{
 		if (gettype($mtg == "object") && $mtg != null){
 			if ($mtg->getCallNumber() == $this->callNumber){
 				if (!(strcasecmp($mtg->getDay(),"AR") == 0 || strcasecmp($mtg->getDay(),"VR") == 0)){
-					$this->meetings[] = $mtg;
+					$this->meetings[$mtg->getDay()] = $mtg;
 					$this->errorMessage = "";
 					return true;
 				}

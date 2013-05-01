@@ -14,4 +14,5 @@
 	. $mtg1->getStartMinute() . "\n  meeting start AMPM: " . $mtg1->getStartAMPM() . "\n meeting end Hour: " . $mtg1->getEndHour() . "\n  meeting end Minute: " . $mtg1->getEndMinute() . "\n  meeting end AMPM: " . $mtg1->getEndAMPM() ."\n  meeting time: " . $mtg1->getMeetingTime() . "\n";
 	echo "meeting 5: " . $mtg5->getDay() . "\n meeting start Hour: " . $mtg5->getStartHour() . "\n meeting start Minute: "
 	. $mtg5->getStartMinute() . "\n  meeting start AMPM: " . $mtg5->getStartAMPM() . "\n  meeting end Hour: " . $mtg5->getEndHour() . "\n  meeting end Minute: " . $mtg5->getEndMinute() . "\n  meeting end AMPM: " . $mtg5->getEndAMPM() ."\n  meeting time: " . $mtg5->getMeetingTime() . "\n";
+	var_dump($mtg6);
 ?>

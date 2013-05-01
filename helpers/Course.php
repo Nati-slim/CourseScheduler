@@ -58,7 +58,7 @@ class Course{
 			//verify coursePrefix and courseNumbers match the course objects.
 			if (strcasecmp($sec->getCoursePrefix(),$this->coursePrefix) == 0 && strcasecmp($sec->getCourseNumber(),$this->courseNumber) == 0){
 				//echo "Adding " . print_r($sec,true). "\n";
-				$this->sectionListings[] = $sec;
+				$this->sectionListings[$sec->getCallNumber()] = $sec;
 				$this->errorMessage = "";
 				return true;
 			}else{
