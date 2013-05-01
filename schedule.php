@@ -1,9 +1,10 @@
 <?php
 session_save_path(dirname($_SERVER['DOCUMENT_ROOT']) . '/sessions');
-session_set_cookie_params(86400,"/","apps.janeullah.com/coursepicker",false,true);
+session_set_cookie_params(86400,"/","apps.janeullah.com",false,true);
 session_name('CourseScheduler');
 session_start();
 $sched = $_SESSION['schedule'][$_SESSION['userid']];
+$msg = $_SESSION['errorMessage'];
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -21,7 +22,7 @@ $sched = $_SESSION['schedule'][$_SESSION['userid']];
 			try{
 				echo "var sched = '".$sched."';";
 			}catch(Exception $e){
-				echo "var sched = '".$_SESSION['test']."';";
+				echo "console.log(\"Problem getting schedule.\");";
 			}
 		?>
 	</script>
@@ -72,11 +73,22 @@ $sched = $_SESSION['schedule'][$_SESSION['userid']];
     <div class="container-fluid">
 		<div class="row-fluid">
 			<div class="span3">
-				<?php echo "User id: " . $_SESSION['userid'] ?>
+				<p class="alert-info">
+					<?php echo "User id: " . $_SESSION['userid'] ?>
+				</p>
+				<p class="alert-error">
+					<?php echo $msg ?>
+				</p>
+				<!-- HIDDEN / POP-UP DIV -->
+				<div id="explain" style="display:none;">
+					<p>Click the link first. Then, scroll down this page to see the generated image. Rightclick the image to save it.
+					</p>
+				</div>
 			</div>
 			<div class="span9" id="canvasDiv">
 				<canvas id="scheduleCanvas" width="780" height="750">
 				</canvas>
+				<div id="canvasImage" style="display: none"></div>
 			</div>
 		</div><!-- /row fluid-->
     </div> <!-- /container -->

@@ -1,0 +1,19 @@
+#scheduleCanvas{
+    /*CSS rule for displaying the canvas object */
+	display:inline;
+	border: 2px solid #634f44;
+	/*margin-left:410px;*/
+	margin-left:auto;
+	margin-top:25px;
+}
+
+#canvasImage{
+    /*margin-left:410px;*/
+    border: 3px solid #634f44;
+    margin-top: 60px;
+    margin-bottom: auto;
+    margin-right: auto;
+    margin-left: auto;
+    width:780px;
+    height:600px;
+}

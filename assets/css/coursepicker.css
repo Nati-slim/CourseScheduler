@@ -1,19 +1,56 @@
 #scheduleCanvas{
     /*CSS rule for displaying the canvas object */
 	display:inline;
-	border: 2px solid #634f44;
-	/*margin-left:410px;*/
-	margin-left:auto;
-	margin-top:25px;
+	border: 2px solid #000000;
 }
 
 #canvasImage{
-    /*margin-left:410px;*/
-    border: 3px solid #634f44;
+    border: 3px solid #000000;
     margin-top: 60px;
-    margin-bottom: auto;
-    margin-right: auto;
-    margin-left: auto;
     width:780px;
-    height:600px;
+    height:730px;
+}
+
+/* HOVER STYLES */
+div#explain {
+    display: none;
+    position: absolute;
+    width: 280px;
+    padding: 10px;
+    font-size: 110%;
+	/* Sauce to make the div rounded*/
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+	border: 2px solid #634f44;
+	border-radius:10px;
+	background-color:#eee9e3;
+	/*Make the div opaque*/
+    filter:alpha(opacity=99);
+    opacity:0.99;
+    color:#634f44;
+    /* Center text*/
+    text-align:center
+}
+
+.courseinfo{
+	/* CSS style for the div overlay
+	* Help with rounded borders from http://viralpatel.net/blogs/rounded-corner-css-without-images/
+	*/
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+	border: 2px solid #634f44;
+	border-radius:10px;
+	display:block;
+	width:100%;
+	height:120px;
+	max-width: 260px;
+	font-family: Georgia, serif;
+	font-size:20px;
+	line-height:22px;
+	background-color:#eee9e3;
+	/*Make the div opaque*/
+    filter:alpha(opacity=99);
+    opacity:0.99;
+    /* Center text*/
+    text-align:center
 }
