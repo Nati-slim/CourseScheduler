@@ -13,6 +13,14 @@
 		echo "CSCI 2150 not found.\n";
 	}
 
+	$sections = $db->getSections("CSCI","1302");
+	if ($sections){
+		echo count($sections) . " found for CSCI 1302.\n";
+		print_r($sections);
+	}else{
+		echo "Sections for CSCI 1302 not found.\n";
+	}
+	
 	$sections2150 = $db->getSections("CSCI","2150");
 	if ($sections2150){
 		echo count($sections2150) . " found for CSCI 2150.\n";
@@ -35,13 +43,6 @@
 		//print_r($courses19);
 	}else{
 		echo "Courses not found for requirement 19.\n";
-	}
-
-	$sections = $db->getSections("CSCI","1302");
-	if ($sections){
-		echo count($sections) . " found for CSCI 1302.\n";
-	}else{
-		echo "Sections for CSCI 1302 not found.\n";
 	}
 
 	$solosection = $db->getSingleSection(73760);

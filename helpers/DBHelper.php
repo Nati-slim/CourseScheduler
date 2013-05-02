@@ -189,7 +189,7 @@ class DBHelper{
 				while ($this->listsections->fetch() && !($this->dbconn->errno)){
 					//Code to merge the class meetings into one section
 					if ($callNumber != $cNo){
-						$section = new Section($courseName,$coursePrefix,$courseNumber,$callNumber,$available,$credithours,$lecturer);
+						$section = new Section(filter_var($courseName,FILTER_SANITIZE_SPECIAL_CHARS),$coursePrefix,$courseNumber,$callNumber,$available,$credithours,trim(filter_var($lecturer,FILTER_SANITIZE_SPECIAL_CHARS)));
 						$section->setBuildingNumber($building);
 						$section->setRoomNumber($room);
 						$sectionListing[] = $section;
@@ -246,7 +246,7 @@ class DBHelper{
 				while ($this->singlesection->fetch() && !($this->dbconn->errno)){
 					//Code to merge the class meetings into one section
 					if ($callNumber != $cNo){
-						$section = new Section($courseName,$coursePrefix,$courseNumber,$callNumber,$available,$credithours,$lecturer);
+						$section = new Section(trim(filter_var($courseName,FILTER_SANITIZE_SPECIAL_CHARS)),$coursePrefix,$courseNumber,$callNumber,$available,$credithours,trim(filter_var($lecturer,FILTER_SANITIZE_SPECIAL_CHARS)));
 						$section->setBuildingNumber($building);
 						$section->setRoomNumber($room);
 						$cNo = $callNumber;

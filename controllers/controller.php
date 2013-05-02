@@ -8,13 +8,7 @@ require_once("../helpers/Meeting.php");
 require_once("../helpers/DBHelper.php");
 require_once("../helpers/UserSchedule.php");
 session_start();
-/**
- * http://php.net/manual/en/language.oop5.autoload.php
- * Autoload the class files for deserializing
- */
-function __autoload($class_name) {
-    include "../helpers/" . $class_name . '.php';
-}
+
 /**
  * Function to undo effects of magic quotes
  * Returns the $_POST value matching the provided key
@@ -50,51 +44,72 @@ function generateToken($length = 256){
 $requestType = $_SERVER['REQUEST_METHOD'];
 if ($requestType === 'POST') {
     $reqId = get_post_var('requirementId');
-    $prefix = get_post_var("coursePrefix");
-    $num = get_post_var("courseNumber");
+    $courseitem = get_post_var("courseitem");
+	$addSection = get_post_var("add");
     if ($reqId){
 		$db = new DBHelper();
 		try{
 			$reqId = (int)$reqId;
 		}catch(Exception $e){
 			$_SESSION['errorMessage'] = "Requirement ID must be an integer.";
-			return "{}";
+			echo "{}";
 		}
 		$courses = $db->getShellCourses($reqId);
 		if ($courses){
 			$_SESSION['errorMessage'] = "";
 			$_SESSION['courses'] = $courses;
-			//$_SESSION['courses'] = json_encode($courses);
-			//echo 1;
 		}else{
 			$_SESSION['errorMessage'] = "No courses found for requirement Id " . $reqId;
 			$_SESSION['courses'] = "[]";
-			//echo 0;
 		}
-		header("Location: http://apps.janeullah.com/coursepicker/schedule.php");
-	}else if ($prefix && $num){
+	}else if ($courseitem){
 		$db = new DBHelper();
-		try{
-			$sections = $db->getSections($prefix,$num);
-			if ($sections){
-				$_SESSION['errorMessage'] = "";
-				$_SESSION['sections'] = $sections;
-				$_SESSION['serial'] = serialize($sections);
-				echo 1;
-			}else{
-				$_SESSION['errorMessage'] = "No sections found for course ". $prefix."-".$num;
-				$_SESSION['sections'] = "[]";
-				echo 0;
+		$pos = strpos($courseitem,"-");
+		if ($pos === false) { // note: three equal signs
+			$_SESSION['errorMessage'] = "No sections found for " . $courseitem;
+			$_SESSION['sections'] = "[]";
+		}else{
+			$sections = $db->getSections(substr($courseitem,0,$pos),substr($courseitem,$pos+1,strlen($courseitem)-1));	
+			$_SESSION['errorMessage'] = "";
+			$_SESSION['sections'] = $sections;
+		}
+	}else if ($addSection){		
+		if ($addSection != 0){			
+			$db = new DBHelper();
+			$userid = $_SESSION['userid'];
+			if (!$userid){
+				//Initialize user schedule object & set relevant $_SESSION variables
+				$userschedule = new UserSchedule(generateToken());
+				$_SESSION['init'] = "initialized";
+				$_SESSION['schedule'][$userschedule->getUserId()] = $userschedule->toJSON();
+				$_SESSION['userid'] = $userschedule->getUserId();
+				$_SESSION['schedObj'] = $userschedule;
+			}else{				
+				$userschedulejson = $_SESSION['schedule'][$userid];
+				$userschedule = unserialize($_SESSION['schedObj']);
+				//echo $userschedulejson;
 			}
-		}catch(Exception $e){
-			$_SESSION['errorMessage'] = "Error with sections.";
-			echo 0;
+			$section = $db->getSingleSection($addSection);
+			try{
+				$status = $userschedule->addSection($section);
+				if (!$status){				
+					$_SESSION['errorMessage'] = $userschedule->getErrorMessage();
+				}else{
+					$_SESSION['errorMessage'] = "Section " . $addSection. "added!";
+					$_SESSION['schedule'][$userschedule->getUserId()] = $userschedule->toJSON();
+				}
+			}catch(Exception $e){
+				$_SESSION['errorMessage'] = $e->getMessage();
+			}
+		}else{
+			$_SESSION['errorMessage'] = "Please select a section.";
 		}
 	}else{
-		$_SESSION['errorMessage'] = "Unknown POST request.";
+		$_SESSION['errorMessage'] = "Unknown POST request";
 		$_SESSION['courses'] = "[]";
-		echo 0;
-	}
+		$_SESSION['sections'] = "[]";
+	}	
+	header("Location: http://apps.janeullah.com/coursepicker/schedule.php");
 }else if ($requestType === 'GET'){
 	if ($_GET['page'] === "schedule"){
 		$init = $_SESSION['init'];
@@ -139,12 +154,11 @@ if ($requestType === 'POST') {
 			$_SESSION['schedule'][$schedule->getUserId()] = $schedule->toJSON();
 			$_SESSION['userid'] = $schedule->getUserId();
 			$_SESSION['schedules'] = $schedules;
+			$_SESSION['schedObj'] = serialize($schedule);
 			$_SESSION['errorMessage'] = "";
 		}
-		header("Location: http://apps.janeullah.com/coursepicker/schedule.php");
-	}else{
-		header("Location: http://apps.janeullah.com/coursepicker/index.php");
 	}
+	header("Location: http://apps.janeullah.com/coursepicker/schedule.php");
 }else{
 	echo "Unknown request type.";
 }

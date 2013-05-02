@@ -13,6 +13,7 @@ var CANVAS_HEIGHT = 750;
 var colorCounter = 0;
 //array to store the added class sections as JSON objects
 var courseRectangles = new Array();
+var sectionsGrabbed = new Array();
 var canvasItem, canvasContext;
 var courseListing;
 var xPos, yPos;
@@ -205,14 +206,14 @@ function drawClassMeeting(ctx) {
 	//http://api.jquery.com/jQuery.parseJSON/
 	try{
 		var schedule = jQuery.parseJSON(sched);
-		console.log(schedule);
+		//console.log(schedule);
 		/*https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Object/keys
 		https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Array/forEach
 		Enumerate the sections by chaining Object.keys which returns an array of the passed-in values
 		and Array.forEach() which executes the anonymous function.*/
 		Object.keys(schedule).forEach(function(key){
 			//method to parse a section and draw the section's meetings onto the canvas
-			console.log(schedule[key]);
+			//console.log(schedule[key]);
 			parseSection(schedule[key],ctx);
 			colorCounter++;
 			if (colorCounter == (colors.length-1)){
@@ -412,38 +413,67 @@ function initializeCanvas() {
 	updateListeners(ctx,courseRectangles);
 }
 
-function processShellCourses(data){
-	//console.log(data);
-	Object.keys(data).forEach(function(key){
-		var section = data[key];
-		console.log(section);
+
+$(document).ready(function(){
+	var item = $('#sectionItem');
+	var cItem = $('#courseitem');
+	//Dump out section list when course selection changes
+	cItem.change(function(){
+		item.empty();
+		item.append("<option value=\"0\">Select A Section</option.");
 	});
-}
-
-/***************************************************
- * LOADING COURSES DYNAMICALLY OR OTHERWISE
- * ************************************************/
-
-/**
- * Suite of functions to display the meeting times of a selection course section
- * and add a course to the schedule. Using $(document).ready to make sure all assets are on the page
- */
-$(document).ready(function(evt){
-	$('#pickRequirement').submit(function(e){
-		e.preventDefault();
-		$.ajax({
-			type: "POST",
-			url: "classes/controllers/controller.php",
-			data: $('#pickRequirement').serialize(),
-			success: function(data){
-				if (data){
-					processShellCourses(courseListings);
-				}else{
-					console.log("No courses.");
+	
+	//Append the meeting times to the DOM when user makes a selection
+	item.change(function(){
+		if (item.val() != 0){
+			$('#meetings').hide();
+			$('#meetings').empty();
+			var sections = jQuery.parseJSON(sectionListings);
+			try{
+				Object.keys(sections).forEach(function(key){
+					var section = sections[key];
+					if (section.callNumber == item.val()){
+						var mtgs = section.meetings;
+						$('#meetings').append("<ol id=\"meetingDisplay\">");	
+						Object.keys(mtgs).forEach(function(day){
+							$('#meetings ol').append("<li>"+day + " " + mtgs[day]);
+						});		
+						//Add Section button creation
+						$('#meetings').append("<form id=\"addSectionForm\" name=\"addSectionForm\" action=\"classes/controllers/controller.php\" method=\"post\">");
+						$('#meetings form').append("<input type=\"hidden\" name=\"add\" value=\""+section.callNumber+"\">");
+						$('#meetings form').append("<input class=\"btn btn-primary\" type=\"submit\" id=\"addSectionButton\" value=\"Add Section\"></form>");
+						//Disable the Add Section button for unavailable sections
+						if (section.status != "Available"){
+							$('#addSectionButton').attr("disabled", "disabled");
+							$('#addSectionButton').val($section.status);
+						}
+						$('#meetings').show();
+						throw true;
+					}
+				});
+			}catch(e){
+				if (e!==true){
+					console.log("Error enumerating list of sections.");
 				}
 			}
-		});
-		return false;
+		}
 	});
+	
+	//Populate the list of currently enrolled sections
+	if (sched.length > 0){
+		console.log("Schedule found.");
+		$('#scheduleInfo').append("<form id=\"deleteForm\" name=\"deleteForm\" action=\"classes/controllers/controller\" method=\"post\">");
+		$('#scheduleInfo form').append("<select id=\"deleteSectionItem\" name=\"deleteSectionItem\">");
+		$('#scheduleInfo form select').append("<option value=\"0\">Select A Section</option>");
+		var schedul = jQuery.parseJSON(sched);
+		Object.keys(schedul).forEach(function(key){
+			var s = schedul[key];		
+			$('#scheduleInfo form select').append("<option value=\""+s.callNumber+"\">"+s.coursePrefix+"-"+s.courseNumber+"</option>");
+		});
+		$('#scheduleInfo form').append("<input type=\"hidden\" value=\"delete\" name=\"delete\">");
+		$('#scheduleInfo form').append("<input type=\"submit\" class=\"btn btn-danger\" value=\"Delete Section\">");
+		$('#scheduleInfo').show();
+	}else{
+		console.log("natch");
+	}
 });
-

@@ -3,6 +3,7 @@ session_save_path(dirname($_SERVER['DOCUMENT_ROOT']) . '/sessions');
 session_set_cookie_params(86400,"/","apps.janeullah.com",false,true);
 session_name('CourseScheduler');
 session_start();
+$controller = "classes/controllers/controller.php";
 /**
  * http://php.net/manual/en/language.oop5.autoload.php
  * Autoload the class files for deserializing
@@ -17,8 +18,9 @@ $lenCourses = count($cListings);
 $lenSections = count($sListings);
 $data = "[]";
 $sects = "[]";
-echo "a: " . $lenCourses . "b: ". $cListings . "c " .$sListings ."d:". $lenSections;
+//echo "a: " . $lenCourses . "b: ". $cListings . "c " .$sListings ."d:". $lenSections;
 if ($lenCourses > 0){
+	//Copy output buffer to a variable
 	ob_start();
 	echo "[";
 	for ($i = 0; $i < $lenCourses; $i++){
@@ -34,6 +36,7 @@ if ($lenCourses > 0){
 }
 
 if ($lenSections > 0){
+	//Copy output buffer to a variable
 	ob_start();
 	echo "[";
 	for ($i = 0; $i < $lenSections; $i++){
@@ -46,8 +49,11 @@ if ($lenSections > 0){
 	echo "]";
 	$sects = ob_get_contents();
 	ob_end_clean();
+	if (gettype($sListings[0]) == "object"){
+		$courseName = $sListings[0]->getCourseName();
+	}
 }
-//echo $data;
+//echo $courseName;
 $msg = $_SESSION['errorMessage'];
 ?>
 <!DOCTYPE html>
@@ -67,8 +73,8 @@ $msg = $_SESSION['errorMessage'];
 		<?php
 			try{
 				echo "var sched = '".$sched."';";
-				echo "var courseListings = ". $data.";";
-				echo "var sectionListings = ". $sects .";";
+				echo "var courseListings = '".$data."';";
+				echo "var sectionListings = '".$sects."';";
 			}catch(Exception $e){
 				echo "console.log(\"Problem getting schedule.\");";
 			}
@@ -126,9 +132,15 @@ $msg = $_SESSION['errorMessage'];
 				<p class="alert-error">
 					<?php echo $msg ?>
 				</p>
-				<form action="<?php echo "classes/controllers/controller.php"; ?>" id="pickRequirement2" name="pickRequirement" method="post">
+				<form action="<?php echo $controller; ?>" id="pickRequirement2" name="pickRequirement" method="post">
 				<!-- class="selectpicker show-tick" data-size="auto"-->
-					<select id="requirementId" name="requirementId">
+				<script type="text/javascript">
+					$('.selectpicker').selectpicker({
+						style: 'btn-primary',
+						size: 'auto'						
+					});
+				</script>
+					<select class="selectpicker" id="requirementId" name="requirementId">
 						<option value="0">Select A Requirement</option>
 						<optgroup label="Core Curriculum">
 							<option value="3">Core Curriculum I: Foundation Courses</option>
@@ -161,23 +173,54 @@ $msg = $_SESSION['errorMessage'];
 						<optgroup label="Comp. Sci. Reqs.">
 							<option value="19">Computer Science Major Courses</option>
 						</optgroup>
-					</select> <br><input type="hidden" id="reqs" name="reqs" value="0"> <input type="submit" value="Submit">
+					</select>
+					<input type="submit" class="btn btn-primary" value="Submit">
 				</form>
 
-				<select id="courses" name="courses" style="display:none;">
-					<option value="0">Select A Course</option>
-				</select>
+				<!-- Displaying the courses -->
+				<form action="<?php echo $controller; ?>" id="courseForm" name="courseForm" method="post">
+					<select id="courseitem" name="courseitem">
+						<option value="0">Select A Course</option>
+						<?php
+							foreach($cListings as $course){
+								echo "<option value=\"".$course->getCoursePrefix()."-".$course->getCourseNumber()."\">".$course->getCoursePrefix()."-".$course->getCourseNumber()."</option>";
+							}
+						?>
+					</select>
+					<input class="btn btn-primary" type="submit">
+				</form>
+				
 				<!-- HIDDEN / POP-UP DIV -->
 				<div id="explain" style="display:none;">
 					<p>Click the link first. Then, scroll down this page to see the generated image. Rightclick the image to save it.
 					</p>
 				</div>
+				
+				<!-- Displaying the sections-->
 				<div id="sectionInfo">
-					<h4></h4>
-					<select id="sections" name="sections" style="display:none;">
-						<option value="0">Select A Section</option>
-					</select>
+					<h4><?php echo $courseName; ?></h4>
+					<form id="sectionForm" name="sectionForm" action="<?php echo $controller; ?>" method="post">
+						<select id="sectionItem" name="sectionItem">
+							<option value="0">Select A Section</option>
+							<?php
+								foreach($sListings as $section){
+									echo "<option value=\"".$section->getCallNumber()."\"> Section ".$section->getCallNumber()."</option>";
+								}
+							?>
+						</select>
+					</form>
 				</div>
+				
+				<!-- Displaying the meeting times of a section -->
+				<div id="meetings" style="display:none;">
+					
+				</div>
+
+				<!-- Displaying the sections-->
+				<div id="scheduleInfo" style="display:none;">
+					<h4>CURRENT SCHEDULE</h4>
+				</div>
+
 			</div>
 			<div class="span9" id="canvasDiv">
 				<canvas id="scheduleCanvas" width="780" height="750">
