@@ -12,41 +12,19 @@ function __autoload($class_name) {
 }
 $sched = $_SESSION['schedule'][$_SESSION['userid']];
 $cListings = $_SESSION['courses'];
-$sListings = $_SESSION['sections'];
-$lenCourses = count($cListings);
-$lenSections = count($sListings);
-$data = "[]";
-$sects = "[]";
-echo "a: " . $lenCourses . "b: ". $cListings . "c " .$sListings ."d:". $lenSections;
-if ($lenCourses > 0){
-	ob_start();
-	echo "[";
-	for ($i = 0; $i < $lenCourses; $i++){
-		if ($i < $lenCourses-1){
-			echo $cListings[$i] . ",";
-		}else{
-			echo $cListings[$i];
-		}
+ob_start();
+echo "[";
+$len = count($cListings);
+for ($i = 0; $i < $len; $i++){
+	if ($i < $len-1){
+		echo $cListings[$i] . ",";
+	}else{
+		echo $cListings[$i];
 	}
-	echo "]";
-	$data = ob_get_contents();
-	ob_end_clean();
 }
-
-if ($lenSections > 0){
-	ob_start();
-	echo "[";
-	for ($i = 0; $i < $lenSections; $i++){
-		if ($i < $lenSections-1){
-			echo $sListings[$i] . ",";
-		}else{
-			echo $sListings[$i];
-		}
-	}
-	echo "]";
-	$sects = ob_get_contents();
-	ob_end_clean();
-}
+echo "]";
+$data = ob_get_contents();
+ob_end_clean();
 //echo $data;
 $msg = $_SESSION['errorMessage'];
 ?>
@@ -68,7 +46,6 @@ $msg = $_SESSION['errorMessage'];
 			try{
 				echo "var sched = '".$sched."';";
 				echo "var courseListings = ". $data.";";
-				echo "var sectionListings = ". $sects .";";
 			}catch(Exception $e){
 				echo "console.log(\"Problem getting schedule.\");";
 			}
@@ -171,12 +148,6 @@ $msg = $_SESSION['errorMessage'];
 				<div id="explain" style="display:none;">
 					<p>Click the link first. Then, scroll down this page to see the generated image. Rightclick the image to save it.
 					</p>
-				</div>
-				<div id="sectionInfo">
-					<h4></h4>
-					<select id="sections" name="sections" style="display:none;">
-						<option value="0">Select A Section</option>
-					</select>
 				</div>
 			</div>
 			<div class="span9" id="canvasDiv">

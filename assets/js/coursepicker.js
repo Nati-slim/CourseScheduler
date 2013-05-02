@@ -16,6 +16,13 @@ var courseRectangles = new Array();
 var canvasItem, canvasContext;
 var courseListing;
 var xPos, yPos;
+/**
+* Array object to store the sections from selecting a course
+* Makes use of the fact that data is already in the session object so
+* no need to make another visit to controller or database.
+*/
+var sectionListing = new Array();
+
 
 $(document).ready(function(){
 	initializeCanvas();
@@ -351,7 +358,7 @@ function drawMeeting(x,y,ctx,text,callNumber,startMinute,endMinute,startHour,end
 	ctx.fillStyle = "#000000";
 	ctx.textAlign = 'center';
 	ctx.fillText(text,x+55,y+20);
-	ctx.fillText(callNumber,x+40,y+40);
+	ctx.fillText(callNumber,x+40,y+35);
 	//Finish out rectangle
 	ctx.lineWidth = 2;
 	ctx.strokeStyle = '#000000';
@@ -404,3 +411,39 @@ function initializeCanvas() {
 	createImage(canvasItem);
 	updateListeners(ctx,courseRectangles);
 }
+
+function processShellCourses(data){
+	//console.log(data);
+	Object.keys(data).forEach(function(key){
+		var section = data[key];
+		console.log(section);
+	});
+}
+
+/***************************************************
+ * LOADING COURSES DYNAMICALLY OR OTHERWISE
+ * ************************************************/
+
+/**
+ * Suite of functions to display the meeting times of a selection course section
+ * and add a course to the schedule. Using $(document).ready to make sure all assets are on the page
+ */
+$(document).ready(function(evt){
+	$('#pickRequirement').submit(function(e){
+		e.preventDefault();
+		$.ajax({
+			type: "POST",
+			url: "classes/controllers/controller.php",
+			data: $('#pickRequirement').serialize(),
+			success: function(data){
+				if (data){
+					processShellCourses(courseListings);
+				}else{
+					console.log("No courses.");
+				}
+			}
+		});
+		return false;
+	});
+});
+

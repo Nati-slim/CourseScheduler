@@ -5,6 +5,7 @@
 class Course{
 	private $courseNumber;
 	private $coursePrefix;
+	private $courseName;
 	private $sectionListings;
 	private $errorMessage;
 
@@ -46,6 +47,22 @@ class Course{
 	 */
 	function getCourseListings(){
 		return $this->sectionListings;
+	}
+
+	/**
+	 * Set the course Name
+	 * @param String $name course name
+	 */
+	function setCourseName($name){
+		$this->courseName = $name;
+	}
+
+	/**
+	 * Retrieve the course Name
+	 * @return String $name course name
+	 */
+	function getCourseName(){
+		return $this->courseName;
 	}
 
 	/**

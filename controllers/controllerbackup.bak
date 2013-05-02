@@ -8,13 +8,7 @@ require_once("../helpers/Meeting.php");
 require_once("../helpers/DBHelper.php");
 require_once("../helpers/UserSchedule.php");
 session_start();
-/**
- * http://php.net/manual/en/language.oop5.autoload.php
- * Autoload the class files for deserializing
- */
-function __autoload($class_name) {
-    include "../helpers/" . $class_name . '.php';
-}
+
 /**
  * Function to undo effects of magic quotes
  * Returns the $_POST value matching the provided key
@@ -50,8 +44,6 @@ function generateToken($length = 256){
 $requestType = $_SERVER['REQUEST_METHOD'];
 if ($requestType === 'POST') {
     $reqId = get_post_var('requirementId');
-    $prefix = get_post_var("coursePrefix");
-    $num = get_post_var("courseNumber");
     if ($reqId){
 		$db = new DBHelper();
 		try{
@@ -65,29 +57,10 @@ if ($requestType === 'POST') {
 			$_SESSION['errorMessage'] = "";
 			$_SESSION['courses'] = $courses;
 			//$_SESSION['courses'] = json_encode($courses);
-			//echo 1;
+			echo 1;
 		}else{
 			$_SESSION['errorMessage'] = "No courses found for requirement Id " . $reqId;
 			$_SESSION['courses'] = "[]";
-			//echo 0;
-		}
-		header("Location: http://apps.janeullah.com/coursepicker/schedule.php");
-	}else if ($prefix && $num){
-		$db = new DBHelper();
-		try{
-			$sections = $db->getSections($prefix,$num);
-			if ($sections){
-				$_SESSION['errorMessage'] = "";
-				$_SESSION['sections'] = $sections;
-				$_SESSION['serial'] = serialize($sections);
-				echo 1;
-			}else{
-				$_SESSION['errorMessage'] = "No sections found for course ". $prefix."-".$num;
-				$_SESSION['sections'] = "[]";
-				echo 0;
-			}
-		}catch(Exception $e){
-			$_SESSION['errorMessage'] = "Error with sections.";
 			echo 0;
 		}
 	}else{
