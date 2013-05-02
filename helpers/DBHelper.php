@@ -11,7 +11,11 @@ class DBHelper{
 	private $singlesection;
 	private $errorMessage;
 
-	//Default constructor
+	/**
+	 * Default constructor to access the database
+	 * Contains methods to access the Requirements and StaticReports database
+	 *
+	 */
 	function __construct(){
 		try {
 			$this->dbconn = new mysqli(DB_HOST,DB_USER,DB_PASSWORD,DB_NAME);
@@ -28,6 +32,47 @@ class DBHelper{
 		} catch(Exception $e) {
 			echo 'ERROR: ' . $e->getMessage();
 		}
+	}
+
+	/**
+	 * Retrieve a list of 'empty' course objects
+	 * to minimize the database load.
+	 * @return array() Course objects
+	 * @param integer $id requirement id
+	 */
+	function getShellCourses($id){
+		try{
+			$courseListing = array();
+			if (!($this->listcourses)){
+				echo "Prepare failed: (" . $this->dbconn->errno . ") " . $this->dbconn->error;
+			}else if (!($this->listcourses->bind_param("i",$id))){
+				echo "Binding parameters failed: (" . $this->listcourses->errno . ") " . $this->listcourses->error;
+			}else if (!($this->listcourses->execute())){
+				echo "Execute failed: (" . $this->listcourses->errno . ") " . $this->listcourses->error;
+			}else if (!(($stored = $this->listcourses->store_result())) && $this->dbconn->errno){
+				//switched from using fetch() to store_result() because of mysql error 2014 about commands being out of sync
+				//storeresult buffers the fetched data
+				echo "Fetch failed (DB): (" . $this->dbconn->errno . ") " . $this->dbconn->error;
+				echo "Fetch failed (STMT): (" . $this->listcourses->errno . ") " . $this->listcourses->error;
+			}else if (!($this->listcourses->bind_result($requirementId,$coursePrefix,$courseNumber))){
+				echo "Binding results failed: (" . $this->listcourses->errno . ") " . $this->listcourses->error;
+			}else{
+				if ($stored){
+					while($this->listcourses->fetch()){
+						$course = new Course($coursePrefix,$courseNumber);
+						$courseListing[] = $course;
+					}
+				}else{
+					$this->errorMessage = "Error storing results.";
+				}
+			}
+			$this->listcourses->free_result();
+			return $courseListing;
+		}catch(Exception $e){
+			echo $e->getMessage();
+		}
+		$this->listcourses->close();
+		return null;
 	}
 
 	/**Retrieve a list of records that fulfill a particular requirement

@@ -50,4 +50,11 @@
 	}else{
 		echo "No section found.\n";
 	}
+
+	$shellcourse = $db->getShellCourses(19);
+	if ($shellcourse){
+		print_r($shellcourse);
+	}else{
+		echo "No section found.\n";
+	}
 ?>

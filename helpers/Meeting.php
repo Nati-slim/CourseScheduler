@@ -181,5 +181,9 @@ class Meeting{
 	public function setErrorMessage($err){
 		$this->errorMessage = $err;
 	}
+
+	public function __toString(){
+		return $this->time;
+	}
 }
 ?>

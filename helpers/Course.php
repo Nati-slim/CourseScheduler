@@ -86,5 +86,51 @@ class Course{
 	public function setErrorMessage($err){
 		$this->errorMessage = $err;
 	}
+
+	/**
+	 * Return a string version of the Course object
+	 * which should be valid JSON output for use in drawing the schedule
+	 * @return String $output valid JSON representation of the Course object
+	 */
+	public function toJSON(){
+		$output = "{";
+		$output .= "\"coursePrefix\": \"" . $this->coursePrefix . "\",";
+		$output .= "\"courseNumber\":\"" . $this->courseNumber . "\",";
+		$output .= "\"sections\": [";
+		$len = strlen($output);
+		foreach ($this->sectionListings as $section){
+			//print each section followed by a comma
+			$output .= $section->toJSON() . ",";
+		}
+		//close brackets if sections were found.
+		if ($len < strlen($output)){
+			$output = substr($output,0,strlen($output)-1);
+		}
+		$output .= "]}";
+		return $output;
+	}
+
+	/**
+	 * Return a string version of the Course object
+	 * which should be valid JSON output for use in drawing the schedule
+	 * @return String $output valid JSON representation of the Course object
+	 */
+	public function __toString(){
+		$output = "{";
+		$output .= "\"coursePrefix\": \"" . $this->coursePrefix . "\",";
+		$output .= "\"courseNumber\":\"" . $this->courseNumber . "\",";
+		$output .= "\"sections\": [";
+		$len = strlen($output);
+		foreach ($this->sectionListings as $section){
+			//print each section followed by a comma
+			$output .= $section->toJSON() . ",";
+		}
+		//close brackets if sections were found.
+		if ($len < strlen($output)){
+			$output = substr($output,0,strlen($output)-1);
+		}
+		$output .= "]}";
+		return $output;
+	}
 }
 ?>

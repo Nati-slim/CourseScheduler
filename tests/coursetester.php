@@ -17,10 +17,10 @@
 	$csci1302a->setRoomNumber("307A");
 	$csci->addSection($csci1302a);
 
-	$mtg5 = new Meeting(23456, "M", "0215P", "0330P");
-	$mtg6 = new Meeting(23456, "W", "0930A", "1045A");
-	$mtg7 = new Meeting(23456, "F", "0900A", "1015A");
-	$mtg8 = new Meeting(23456, "R", "1145A", "0100P");
+	$mtg5 = new Meeting(23456, "F", "0215P", "0330P");
+	$mtg6 = new Meeting(23456, "M", "0930A", "1045A");
+	$mtg7 = new Meeting(23456, "R", "0900A", "1015A");
+	$mtg8 = new Meeting(23456, "T", "1145A", "0100P");
 	$csci1302b = new Section("Intro to Java", "CSCI","1302",23456,"Available",4.0,"Eileen Kraemer");
 	$csci1302b->addMeeting($mtg5);
 	$csci1302b->addMeeting($mtg6);
@@ -33,6 +33,7 @@
 	//Testing invalid addition
 	$badsection = new Section("Systems Programming","CSCI","1730",22234,"Full",4.0,"Chris Plaue");
 	$val = $csci->addSection($badsection);
-	echo "Error: " . $csci->getErrorMessage() . " val = " . $val . "\n";
+	echo "Error: " . $csci->getErrorMessage();
 	var_dump($csci);
+	echo $csci->toJSON();
 ?>

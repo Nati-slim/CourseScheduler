@@ -11,6 +11,7 @@
 
     <!-- Le styles -->
     <script src="assets/js/jquery-1.9.1.min.js"></script>
+    <script src="assets/js/bootstrap.min.js"></script>
     <link href="assets/css/bootstrap.css" rel="stylesheet">
     <link href="assets/css/coursepicker.css" rel="stylesheet">
     <style>
@@ -43,7 +44,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="brand" href="http://apps.janeullah.com/coursepicker">Project name</a>
+          <a class="brand" href="http://apps.janeullah.com/coursepicker">Course Scheduler</a>
           <div class="nav-collapse collapse">
             <ul class="nav">
               <li class="active"><a href="#">Home</a></li>
@@ -58,7 +59,7 @@
     <div class="container">
 
       <h1>Course Scheduler</h1>
-      <a href="classes/controllers/controller.php?page=schedule">Enter</a>
+      <a href="<?php echo "classes/controllers/controller.php?page=schedule"; ?>">Enter</a>
 
 
 

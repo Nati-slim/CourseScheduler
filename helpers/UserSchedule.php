@@ -4,8 +4,14 @@ class UserSchedule{
 	private $userid;
 	private $errorMessage;
 
+	/**
+	 * Public constructor for the UserSchedule
+	 * class
+	 * @param integer $randomId randomly generated number to ID the user's session
+	 *
+	 */
 	function __construct($randomId){
-		$this->userid = (int)$randomId;
+		$this->userid = $randomId;
 		$this->schedule = array();
 	}
 
@@ -160,6 +166,24 @@ class UserSchedule{
 	 * @return String $output valid JSON representation of the object
 	 */
 	public function toJSON(){
+		$output = "{";
+		$len = 1;
+		foreach($this->schedule as $item){
+			$output .= "\"" . $item->getCallNumber() . "\":" . $item->toJSON() . ",";
+		}
+		if (strlen($output) > 1){
+			$output = substr($output,0,strlen($output)-1);
+		}
+		$output .= "}";
+		return $output;
+	}
+
+	/**
+	 * Return a string version of the UserSchedule object
+	 * which should be valid JSON output for use in drawing the schedule
+	 * @return String $output valid JSON representation of the object
+	 */
+	public function __toString(){
 		$output = "{";
 		$len = 1;
 		foreach($this->schedule as $item){
