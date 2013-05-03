@@ -69,7 +69,6 @@ $msg = $_SESSION['errorMessage'];
     <!-- Le styles -->
     <script src="assets/js/jquery-1.9.1.min.js"></script>
     <script src="assets/js/bootstrap.min.js"></script>
-    <script src="assets/js/bootstrap-select.min.js"></script>
 	<script type="text/javascript">
 		<?php
 			try{
@@ -83,7 +82,6 @@ $msg = $_SESSION['errorMessage'];
 	</script>
     <script src="assets/js/coursepicker.js"></script>
     <link href="assets/css/bootstrap.css" rel="stylesheet">
-    <link href="assets/css/bootstrap-select.min.css" rel="stylesheet">
     <link href="assets/css/coursepicker.css" rel="stylesheet">
     <style>
       body {
@@ -139,7 +137,7 @@ $msg = $_SESSION['errorMessage'];
 				<p class="alert-error">
 					<?php echo $msg ?>
 				</p>
-				<div id="listInfo requirementInfo">
+				<div class="listInfo" id="requirementInfo">
 					<form action="<?php echo $controller; ?>" id="pickRequirement2" name="pickRequirement" method="post">
 						<select class="selectpicker" id="requirementId" name="requirementId">
 							<option value="0">Select A Requirement</option>
@@ -180,7 +178,7 @@ $msg = $_SESSION['errorMessage'];
 				</div>
 
 				<!-- Displaying the courses -->
-				<div id="listInfo courseInfo">
+				<div class="listInfo" id="courseInfo">
 					<?php
 						if ($requirementName && strlen($requirementName)){
 							echo "<h4>".$requirementName."</h4>";
@@ -200,13 +198,13 @@ $msg = $_SESSION['errorMessage'];
 				</div>
 
 				<!-- HIDDEN / POP-UP DIV -->
-				<div id="listInfo explain" style="display:none;">
+				<div class="listInfo" id="explain" style="display:none;">
 					<p>Click the link first. Then, scroll down this page to see the generated image. Rightclick the image to save it.
 					</p>
 				</div>
 
 				<!-- Displaying the sections-->
-				<div id="listInfo sectionInfo">
+				<div class="listInfo" id="sectionInfo">
 					<?php echo "<h4>".$courseName."</h4>"; ?>
 					<form id="sectionForm" name="sectionForm" action="<?php echo $controller; ?>" method="post">
 						<select id="sectionItem" name="sectionItem">
@@ -226,7 +224,7 @@ $msg = $_SESSION['errorMessage'];
 				</div>
 
 				<!-- Displaying the sections-->
-				<div id="listInfo scheduleInfo" style="display:none;">
+				<div class="listInfo" id="scheduleInfo" style="display:none;">
 					<h4>CURRENT SCHEDULE</h4>
 				</div>
 
