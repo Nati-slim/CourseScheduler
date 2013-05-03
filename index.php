@@ -19,6 +19,9 @@ $controller = "classes/controllers/controller.php";
       body {
         padding-top: 20px;
         padding-bottom: 60px;
+        background-image:url('assets/images/escheresque.png');
+        background-repeat:repeat;
+
       }
 
       /* Custom container */
@@ -47,6 +50,10 @@ $controller = "classes/controllers/controller.php";
         font-size: 21px;
         padding: 14px 24px;
       }
+
+      .jumbotron .hidden{
+		  display:none;
+	  }
 
       /* Supporting marketing content */
       .marketing {
@@ -85,7 +92,7 @@ $controller = "classes/controllers/controller.php";
         border-right: 0;
         border-radius: 0 3px 3px 0;
       }
-    </style>	
+    </style>
     <link href="assets/css/bootstrap-responsive.css" rel="stylesheet">
 
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
@@ -99,6 +106,28 @@ $controller = "classes/controllers/controller.php";
       <link rel="apple-touch-icon-precomposed" sizes="72x72" href="assets/ico/apple-touch-icon-72-precomposed.png">
                     <link rel="apple-touch-icon-precomposed" href="assets/ico/apple-touch-icon-57-precomposed.png">
                                    <link rel="shortcut icon" href="assets/ico/favicon.png">
+<script type="text/javascript">
+$(document).ready(function(){
+	$('#navigator li:eq(0)').bind('click',function(){
+		$('#jumbo0').removeClass("hidden");
+		$('#jumbo1, #jumbo2').addClass("hidden");
+		$('#navigator li:eq(0)').addClass("active");
+		$('#navigator li:eq(1), #navigator li:eq(2)').removeClass("active");
+	});
+	$('#navigator li:eq(1)').bind('click',function(){
+		$('#jumbo1').removeClass("hidden");
+		$('#jumbo0, #jumbo2').addClass("hidden");
+		$('#navigator li:eq(1)').addClass("active");
+		$('#navigator li:eq(0), #navigator li:eq(2)').removeClass("active");
+	});
+	$('#navigator li:eq(2)').bind('click',function(){
+		$('#jumbo2').removeClass("hidden");
+		$('#jumbo0, #jumbo1').addClass("hidden");
+		$('#navigator li:eq(2)').addClass("active");
+		$('#navigator li:eq(0), #navigator li:eq(1)').removeClass("active");
+	});
+});
+</script>
 </head>
 
 <body>
@@ -106,15 +135,12 @@ $controller = "classes/controllers/controller.php";
     <div class="container">
 
       <div class="masthead">
-        <h3 class="muted">Project name</h3>
+        <h3 class="muted">Course Scheduler</h3>
         <div class="navbar">
           <div class="navbar-inner">
             <div class="container">
-              <ul class="nav">
-                <li class="active"><a href="http://apps.janeullah.com/coursepicker">Course Scheduler</a></li>
-                <li><a href="#">Projects</a></li>
-                <li><a href="#">Services</a></li>
-                <li><a href="#">Downloads</a></li>
+              <ul id="navigator" class="nav">
+                <li class="active"><a href="http://apps.janeullah.com/coursepicker">Home</a></li>
                 <li><a href="#">About</a></li>
                 <li><a href="#">Contact</a></li>
               </ul>
@@ -124,12 +150,28 @@ $controller = "classes/controllers/controller.php";
       </div>
 
       <!-- Jumbotron -->
-      <div class="jumbotron">
+      <div id="jumbo0" class="jumbotron">
         <h1>Course Scheduler</h1>
-        <p class="lead">Yet Another Course Scheduling application. This time, geared towards students at the <strong>University of Georgia</strong>, <strong>in</strong> the Franklin College
-		 of Arts &amp; Sciences <strong>and</strong> Computer Science majors.</p>
+        <p class="lead">Yet Another Course Scheduling application. This time, geared towards students at the <strong>University of Georgia</strong>, in <strong>the Franklin College
+		 of Arts &amp; Sciences</strong> and <strong>Computer Science</strong> majors.</p>
         <a class="btn btn-large btn-primary" href="<?php echo $controller."?page=schedule"; ?>">Enter</a>
       </div>
+
+
+	<div id="jumbo1" class="jumbotron hidden">
+		<p class="lead">Originally created in Java and originated out of a group project for a class at UGA. This port was written by <a href="http://janeullah.com">Jane Ullah</a>.
+		</p>
+	</div>
+
+	<div id="jumbo2" class="jumbotron hidden">
+		<p class="lead">Tweet @janetalkstech or firstnamelastname@gmail.com (substitute appropriately).</p>
+	</div>
+
+    <?php /*<div class="jumbotron hidden">
+    </div>
+
+    <div class="jumbotron hidden">
+    </div>*/?>
 
 
       <div class="footer">

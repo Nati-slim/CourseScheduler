@@ -81,4 +81,10 @@
 		echo "mtg11/mtg18 Overlap detected between " . $mtg11->getMeetingTime() . " and " . $mtg18->getMeetingTime() . "\n";
 	}
 	echo $schedule->toJSON();
+
+	if ($schedule->deleteSection(12345)){
+		echo "Section 12345 deleted.";
+	}else{
+		echo $schedule->getErrorMessage();
+	}
 ?>

@@ -22,8 +22,8 @@ class UserSchedule{
 	 * @return boolean
 	 */
 	function deleteSection($callNumber){
-		$key = array_search($callNumber,$this->schedule);
-		if($key!==false){
+		$key = array_key_exists($callNumber,$this->schedule);
+		if($key){
 			unset($this->schedule[$callNumber]);
 			$this->schedule = array_values($this->schedule);
 			$this->errorMessage = "";

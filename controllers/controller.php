@@ -41,11 +41,83 @@ function generateToken($length = 256){
     }
 }
 
+/**
+ * Returns the human version of the requirement selected.
+ * @param integer $id i.e. the requirement ID
+ */
+function getRequirementName($id){
+	try{
+		$id = (int)$id;
+	}catch(Exception $e){
+		return "Invalid Requirement ID.";
+	}
+	switch($id){
+	case 1:
+		return "Cultural Diversity Requirement";
+	case 2:
+		return "Environmental Literacy Requirement";
+	case 3:
+		return "Core Curriculum I: Foundation Courses";
+	case 4:
+		return "Core Curriculum II: Physical Sciences";
+	case 5:
+		return "Core Curriculum II: Life Sciences";
+	case 6:
+		return "Core Curriculum III: Quantitative Reasoning";
+	case 7:
+		return "Core Curriculum IV: World Languages and Culture";
+	case 8:
+		return "Core Curriculum IV: Humanities and Arts";
+	case 9:
+		return "Core Curriculum V: Social Sciences";
+	case 10:
+		return "Franklin College: Foreign Language";
+	case 11:
+		return "Franklin College: Literature";
+	case 12:
+		return "Franklin College: Fine Arts/Philosophy/Religion";
+	case 13:
+		return "Franklin College: History";
+	case 14:
+		return "Franklin College: Social Sciences other than History";
+	case 15:
+		return "Franklin College: Biological Sciences";
+	case 16:
+		return "Franklin College: Physical Sciences";
+	case 17:
+		return "Franklin College: Multicultural Requirement";
+	case 18:
+		return "Core Curriculum VI: Major related courses";
+	case 19:
+		return "Computer Science Major Courses";
+	default:
+		return "Error obtaining requirement's name;";
+	}
+}
+
+/**
+ * Set the required session variables
+ * @param integer @userid user generated id string
+ * @param UserSchedule object $schedule
+ */
+function initialize($userid,$schedule){
+	$_SESSION['init'] = "initialized";
+	$_SESSION['schedule'][$userid] = $schedule->toJSON();
+	$_SESSION['schedObj'][$userid] = serialize($schedule);
+	$_SESSION['userid'] = $userid;
+	$_SESSION['errorMessage'] = "";
+}
+
+/**
+ *
+ * Handle Requests
+ */
 $requestType = $_SERVER['REQUEST_METHOD'];
 if ($requestType === 'POST') {
     $reqId = get_post_var('requirementId');
     $courseitem = get_post_var("courseitem");
 	$addSection = get_post_var("add");
+	$del = get_post_var("delete");
     if ($reqId){
 		$db = new DBHelper();
 		try{
@@ -58,57 +130,87 @@ if ($requestType === 'POST') {
 		if ($courses){
 			$_SESSION['errorMessage'] = "";
 			$_SESSION['courses'] = $courses;
+			$_SESSION['requirementName'] = getRequirementName($reqId);
 		}else{
 			$_SESSION['errorMessage'] = "No courses found for requirement Id " . $reqId;
 			$_SESSION['courses'] = "[]";
+			$_SESSION['requirementName'] = "";
 		}
 	}else if ($courseitem){
 		$db = new DBHelper();
 		$pos = strpos($courseitem,"-");
-		if ($pos === false) { // note: three equal signs
+		if ($pos === false) {
 			$_SESSION['errorMessage'] = "No sections found for " . $courseitem;
 			$_SESSION['sections'] = "[]";
 		}else{
-			$sections = $db->getSections(substr($courseitem,0,$pos),substr($courseitem,$pos+1,strlen($courseitem)-1));	
+			$sections = $db->getSections(substr($courseitem,0,$pos),substr($courseitem,$pos+1,strlen($courseitem)-1));
 			$_SESSION['errorMessage'] = "";
 			$_SESSION['sections'] = $sections;
 		}
-	}else if ($addSection){		
-		if ($addSection != 0){			
+	}else if ($addSection){
+		if ($addSection != 0){
 			$db = new DBHelper();
-			$userid = $_SESSION['userid'];
-			if (!$userid){
+			$init = $_SESSION['init'];
+			if (strcmp($init,"initialized") != 0){
 				//Initialize user schedule object & set relevant $_SESSION variables
 				$userschedule = new UserSchedule(generateToken());
-				$_SESSION['init'] = "initialized";
-				$_SESSION['schedule'][$userschedule->getUserId()] = $userschedule->toJSON();
-				$_SESSION['userid'] = $userschedule->getUserId();
-				$_SESSION['schedObj'] = $userschedule;
-			}else{				
-				$userschedulejson = $_SESSION['schedule'][$userid];
-				$userschedule = unserialize($_SESSION['schedObj']);
-				//echo $userschedulejson;
+				initialize($userschedule->getUserId(),$userschedule);
 			}
+
+			$userid = $_SESSION['userid'];
+			$userschedulejson = $_SESSION['schedule'][$userid];
+			$userschedule = unserialize($_SESSION['schedObj'][$userid]);
 			$section = $db->getSingleSection($addSection);
 			try{
 				$status = $userschedule->addSection($section);
-				if (!$status){				
+				if (!$status){
 					$_SESSION['errorMessage'] = $userschedule->getErrorMessage();
 				}else{
-					$_SESSION['errorMessage'] = "Section " . $addSection. "added!";
+					$_SESSION['errorMessage'] = "Section " . $addSection. "(". $section->getCoursePrefix()."-".$section->getCourseNumber().") added!";
+					//.gettype($userschedule) . " " . print_r($userschedule,true)." " . gettype($_SESSION['schedObj'][$userid]);
 					$_SESSION['schedule'][$userschedule->getUserId()] = $userschedule->toJSON();
+					$_SESSION['schedObj'][$userid] = serialize($userschedule);
 				}
 			}catch(Exception $e){
 				$_SESSION['errorMessage'] = $e->getMessage();
 			}
 		}else{
-			$_SESSION['errorMessage'] = "Please select a section.";
+			$_SESSION['errorMessage'] = "Please select a section to add first.";
+		}
+	}else if ($del){
+		$callNum = get_post_var("deleteSectionItem");
+		if ($callNum){
+			$db = new DBHelper();
+			$init = $_SESSION['init'];
+			if (strcmp($init,"initialized") != 0){
+				//Initialize user schedule object & set relevant $_SESSION variables
+				$userschedule = new UserSchedule(generateToken());
+				initialize($userschedule->getUserId(),$userschedule);
+			}
+
+			$userid = $_SESSION['userid'];
+			$userschedulejson = $_SESSION['schedule'][$userid];
+			$userschedule = unserialize($_SESSION['schedObj'][$userid]);
+			try{
+				$status = $userschedule->deleteSection($callNum);
+				if (!$status){
+					$_SESSION['errorMessage'] = $userschedule->getErrorMessage();
+				}else{
+					$_SESSION['errorMessage'] = "Section " . $addSection. " deleted!";
+					$_SESSION['schedule'][$userschedule->getUserId()] = $userschedule->toJSON();
+					$_SESSION['schedObj'][$userid] = serialize($userschedule);
+				}
+			}catch(Exception $e){
+				$_SESSION['errorMessage'] = $e->getMessage();
+			}
+		}else{
+			$_SESSION['errorMessage'] = "Please select a section to delete first.";
 		}
 	}else{
 		$_SESSION['errorMessage'] = "Unknown POST request";
 		$_SESSION['courses'] = "[]";
 		$_SESSION['sections'] = "[]";
-	}	
+	}
 	header("Location: http://apps.janeullah.com/coursepicker/schedule.php");
 }else if ($requestType === 'GET'){
 	if ($_GET['page'] === "schedule"){
@@ -116,7 +218,8 @@ if ($requestType === 'POST') {
 		if ($init !== "initialized"){
 			$schedules = array();
 			$schedule = new UserSchedule(generateToken());
-			$mtg1 = new Meeting(12345, "M", "0230P", "0320P");
+			//Test schedule
+			/*$mtg1 = new Meeting(12345, "M", "0230P", "0320P");
 			$mtg2 = new Meeting(12345, "T", "0200P", "0315P");
 			$mtg3 = new Meeting(12345, "R", "0200P", "0315P");
 			$csci1302a = new Section("Web Programming", "CSCI","4300",12345,"Available",4.0,"EVERETT");
@@ -148,14 +251,10 @@ if ($requestType === 'POST') {
 			$schedule->addSection($csci1302c);
 			if ($schedule->getErrorMessage()){
 				echo "Error adding items to schedule: " . $schedule->getErrorMessage() . "\n";
-			}
+			}*/
 			$schedules[] = $schedule;
-			$_SESSION['init'] = "initialized";
-			$_SESSION['schedule'][$schedule->getUserId()] = $schedule->toJSON();
-			$_SESSION['userid'] = $schedule->getUserId();
 			$_SESSION['schedules'] = $schedules;
-			$_SESSION['schedObj'] = serialize($schedule);
-			$_SESSION['errorMessage'] = "";
+			initialize($schedule->getUserId(),$schedule);
 		}
 	}
 	header("Location: http://apps.janeullah.com/coursepicker/schedule.php");

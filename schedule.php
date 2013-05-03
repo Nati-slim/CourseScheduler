@@ -14,6 +14,7 @@ function __autoload($class_name) {
 $sched = $_SESSION['schedule'][$_SESSION['userid']];
 $cListings = $_SESSION['courses'];
 $sListings = $_SESSION['sections'];
+$requirementName = $_SESSION['requirementName'];
 $lenCourses = count($cListings);
 $lenSections = count($sListings);
 $data = "[]";
@@ -87,7 +88,13 @@ $msg = $_SESSION['errorMessage'];
     <style>
       body {
         padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
+        background-image:url('assets/images/escheresque.png');
+        background-repeat:repeat;
       }
+
+      .listInfo{
+		  border: 2 solid #000000;
+	  }
     </style>
     <link href="assets/css/bootstrap-responsive.css" rel="stylesheet">
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
@@ -132,76 +139,78 @@ $msg = $_SESSION['errorMessage'];
 				<p class="alert-error">
 					<?php echo $msg ?>
 				</p>
-				<form action="<?php echo $controller; ?>" id="pickRequirement2" name="pickRequirement" method="post">
-				<!-- class="selectpicker show-tick" data-size="auto"-->
-				<script type="text/javascript">
-					$('.selectpicker').selectpicker({
-						style: 'btn-primary',
-						size: 'auto'						
-					});
-				</script>
-					<select class="selectpicker" id="requirementId" name="requirementId">
-						<option value="0">Select A Requirement</option>
-						<optgroup label="Core Curriculum">
-							<option value="3">Core Curriculum I: Foundation Courses</option>
-							<option value="4">Core Curriculum II: Physical Sciences</option>
-							<option value="5">Core Curriculum II: Life Sciences</option>
-							<option value="6">Core Curriculum III: Quantitative Reasoning</option>
-							<option value="7">Core Curriculum IV: World Languages and
-								Culture</option>
-							<option value="8">Core Curriculum IV: Humanities and Arts</option>
-							<option value="9">Core Curriculum V: Social Sciences</option>
-							<option value="18">Core Curriculum VI: Major related courses</option>
-						</optgroup>
-						<optgroup label="Franklin College">>
-							<option value="10">Franklin College: Foreign Language</option>
-							<option value="11">Franklin College: Literature</option>
-							<option value="12">Franklin College: Fine
-								Arts/Philosophy/Religion</option>
-							<option value="13">Franklin College: History</option>
-							<option value="14">Franklin College: Social Sciences other
-								than History</option>
-							<option value="15">Franklin College: Biological Sciences</option>
-							<option value="16">Franklin College:Physical Sciences</option>
-							<option value="17">Franklin College: Multicultural
-								Requirement</option>
-						</optgroup>
-						<optgroup label="Miscellaneous">
-							<option value="1">Cultural Diversity Requirement</option>
-							<option value="2">Environmental Literacy Requirement</option>
-						</optgroup>
-						<optgroup label="Comp. Sci. Reqs.">
-							<option value="19">Computer Science Major Courses</option>
-						</optgroup>
-					</select>
-					<input type="submit" class="btn btn-primary" value="Submit">
-				</form>
+				<div id="listInfo requirementInfo">
+					<form action="<?php echo $controller; ?>" id="pickRequirement2" name="pickRequirement" method="post">
+						<select class="selectpicker" id="requirementId" name="requirementId">
+							<option value="0">Select A Requirement</option>
+							<optgroup label="Core Curriculum">
+								<option value="3">Core Curriculum I: Foundation Courses</option>
+								<option value="4">Core Curriculum II: Physical Sciences</option>
+								<option value="5">Core Curriculum II: Life Sciences</option>
+								<option value="6">Core Curriculum III: Quantitative Reasoning</option>
+								<option value="7">Core Curriculum IV: World Languages and
+									Culture</option>
+								<option value="8">Core Curriculum IV: Humanities and Arts</option>
+								<option value="9">Core Curriculum V: Social Sciences</option>
+								<option value="18">Core Curriculum VI: Major related courses</option>
+							</optgroup>
+							<optgroup label="Franklin College">>
+								<option value="10">Franklin College: Foreign Language</option>
+								<option value="11">Franklin College: Literature</option>
+								<option value="12">Franklin College: Fine
+									Arts/Philosophy/Religion</option>
+								<option value="13">Franklin College: History</option>
+								<option value="14">Franklin College: Social Sciences other
+									than History</option>
+								<option value="15">Franklin College: Biological Sciences</option>
+								<option value="16">Franklin College:Physical Sciences</option>
+								<option value="17">Franklin College: Multicultural
+									Requirement</option>
+							</optgroup>
+							<optgroup label="Miscellaneous">
+								<option value="1">Cultural Diversity Requirement</option>
+								<option value="2">Environmental Literacy Requirement</option>
+							</optgroup>
+							<optgroup label="Comp. Sci. Reqs.">
+								<option value="19">Computer Science Major Courses</option>
+							</optgroup>
+						</select>
+						<input type="submit" class="btn btn-primary" value="Submit Requirement">
+					</form>
+				</div>
 
 				<!-- Displaying the courses -->
-				<form action="<?php echo $controller; ?>" id="courseForm" name="courseForm" method="post">
-					<select id="courseitem" name="courseitem">
-						<option value="0">Select A Course</option>
-						<?php
-							foreach($cListings as $course){
-								echo "<option value=\"".$course->getCoursePrefix()."-".$course->getCourseNumber()."\">".$course->getCoursePrefix()."-".$course->getCourseNumber()."</option>";
-							}
-						?>
-					</select>
-					<input class="btn btn-primary" type="submit">
-				</form>
-				
+				<div id="listInfo courseInfo">
+					<?php
+						if ($requirementName && strlen($requirementName)){
+							echo "<h4>".$requirementName."</h4>";
+						}
+					 ?>
+					<form action="<?php echo $controller; ?>" id="courseForm" name="courseForm" method="post">
+						<select id="courseitem" name="courseitem">
+							<option value="0">Select A Course</option>
+							<?php
+								foreach($cListings as $course){
+									echo "<option value=\"".$course->getCoursePrefix()."-".$course->getCourseNumber()."\">".$course->getCoursePrefix()."-".$course->getCourseNumber()."</option>";
+								}
+							?>
+						</select>
+						<input class="btn btn-primary" type="submit" value="Submit Course">
+					</form>
+				</div>
+
 				<!-- HIDDEN / POP-UP DIV -->
-				<div id="explain" style="display:none;">
+				<div id="listInfo explain" style="display:none;">
 					<p>Click the link first. Then, scroll down this page to see the generated image. Rightclick the image to save it.
 					</p>
 				</div>
-				
+
 				<!-- Displaying the sections-->
-				<div id="sectionInfo">
-					<h4><?php echo $courseName; ?></h4>
+				<div id="listInfo sectionInfo">
+					<?php echo "<h4>".$courseName."</h4>"; ?>
 					<form id="sectionForm" name="sectionForm" action="<?php echo $controller; ?>" method="post">
 						<select id="sectionItem" name="sectionItem">
-							<option value="0">Select A Section</option>
+							<option value="0">Choose A Section</option>
 							<?php
 								foreach($sListings as $section){
 									echo "<option value=\"".$section->getCallNumber()."\"> Section ".$section->getCallNumber()."</option>";
@@ -210,14 +219,14 @@ $msg = $_SESSION['errorMessage'];
 						</select>
 					</form>
 				</div>
-				
+
 				<!-- Displaying the meeting times of a section -->
 				<div id="meetings" style="display:none;">
-					
+
 				</div>
 
 				<!-- Displaying the sections-->
-				<div id="scheduleInfo" style="display:none;">
+				<div id="listInfo scheduleInfo" style="display:none;">
 					<h4>CURRENT SCHEDULE</h4>
 				</div>
 

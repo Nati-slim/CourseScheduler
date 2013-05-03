@@ -339,8 +339,11 @@ function findHeight(hourDiff, startMin, endMin){
 	if (hourDiff > 1){
 		block = hourDiff*CELL_HEIGHT;
 		return block+startPixels+endPixels;
+	}else if (hourDiff == 0){
+		return ((endMin-startMin)*CELL_HEIGHT)/60;
+	}else{
+		return startPixels+endPixels;
 	}
-	return startPixels+endPixels;
 }
 
 /**
@@ -422,7 +425,7 @@ $(document).ready(function(){
 		item.empty();
 		item.append("<option value=\"0\">Select A Section</option.");
 	});
-	
+
 	//Append the meeting times to the DOM when user makes a selection
 	item.change(function(){
 		if (item.val() != 0){
@@ -432,12 +435,13 @@ $(document).ready(function(){
 			try{
 				Object.keys(sections).forEach(function(key){
 					var section = sections[key];
+					console.log("Item #: " + item.val() + " Section #:" + section.callNumber);
 					if (section.callNumber == item.val()){
 						var mtgs = section.meetings;
-						$('#meetings').append("<ol id=\"meetingDisplay\">");	
+						$('#meetings').append("<ol id=\"meetingDisplay\">");
 						Object.keys(mtgs).forEach(function(day){
 							$('#meetings ol').append("<li>"+day + " " + mtgs[day]);
-						});		
+						});
 						//Add Section button creation
 						$('#meetings').append("<form id=\"addSectionForm\" name=\"addSectionForm\" action=\"classes/controllers/controller.php\" method=\"post\">");
 						$('#meetings form').append("<input type=\"hidden\" name=\"add\" value=\""+section.callNumber+"\">");
@@ -458,16 +462,16 @@ $(document).ready(function(){
 			}
 		}
 	});
-	
+
 	//Populate the list of currently enrolled sections
 	if (sched.length > 0){
-		console.log("Schedule found.");
-		$('#scheduleInfo').append("<form id=\"deleteForm\" name=\"deleteForm\" action=\"classes/controllers/controller\" method=\"post\">");
+		//console.log(sched.length + " " + sched);
+		$('#scheduleInfo').append("<form id=\"deleteForm\" name=\"deleteForm\" action=\"classes/controllers/controller.php\" method=\"post\">");
 		$('#scheduleInfo form').append("<select id=\"deleteSectionItem\" name=\"deleteSectionItem\">");
 		$('#scheduleInfo form select').append("<option value=\"0\">Select A Section</option>");
 		var schedul = jQuery.parseJSON(sched);
 		Object.keys(schedul).forEach(function(key){
-			var s = schedul[key];		
+			var s = schedul[key];
 			$('#scheduleInfo form select').append("<option value=\""+s.callNumber+"\">"+s.coursePrefix+"-"+s.courseNumber+"</option>");
 		});
 		$('#scheduleInfo form').append("<input type=\"hidden\" value=\"delete\" name=\"delete\">");
