@@ -161,6 +161,9 @@ $(document).ready(function(){
 	<div id="jumbo1" class="jumbotron hidden">
 		<p class="lead">Originally created in Java and originated out of a group project for a class at UGA. This port was written by <a href="http://janeullah.com">Jane Ullah</a>.
 		</p>
+		<p>
+		If you refresh your browser's cache, your schedule will be lost, take a picture! (it'll last longer. :))
+		</p>
 	</div>
 
 	<div id="jumbo2" class="jumbotron hidden">
@@ -180,6 +183,6 @@ $(document).ready(function(){
 
     </div> <!-- /container -->
 
-
-  </body>
+	<?php include_once("includes/analyticstracking.php") ?>
+	</body>
 </html>

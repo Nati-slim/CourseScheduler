@@ -109,8 +109,7 @@ $msg = $_SESSION['errorMessage'];
 
   </head>
 
-  <body>
-
+	<body>
     <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container">
@@ -188,8 +187,10 @@ $msg = $_SESSION['errorMessage'];
 						<select id="courseitem" name="courseitem">
 							<option value="0">Select A Course</option>
 							<?php
-								foreach($cListings as $course){
-									echo "<option value=\"".$course->getCoursePrefix()."-".$course->getCourseNumber()."\">".$course->getCoursePrefix()."-".$course->getCourseNumber()."</option>";
+								if (count($cListings) > 0){
+									foreach($cListings as $course){
+										echo "<option value=\"".$course->getCoursePrefix()."-".$course->getCourseNumber()."\">".$course->getCoursePrefix()."-".$course->getCourseNumber()."</option>";
+									}
 								}
 							?>
 						</select>
@@ -210,8 +211,10 @@ $msg = $_SESSION['errorMessage'];
 						<select id="sectionItem" name="sectionItem">
 							<option value="0">Choose A Section</option>
 							<?php
-								foreach($sListings as $section){
-									echo "<option value=\"".$section->getCallNumber()."\"> Section ".$section->getCallNumber()."</option>";
+								if (count($sListings) > 0){
+									foreach($sListings as $section){
+										echo "<option value=\"".$section->getCallNumber()."\"> Section ".$section->getCallNumber()."</option>";
+									}
 								}
 							?>
 						</select>
@@ -237,6 +240,6 @@ $msg = $_SESSION['errorMessage'];
 		</div><!-- /row fluid-->
     </div> <!-- /container -->
 
-
-  </body>
+	<?php include_once("includes/analyticstracking.php") ?>
+	</body>
 </html>

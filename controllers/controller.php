@@ -164,7 +164,7 @@ if ($requestType === 'POST') {
 			try{
 				$status = $userschedule->addSection($section);
 				if (!$status){
-					$_SESSION['errorMessage'] = $userschedule->getErrorMessage();
+					$_SESSION['errorMessage'] = $userschedule->getErrorMessage() . " " .$userschedule->toJSON();
 				}else{
 					$_SESSION['errorMessage'] = "Section " . $addSection. "(". $section->getCoursePrefix()."-".$section->getCourseNumber().") added!";
 					//.gettype($userschedule) . " " . print_r($userschedule,true)." " . gettype($_SESSION['schedObj'][$userid]);

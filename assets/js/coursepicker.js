@@ -424,6 +424,9 @@ $(document).ready(function(){
 	cItem.change(function(){
 		item.empty();
 		item.append("<option value=\"0\">Select A Section</option.");
+		$('#meetings').hide();
+		$('#meetings').empty();
+		sectionListings = "[]";
 	});
 
 	//Append the meeting times to the DOM when user makes a selection
