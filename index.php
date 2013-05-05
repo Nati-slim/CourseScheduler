@@ -13,8 +13,11 @@ $controller = "classes/controllers/controller.php";
     <!-- Le styles -->
     <script src="assets/js/jquery-1.9.1.min.js"></script>
     <script src="assets/js/bootstrap.min.js"></script>
+    <script src="assets/js/alertify.min.js"></script>
     <link href="assets/css/bootstrap.css" rel="stylesheet">
     <link href="assets/css/coursepicker.css" rel="stylesheet">
+    <link href="assets/css/alertify.core.css" rel="stylesheet" media="screen" />
+    <link href="assets/css/alertify.default.css" rel="stylesheet" media="screen" />
     <style type="text/css">
       body {
         padding-top: 20px;
@@ -103,31 +106,48 @@ $controller = "classes/controllers/controller.php";
     <!-- Fav and touch icons -->
     <link rel="apple-touch-icon-precomposed" sizes="144x144" href="assets/ico/apple-touch-icon-144-precomposed.png">
     <link rel="apple-touch-icon-precomposed" sizes="114x114" href="assets/ico/apple-touch-icon-114-precomposed.png">
-      <link rel="apple-touch-icon-precomposed" sizes="72x72" href="assets/ico/apple-touch-icon-72-precomposed.png">
-                    <link rel="apple-touch-icon-precomposed" href="assets/ico/apple-touch-icon-57-precomposed.png">
-                                   <link rel="shortcut icon" href="assets/ico/favicon.png">
-<script type="text/javascript">
-$(document).ready(function(){
-	$('#navigator li:eq(0)').bind('click',function(){
-		$('#jumbo0').removeClass("hidden");
-		$('#jumbo1, #jumbo2').addClass("hidden");
-		$('#navigator li:eq(0)').addClass("active");
-		$('#navigator li:eq(1), #navigator li:eq(2)').removeClass("active");
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="assets/ico/apple-touch-icon-57-precomposed.png">
+    <link rel="shortcut icon" href="assets/ico/favicon.png">
+	<script type="text/javascript">
+	$(document).ready(function(){
+		$('#navigator li:eq(0)').bind('click',function(){
+			$('#jumbo0').removeClass("hidden");
+			$('#jumbo1, #jumbo2').addClass("hidden");
+			$('#navigator li:eq(0)').addClass("active");
+			$('#navigator li:eq(1), #navigator li:eq(2)').removeClass("active");
+		});
+		$('#navigator li:eq(1)').bind('click',function(){
+			$('#jumbo1').removeClass("hidden");
+			$('#jumbo0, #jumbo2').addClass("hidden");
+			$('#navigator li:eq(1)').addClass("active");
+			$('#navigator li:eq(0), #navigator li:eq(2)').removeClass("active");
+		});
+		$('#navigator li:eq(2)').bind('click',function(){
+			$('#jumbo2').removeClass("hidden");
+			$('#jumbo0, #jumbo1').addClass("hidden");
+			$('#navigator li:eq(2)').addClass("active");
+			$('#navigator li:eq(0), #navigator li:eq(1)').removeClass("active");
+		});
 	});
-	$('#navigator li:eq(1)').bind('click',function(){
-		$('#jumbo1').removeClass("hidden");
-		$('#jumbo0, #jumbo2').addClass("hidden");
-		$('#navigator li:eq(1)').addClass("active");
-		$('#navigator li:eq(0), #navigator li:eq(2)').removeClass("active");
-	});
-	$('#navigator li:eq(2)').bind('click',function(){
-		$('#jumbo2').removeClass("hidden");
-		$('#jumbo0, #jumbo1').addClass("hidden");
-		$('#navigator li:eq(2)').addClass("active");
-		$('#navigator li:eq(0), #navigator li:eq(1)').removeClass("active");
-	});
-});
-</script>
+	</script>
+	<script type="text/javascript">
+		$(document).ready(function(){
+			$('#sendMessage').submit(function(e){
+				e.preventDefault();
+                $.ajax({
+                    type:'POST',
+                    url: 'classes/controllers/auth.php',
+                    data:$(this).serialize(),
+                    success: function(response) {
+                        alertify.alert(response);
+                        Recaptcha.reload();
+                    }
+                });
+                return false;
+			});
+		});
+	</script>
 </head>
 
 <body>
@@ -168,6 +188,37 @@ $(document).ready(function(){
 
 	<div id="jumbo2" class="jumbotron hidden">
 		<p class="lead">Tweet @janetalkstech or firstnamelastname@gmail.com (substitute appropriately).</p>
+		<form id="sendMessage" name="sendMessage" action="#" method="post">
+			<div class="control-group">
+				<label class="control-label" for="name">Name</label>
+				<div class="controls">
+					<input type="text" id="name" name="name" class="span3" placeholder="Name" required>
+				</div>
+		    </div>
+		    <div class="control-group">
+				<label class="control-label" for="email">Email</label>
+				<div class="controls">
+					<input type="email" id="email" name="email" class="span3" placeholder="Email" required>
+				</div>
+			</div>
+		    <div class="control-group">
+				<label class="control-label" for="message">Message</label>
+				<div class="controls">
+					<textarea name="message" style="height:15em; width:18em;" id="message" placeholder="Please enter your message here." required></textarea>
+				</div>
+			</div>
+			<div id="captcha">
+				<?php
+					require_once('../../auth/recaptcha/recaptchalib.php');
+                    require_once('../../creds/captcha.inc');
+                    $publickey = RECAPTCHA_JANEULLAH_PUBLIC;
+                    echo recaptcha_get_html($publickey);
+				?>
+			</div>
+			<div class="control-group">
+				<input type="submit" class="btn btn-large btn-primary" value="Send Message">
+			</div>
+		</form>
 	</div>
 
     <?php /*<div class="jumbotron hidden">

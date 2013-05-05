@@ -11,6 +11,7 @@ var CELL_HEIGHT = 50;
 var CANVAS_WIDTH = 780;
 var CANVAS_HEIGHT = 750;
 var colorCounter = 0;
+var pngOn = false;
 //array to store the added class sections as JSON objects
 var courseRectangles = new Array();
 var sectionsGrabbed = new Array();
@@ -64,8 +65,6 @@ Method to detect if a click is within the boundaries of any of the
 drawn class meetings on the canvas.
 */
 function updateListeners(ctx,courseRectangles){
-	//Adding an event listener for clicks to/on the canvas
-	//and executing the anonymous function per click.
 	//console.log(courseRectangles);
 	$("#scheduleCanvas").on("click",function(e){
 		var x, y;
@@ -85,11 +84,11 @@ function updateListeners(ctx,courseRectangles){
 				//add double click listener to the class meeting
 				var classmtg = courseRectangles[key];
 				if (classmtg.xCoord < x && classmtg.yCoord < y &&
-					classmtg.xCoord + 130 > x && classmtg.yCoord + 60 > y){
+					classmtg.xCoord + CELL_WIDTH > x && classmtg.yCoord + CELL_HEIGHT > y){
 					console.log("Point is within " + classmtg.callNumber);
-					//$('.courseinfo').remove();
+					$('.courseinfo').remove();
 					//pass absolute coordinates to triggerOverlay
-					//triggerOverlay(classmtg,e.pageX,e.pageY);
+					triggerOverlay(classmtg,e.pageX,e.pageY);
 					//end iteration if the point click has been found within the boundaries of a class meeting on the schedule
 					throw true;
 				}
@@ -107,11 +106,6 @@ function updateListeners(ctx,courseRectangles){
 * when a drawn class meeting box/object on the canvas is clicked.
 */
 function triggerOverlay(classmtg,x,y){
-	//hide the div containing the canvas .png image
-	if (pngOn){
-		$('#canvasImage').hide();
-		pngOn = false;
-	}
 	//console.log("x: "+x+" y: "+y);
 	//Get the div which houses the canvas
 	var topMargin;
@@ -126,7 +120,7 @@ function triggerOverlay(classmtg,x,y){
 	if (classmtg.yCoord > 480){
 		topMargin = 250;
 	}else{
-		topMargin = 540-classmtg.yCoord;
+		topMargin = 700-classmtg.yCoord;
 	}
 	var style = "margin-left: " + leftMargin+ "px; margin-top: -"+topMargin+"px;";
 	courseinfodiv.setAttribute("style",style);
@@ -417,6 +411,17 @@ function initializeCanvas() {
 }
 
 
+function checkSubmission(id){
+	if (id == 0){
+		if ($('#pickRequirement').val() == 0){
+			return false;
+		}
+	}else if (id == 1){
+
+	}
+	return true;
+}
+
 $(document).ready(function(){
 	var item = $('#sectionItem');
 	var cItem = $('#courseitem');
@@ -481,6 +486,6 @@ $(document).ready(function(){
 		$('#scheduleInfo form').append("<input type=\"submit\" class=\"btn btn-danger\" value=\"Delete Section\">");
 		$('#scheduleInfo').show();
 	}else{
-		console.log("natch");
+		console.log("no sections chosen.");
 	}
 });

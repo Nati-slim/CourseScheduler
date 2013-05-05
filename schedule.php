@@ -142,7 +142,7 @@ $msg = $_SESSION['errorMessage'];
 					<?php echo $msg ?>
 				</p>
 				<div class="listInfo" id="requirementInfo">
-					<form action="<?php echo $controller; ?>" id="pickRequirement2" name="pickRequirement" method="post">
+					<form action="<?php echo $controller; ?>" id="pickRequirement" name="pickRequirement" method="post">
 						<select class="selectpicker" id="requirementId" name="requirementId">
 							<option value="0">Select A Requirement</option>
 							<optgroup label="Core Curriculum">
