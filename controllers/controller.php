@@ -1,7 +1,7 @@
 <?php
 session_save_path(dirname($_SERVER['DOCUMENT_ROOT']) . '/sessions');
 session_set_cookie_params(86400,"/","apps.janeullah.com",false,true);
-session_name('CourseScheduler');
+session_name('CoursePicker');
 require_once("../helpers/Course.php");
 require_once("../helpers/Section.php");
 require_once("../helpers/Meeting.php");
@@ -110,6 +110,22 @@ function initialize($userid,$schedule){
 
 /**
  *
+ * Processing POST requests
+ *
+ */
+function doPost(){
+
+}
+
+/**
+ * processing GET requests
+ *
+ */
+function doGet(){
+
+}
+/**
+ *
  * Handle Requests
  */
 $requestType = $_SERVER['REQUEST_METHOD'];
@@ -164,9 +180,9 @@ if ($requestType === 'POST') {
 			try{
 				$status = $userschedule->addSection($section);
 				if (!$status){
-					$_SESSION['errorMessage'] = $userschedule->getErrorMessage() . " " .$userschedule->toJSON();
+					$_SESSION['errorMessage'] = $userschedule->getErrorMessage();
 				}else{
-					$_SESSION['errorMessage'] = "Section " . $addSection. "(". $section->getCoursePrefix()."-".$section->getCourseNumber().") added!";
+					$_SESSION['errorMessage'] = "Section " . $addSection. " (". $section->getCoursePrefix()."-".$section->getCourseNumber().") added!";
 					//.gettype($userschedule) . " " . print_r($userschedule,true)." " . gettype($_SESSION['schedObj'][$userid]);
 					$_SESSION['schedule'][$userschedule->getUserId()] = $userschedule->toJSON();
 					$_SESSION['schedObj'][$userid] = serialize($userschedule);
@@ -189,14 +205,13 @@ if ($requestType === 'POST') {
 			}
 
 			$userid = $_SESSION['userid'];
-			$userschedulejson = $_SESSION['schedule'][$userid];
 			$userschedule = unserialize($_SESSION['schedObj'][$userid]);
 			try{
 				$status = $userschedule->deleteSection($callNum);
 				if (!$status){
-					$_SESSION['errorMessage'] = $userschedule->getErrorMessage();
+					$_SESSION['errorMessage'] = $userschedule->getErrorMessage() . " " . $userschedule->toJSON();
 				}else{
-					$_SESSION['errorMessage'] = "Section " . $addSection. " deleted!";
+					$_SESSION['errorMessage'] = "Section " . $callNum. " deleted!";
 					$_SESSION['schedule'][$userschedule->getUserId()] = $userschedule->toJSON();
 					$_SESSION['schedObj'][$userid] = serialize($userschedule);
 				}
@@ -218,45 +233,12 @@ if ($requestType === 'POST') {
 		if ($init !== "initialized"){
 			$schedules = array();
 			$schedule = new UserSchedule(generateToken());
-			//Test schedule
-			/*$mtg1 = new Meeting(12345, "M", "0230P", "0320P");
-			$mtg2 = new Meeting(12345, "T", "0200P", "0315P");
-			$mtg3 = new Meeting(12345, "R", "0200P", "0315P");
-			$csci1302a = new Section("Web Programming", "CSCI","4300",12345,"Available",4.0,"EVERETT");
-			$csci1302a->setBuildingNumber(1023);
-			$csci1302a->setRoomNumber("206");
-			$csci1302a->addMeeting($mtg1);
-			$csci1302a->addMeeting($mtg2);
-			$csci1302a->addMeeting($mtg3);
-			$mtg4 = new Meeting(23456, "T", "0930A", "1045A");
-			$mtg5 = new Meeting(23456, "W", "1010A", "1100A");
-			$mtg6 = new Meeting(23456, "R", "0930A", "1045A");
-			$csci1302b = new Section("Compilers", "CSCI","4570",23456,"Available",4.0,"KOCHUT");
-			$csci1302b->setBuildingNumber(1023);
-			$csci1302b->setRoomNumber("306");
-			$csci1302b->addMeeting($mtg4);
-			$csci1302b->addMeeting($mtg5);
-			$csci1302b->addMeeting($mtg6);
-			$mtg7 = new Meeting(34567, "M", "1100A", "1215P");
-			$mtg8 = new Meeting(34567, "T", "1115A", "1205A");
-			$mtg9 = new Meeting(34567, "R", "1100A", "1215P");
-			$csci1302c = new Section("Networks", "CSCI","4760",34567,"Available",4.0,"PERDISCI");
-			$csci1302c->setBuildingNumber(1023);
-			$csci1302c->setRoomNumber("306");
-			$csci1302c->addMeeting($mtg7);
-			$csci1302c->addMeeting($mtg8);
-			$csci1302c->addMeeting($mtg9);
-			$schedule->addSection($csci1302a);
-			$schedule->addSection($csci1302b);
-			$schedule->addSection($csci1302c);
-			if ($schedule->getErrorMessage()){
-				echo "Error adding items to schedule: " . $schedule->getErrorMessage() . "\n";
-			}*/
 			$schedules[] = $schedule;
 			$_SESSION['schedules'] = $schedules;
 			initialize($schedule->getUserId(),$schedule);
 		}
 	}
+	$_SESSION['errorMessage'] = "";
 	header("Location: http://apps.janeullah.com/coursepicker/schedule.php");
 }else{
 	echo "Unknown request type.";

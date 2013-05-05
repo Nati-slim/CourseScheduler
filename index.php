@@ -135,7 +135,7 @@ $(document).ready(function(){
     <div class="container">
 
       <div class="masthead">
-        <h3 class="muted">Course Scheduler</h3>
+        <h3 class="muted">Course Picker</h3>
         <div class="navbar">
           <div class="navbar-inner">
             <div class="container">
@@ -151,7 +151,7 @@ $(document).ready(function(){
 
       <!-- Jumbotron -->
       <div id="jumbo0" class="jumbotron">
-        <h1>Course Scheduler</h1>
+        <h1>Course Picker</h1>
         <p class="lead">Yet Another Course Scheduling application. This time, geared towards students at the <strong>University of Georgia</strong>, in <strong>the Franklin College
 		 of Arts &amp; Sciences</strong> and <strong>Computer Science</strong> majors.</p>
         <a class="btn btn-large btn-primary" href="<?php echo $controller."?page=schedule"; ?>">Enter</a>

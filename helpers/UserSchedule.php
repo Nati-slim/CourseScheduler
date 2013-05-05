@@ -25,7 +25,6 @@ class UserSchedule{
 		$key = array_key_exists($callNumber,$this->schedule);
 		if($key){
 			unset($this->schedule[$callNumber]);
-			$this->schedule = array_values($this->schedule);
 			$this->errorMessage = "";
 			return true;
 		}else{

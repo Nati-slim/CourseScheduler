@@ -1,7 +1,7 @@
 <?php
 session_save_path(dirname($_SERVER['DOCUMENT_ROOT']) . '/sessions');
 session_set_cookie_params(86400,"/","apps.janeullah.com",false,true);
-session_name('CourseScheduler');
+session_name('CoursePicker');
 session_start();
 $controller = "classes/controllers/controller.php";
 /**
@@ -93,6 +93,10 @@ $msg = $_SESSION['errorMessage'];
       .listInfo{
 		  border: 2 solid #000000;
 	  }
+
+	  #pngModal{
+		  width:810px;
+	  }
     </style>
     <link href="assets/css/bootstrap-responsive.css" rel="stylesheet">
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
@@ -118,12 +122,13 @@ $msg = $_SESSION['errorMessage'];
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="brand" href="http://apps.janeullah.com/coursepicker">Course Scheduler</a>
+          <a class="brand" href="http://apps.janeullah.com/coursepicker">Course Picker</a>
           <div class="nav-collapse collapse">
             <ul class="nav">
               <li class="active"><a href="#">Home</a></li>
               <li><a href="#about">About</a></li>
               <li><a href="#contact">Contact</a></li>
+              <li><a href="#pngModal" data-toggle="modal">Save Schedule</a></li>
             </ul>
           </div><!--/.nav-collapse -->
         </div>
@@ -133,7 +138,7 @@ $msg = $_SESSION['errorMessage'];
     <div class="container-fluid">
 		<div class="row-fluid">
 			<div class="span3">
-				<p class="alert-error">
+				<p class="infoMessage">
 					<?php echo $msg ?>
 				</p>
 				<div class="listInfo" id="requirementInfo">
@@ -235,11 +240,22 @@ $msg = $_SESSION['errorMessage'];
 			<div class="span9" id="canvasDiv">
 				<canvas id="scheduleCanvas" width="780" height="750">
 				</canvas>
-				<div id="canvasImage" style="display: none"></div>
 			</div>
 		</div><!-- /row fluid-->
     </div> <!-- /container -->
 
+	<!-- PNG Image Modal -->
+	<div class="modal hide fade" id="pngModal" tabindex="-1" role="dialog" aria-labelledby="pngModalLabel" aria-hidden="true">
+		<div class="modal-header">
+			<h3 id="pngModalLabel">Right-click image and save as a .png file</h3>
+		</div>
+		<div class="modal-body" id="canvasImage">
+
+		</div>
+		<div class="modal-footer">
+			<a class="btn btn-primary" data-dismiss="modal" aria-hidden="true">Close</a>
+		</div>
+	</div>
 	<?php include_once("includes/analyticstracking.php") ?>
 	</body>
 </html>
