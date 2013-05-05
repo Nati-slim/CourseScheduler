@@ -443,7 +443,7 @@ $(document).ready(function(){
 			try{
 				Object.keys(sections).forEach(function(key){
 					var section = sections[key];
-					console.log("Item #: " + item.val() + " Section #:" + section.callNumber);
+					//console.log("Item #: " + item.val() + " Section #:" + section.callNumber);
 					if (section.callNumber == item.val()){
 						var mtgs = section.meetings;
 						$('#meetings').append("<ol id=\"meetingDisplay\">");
@@ -457,7 +457,7 @@ $(document).ready(function(){
 						//Disable the Add Section button for unavailable sections
 						if (section.status != "Available"){
 							$('#addSectionButton').attr("disabled", "disabled");
-							$('#addSectionButton').val($section.status);
+							$('#addSectionButton').val(section.status);
 						}
 						$('#meetings').show();
 						throw true;
