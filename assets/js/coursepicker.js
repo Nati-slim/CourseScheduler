@@ -425,6 +425,25 @@ function checkSubmission(id){
 $(document).ready(function(){
 	var item = $('#sectionItem');
 	var cItem = $('#courseitem');
+	var reqItem = $('#requirementId');
+
+	//Dump out the course list and section list when requirement selection changes
+	reqItem.change(function(){
+		item.empty();
+		item.append("<option value=\"0\">Select A Section</option.");
+		$('#meetings').hide();
+		$('#meetings').empty();
+		sectionListings = "[]";
+		if (reqItem.val() == 0){
+			$('#message').html("Please select a requirement.");
+		}else{
+			$('#message').html("");
+			//Submit the form if the user has selected a valid requirement
+			$('#pickRequirement').submit();
+		}
+	});
+
+
 	//Dump out section list when course selection changes
 	cItem.change(function(){
 		item.empty();
@@ -432,6 +451,12 @@ $(document).ready(function(){
 		$('#meetings').hide();
 		$('#meetings').empty();
 		sectionListings = "[]";
+		if (cItem.val() == 0){
+			$('#message').html("Please choose a course.");
+		}else{
+			$('#message').html("");
+			$('#courseForm').submit();
+		}
 	});
 
 	//Append the meeting times to the DOM when user makes a selection
@@ -456,8 +481,13 @@ $(document).ready(function(){
 						$('#meetings form').append("<input class=\"btn btn-primary\" type=\"submit\" id=\"addSectionButton\" value=\"Add Section\"></form>");
 						//Disable the Add Section button for unavailable sections
 						if (section.status != "Available"){
+							//Disable the submit button and replace the action attribute link
+							//for the clever git who re-enables the button. :) TODO: block adding
+							//full or cancelled course on the backend as well.
 							$('#addSectionButton').attr("disabled", "disabled");
+							$('#addSectionButton').addClass("btn-danger");
 							$('#addSectionButton').val(section.status);
+							$('#addSectionForm').attr("action","#");
 						}
 						$('#meetings').show();
 						throw true;

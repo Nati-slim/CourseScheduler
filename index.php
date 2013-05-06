@@ -179,10 +179,9 @@ $controller = "classes/controllers/controller.php";
 
 
 	<div id="jumbo1" class="jumbotron hidden">
-		<p class="lead">Originally created in Java and originated out of a group project for a class at UGA. This port was written by <a href="http://janeullah.com">Jane Ullah</a>.
+		<p class="lead">Course Picker is developed by <a href="http://janeullah.com">Jane Ullah</a>. 'Twas born out of a class project taught at UGA (CSCI 4300) and was originally written in Java. This web application is written in PHP and shares some of the DNA of the original project. Also, this application is for the Fall 2013 semester's courses.
 		</p>
-		<p>
-		If you refresh your browser's cache, your schedule will be lost, take a picture! (it'll last longer. :))
+		<p>If you clear your browser's cookies, your schedule will be lost, take a picture! (it'll last longer. :)). You need to enable JavaScript to use this site.
 		</p>
 	</div>
 

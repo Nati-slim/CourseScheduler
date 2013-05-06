@@ -47,6 +47,10 @@ class UserSchedule{
 				if ($this->isConflict($newSection->getMeetings(),$currentSection->getMeetings())){
 					$this->errorMessage = "Conflict detected with existing section " . $currentSection->getCallNumber() . "\n";
 					return false;
+				}else if (strcasecmp($currentSection->getCoursePrefix(),$newSection->getCoursePrefix()) == 0
+				&& strcasecmp($currentSection->getCourseNumber(),$newSection->getCourseNumber()) == 0){
+					$this->errorMessage = "Attempting to take the same course " . $newSection->getCoursePrefix() . "-" .$newSection->getCourseNumber(). " twice.";
+					return false;
 				}
 			}
 			$this->errorMessage = "";
