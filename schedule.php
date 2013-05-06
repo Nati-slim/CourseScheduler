@@ -137,108 +137,170 @@ $msg = $_SESSION['errorMessage'];
 
     <div class="container-fluid">
 		<div class="row-fluid">
+
 			<div class="span3">
+				<ul class="nav nav-pills">
+				  <li><a href="#loadcourses" data-toggle="tab">Load Courses</a></li>
+				  <li><a href="#search" data-toggle="pill">Search</a></li>
+				</ul>
 				<p class="infoMessage" id="message">
 					<?php echo $msg ?>
 				</p>
-				<div class="listInfo" id="requirementInfo">
-					<h4>Choose A Requirement</h4>
-					<form action="<?php echo $controller; ?>" id="pickRequirement" name="pickRequirement" method="post">
-						<select class="selectpicker" id="requirementId" name="requirementId">
-							<option value="0">Select A Requirement</option>
-							<optgroup label="Core Curriculum">
-								<option value="3">Core Curriculum I: Foundation Courses</option>
-								<option value="4">Core Curriculum II: Physical Sciences</option>
-								<option value="5">Core Curriculum II: Life Sciences</option>
-								<option value="6">Core Curriculum III: Quantitative Reasoning</option>
-								<option value="7">Core Curriculum IV: World Languages and
-									Culture</option>
-								<option value="8">Core Curriculum IV: Humanities and Arts</option>
-								<option value="9">Core Curriculum V: Social Sciences</option>
-								<option value="18">Core Curriculum VI: Major related courses</option>
-							</optgroup>
-							<optgroup label="Franklin College">>
-								<option value="10">Franklin College: Foreign Language</option>
-								<option value="11">Franklin College: Literature</option>
-								<option value="12">Franklin College: Fine
-									Arts/Philosophy/Religion</option>
-								<option value="13">Franklin College: History</option>
-								<option value="14">Franklin College: Social Sciences other
-									than History</option>
-								<option value="15">Franklin College: Biological Sciences</option>
-								<option value="16">Franklin College:Physical Sciences</option>
-								<option value="17">Franklin College: Multicultural
-									Requirement</option>
-							</optgroup>
-							<optgroup label="Miscellaneous">
-								<option value="1">Cultural Diversity Requirement</option>
-								<option value="2">Environmental Literacy Requirement</option>
-							</optgroup>
-							<optgroup label="Comp. Sci. Reqs.">
-								<option value="19">Computer Science Major Courses</option>
-							</optgroup>
-						</select>
-					</form>
-				</div>
+				<div class="tab-content">
+					<div class="tab-pane active" id="loadcourses">
+						<div class="listInfo" id="requirementInfo">
+							<h4>Choose A Requirement</h4>
+							<form action="<?php echo $controller; ?>" id="pickRequirement" name="pickRequirement" method="post">
+								<select class="selectpicker" id="requirementId" name="requirementId">
+									<option value="0">Select A Requirement</option>
+									<optgroup label="Core Curriculum">
+										<option value="3">Core Curriculum I: Foundation Courses</option>
+										<option value="4">Core Curriculum II: Physical Sciences</option>
+										<option value="5">Core Curriculum II: Life Sciences</option>
+										<option value="6">Core Curriculum III: Quantitative Reasoning</option>
+										<option value="7">Core Curriculum IV: World Languages and
+											Culture</option>
+										<option value="8">Core Curriculum IV: Humanities and Arts</option>
+										<option value="9">Core Curriculum V: Social Sciences</option>
+										<option value="18">Core Curriculum VI: Major related courses</option>
+									</optgroup>
+									<optgroup label="Franklin College">>
+										<option value="10">Franklin College: Foreign Language</option>
+										<option value="11">Franklin College: Literature</option>
+										<option value="12">Franklin College: Fine
+											Arts/Philosophy/Religion</option>
+										<option value="13">Franklin College: History</option>
+										<option value="14">Franklin College: Social Sciences other
+											than History</option>
+										<option value="15">Franklin College: Biological Sciences</option>
+										<option value="16">Franklin College:Physical Sciences</option>
+										<option value="17">Franklin College: Multicultural
+											Requirement</option>
+									</optgroup>
+									<optgroup label="Miscellaneous">
+										<option value="1">Cultural Diversity Requirement</option>
+										<option value="2">Environmental Literacy Requirement</option>
+									</optgroup>
+									<optgroup label="Comp. Sci. Reqs.">
+										<option value="19">Computer Science Major Courses</option>
+									</optgroup>
+								</select>
+							</form>
+						</div>
 
-				<!-- Displaying the courses -->
-				<div class="listInfo" id="courseInfo">
-					<?php
-						if ($requirementName && strlen($requirementName)){
-							echo "<h4>".$requirementName."</h4>";
-							echo "<h5> Choose A Course </h5>";
-						}
-					 ?>
-					<form action="<?php echo $controller; ?>" id="courseForm" name="courseForm" method="post">
-						<select id="courseitem" name="courseitem">
-							<option value="0">Select A Course</option>
+						<!-- Displaying the courses -->
+						<div class="listInfo" id="courseInfo">
 							<?php
-								if (count($cListings) > 0){
-									foreach($cListings as $course){
-										echo "<option value=\"".$course->getCoursePrefix()."-".$course->getCourseNumber()."\">".$course->getCoursePrefix()."-".$course->getCourseNumber()."</option>";
-									}
+								if ($requirementName && strlen($requirementName)){
+									echo "<h4>".$requirementName."</h4>";
+									echo "<h5> Choose A Course </h5>";
 								}
-							?>
-						</select>
-					</form>
-				</div>
+							 ?>
+							<form action="<?php echo $controller; ?>" id="courseForm" name="courseForm" method="post">
+								<select id="courseitem" name="courseitem">
+									<option value="0">Select A Course</option>
+									<?php
+										if (count($cListings) > 0){
+											foreach($cListings as $course){
+												echo "<option value=\"".$course->getCoursePrefix()."-".$course->getCourseNumber()."\">".$course->getCoursePrefix()."-".$course->getCourseNumber()."</option>";
+											}
+										}
+									?>
+								</select>
+							</form>
+						</div>
 
-				<!-- HIDDEN / POP-UP DIV -->
-				<div class="listInfo" id="explain" style="display:none;">
-					<p>Click the link first. Then, scroll down this page to see the generated image. Rightclick the image to save it.
-					</p>
-				</div>
+						<!-- HIDDEN / POP-UP DIV -->
+						<div class="listInfo" id="explain" style="display:none;">
+							<p>Click the link first. Then, scroll down this page to see the generated image. Rightclick the image to save it.
+							</p>
+						</div>
 
-				<!-- Displaying the sections-->
-				<div class="listInfo" id="sectionInfo">
-					<?php
-						echo "<h4>".$courseName."</h4>";
-						echo "<h5> Choose A Section </h5>";
-					?>
-					<form id="sectionForm" name="sectionForm" action="<?php echo $controller; ?>" method="post">
-						<select id="sectionItem" name="sectionItem">
-							<option value="0">Choose A Section</option>
+						<!-- Displaying the sections-->
+						<div class="listInfo" id="sectionInfo">
 							<?php
-								if (count($sListings) > 0){
-									foreach($sListings as $section){
-										echo "<option value=\"".$section->getCallNumber()."\"> Section ".$section->getCallNumber()."</option>";
-									}
-								}
+								echo "<h4>".$courseName."</h4>";
+								echo "<h5> Choose A Section </h5>";
 							?>
-						</select>
-					</form>
+							<form id="sectionForm" name="sectionForm" action="<?php echo $controller; ?>" method="post">
+								<select id="sectionItem" name="sectionItem">
+									<option value="0">Choose A Section</option>
+									<?php
+										if (count($sListings) > 0){
+											foreach($sListings as $section){
+												echo "<option value=\"".$section->getCallNumber()."\"> Section ".$section->getCallNumber()."</option>";
+											}
+										}
+									?>
+								</select>
+							</form>
+						</div>
+
+						<!-- Displaying the meeting times of a section -->
+						<div id="meetings" style="display:none;">
+
+						</div>
+
+						<!-- Displaying the sections-->
+						<div class="listInfo" id="scheduleInfo" style="display:none;">
+							<h4>CURRENT SCHEDULE</h4>
+						</div>
+					</div>
+					<div class="tab-pane" id="search">
+						<script type="text/javascript">
+							/* Charles Lawrence - Feb 16, 2012. Free to use and modify. Please attribute back to @geuis if you find this useful. Twitter Bootstrap Typeahead doesn't support remote data querying. This is an expected feature in the future. In the meantime, others have submitted patches to the core bootstrap component that allow it. The following will allow remote autocompletes *without* modifying any officially released core code. If others find ways to improve this, please share.*/
+							$(document).ready(function(){
+								var autocomplete = $('#courses').typeahead()
+									.on('keyup', function(ev){
+
+									ev.stopPropagation();
+									ev.preventDefault();
+									//filter out up/down, tab, enter, and escape keys
+									if( $.inArray(ev.keyCode,[40,38,9,13,27]) === -1 ){
+
+										var self = $(this);
+
+										//set typeahead source to empty
+										self.data('typeahead').source = [];
+
+										//active used so we aren't triggering duplicate keyup events
+										if( !self.data('active') && self.val().length > 0){
+
+											self.data('active', true);
+
+											//Do data request. Insert your own API logic here.
+											$.getJSON("assets/json/courses.json", function(data) {
+												//set this to true when your callback executes
+												self.data('active',true);
+
+												//Filter out your own parameters. Populate them into an array, since this is what typeahead's source requires
+												var arr = [], i=data.length;
+												while(i--){
+													arr[i] = data[i];
+												}
+
+												//set your results into the typehead's source
+												self.data('typeahead').source = arr;
+
+												//trigger keyup on the typeahead to make it search
+												self.trigger('keyup');
+
+												//All done, set to false to prepare for the next remote query.
+												self.data('active', false);
+
+											});
+
+										}
+									}
+								});
+							});
+						</script>
+						<input id="courses" data-provide="typeahead" class="typeahead" type="text" placeholder="Courses" autocomplete="off" spellcheck="false" dir="auto">
+
+					</div>
+					<!--<div class="tab-pane" id="messages">...</div>
+					<div class="tab-pane" id="settings">...</div>-->
 				</div>
-
-				<!-- Displaying the meeting times of a section -->
-				<div id="meetings" style="display:none;">
-
-				</div>
-
-				<!-- Displaying the sections-->
-				<div class="listInfo" id="scheduleInfo" style="display:none;">
-					<h4>CURRENT SCHEDULE</h4>
-				</div>
-
 			</div>
 			<div class="span9" id="canvasDiv">
 				<canvas id="scheduleCanvas" width="780" height="750">

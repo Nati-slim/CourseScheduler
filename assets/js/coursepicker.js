@@ -12,6 +12,7 @@ var CANVAS_WIDTH = 780;
 var CANVAS_HEIGHT = 750;
 var colorCounter = 0;
 var pngOn = false;
+var searchIsOn = false;
 //array to store the added class sections as JSON objects
 var courseRectangles = new Array();
 var sectionsGrabbed = new Array();
@@ -519,3 +520,26 @@ $(document).ready(function(){
 		console.log("no sections chosen.");
 	}
 });
+
+
+
+/***************************************************
+ *  CLICK TO SEARCH DATABASE
+ * *************************************************/
+/*$(document).ready(function(){
+
+	$('#clickToSearch').on('click',function(){
+		searchIsOn = true;
+		$('#predefined').hide();
+		$('#searchCourses').show();
+	});
+
+
+	$('#clickGoBack').on('click',function(){
+		searchIsOn = false;
+		$('#searchCourses').hide();
+		$('#predefined').show();
+	});
+});*/
+
+
