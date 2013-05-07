@@ -89,7 +89,7 @@ $msg = $_SESSION['errorMessage'];
         background-image:url('assets/images/escheresque.png');
         background-repeat:repeat;
       }
-	  .modal-body
+	  .modal-body{
 		background-image:url('assets/images/escheresque.png') !important;
       }
 
