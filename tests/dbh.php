@@ -18,6 +18,7 @@
 		echo count($sections) . " found for CSCI 1302.\n";
 		print_r($sections);
 		echo json_encode($sections);
+		echo "last error: " . json_last_error();
 	}else{
 		echo "Sections for CSCI 1302 not found.\n";
 	}

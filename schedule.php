@@ -81,13 +81,16 @@ $msg = $_SESSION['errorMessage'];
 		?>
 	</script>
     <script src="assets/js/coursepicker.js"></script>
-    <link href="assets/css/bootstrap.css" rel="stylesheet">
+    <link href="assets/css/bootstrap.min.css" rel="stylesheet">
     <link href="assets/css/coursepicker.css" rel="stylesheet">
     <style>
       body {
         padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
         background-image:url('assets/images/escheresque.png');
         background-repeat:repeat;
+      }
+	  .modal-body
+		background-image:url('assets/images/escheresque.png') !important;
       }
 
       .listInfo{
@@ -164,7 +167,7 @@ $msg = $_SESSION['errorMessage'];
 										<option value="9">Core Curriculum V: Social Sciences</option>
 										<option value="18">Core Curriculum VI: Major related courses</option>
 									</optgroup>
-									<optgroup label="Franklin College">>
+									<optgroup label="Franklin College">
 										<option value="10">Franklin College: Foreign Language</option>
 										<option value="11">Franklin College: Literature</option>
 										<option value="12">Franklin College: Fine

@@ -14,7 +14,7 @@ $controller = "classes/controllers/controller.php";
     <script src="assets/js/jquery-1.9.1.min.js"></script>
     <script src="assets/js/bootstrap.min.js"></script>
     <script src="assets/js/alertify.min.js"></script>
-    <link href="assets/css/bootstrap.css" rel="stylesheet">
+    <link href="assets/css/bootstrap.min.css" rel="stylesheet">
     <link href="assets/css/coursepicker.css" rel="stylesheet">
     <link href="assets/css/alertify.core.css" rel="stylesheet" media="screen" />
     <link href="assets/css/alertify.default.css" rel="stylesheet" media="screen" />
