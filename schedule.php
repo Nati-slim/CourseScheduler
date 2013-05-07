@@ -125,9 +125,9 @@ $msg = $_SESSION['errorMessage'];
           <a class="brand" href="http://apps.janeullah.com/coursepicker">Course Picker</a>
           <div class="nav-collapse collapse">
             <ul class="nav">
-              <li class="active"><a href="#">Home</a></li>
-              <li><a href="#about">About</a></li>
-              <li><a href="#contact">Contact</a></li>
+              <li class="active"><a href="http://apps.janeullah.com/coursepicker/schedule.php">Home</a></li>
+              <li><a href="#aboutModal" data-toggle="modal">About</a></li>
+              <li><a href="#contactModal" data-toggle="modal">Contact</a></li>
               <li><a href="#pngModal" data-toggle="modal">Save Schedule</a></li>
             </ul>
           </div><!--/.nav-collapse -->
@@ -140,8 +140,8 @@ $msg = $_SESSION['errorMessage'];
 
 			<div class="span3">
 				<ul class="nav nav-pills">
-				  <li><a href="#loadcourses" data-toggle="tab">Load Courses</a></li>
-				  <li><a href="#search" data-toggle="pill">Search</a></li>
+				  <li class="active"><a href="#loadcourses" data-toggle="tab">Load Courses</a></li>
+				  <li><a href="#search" data-toggle="tab">Search</a></li>
 				</ul>
 				<p class="infoMessage" id="message">
 					<?php echo $msg ?>
@@ -193,8 +193,8 @@ $msg = $_SESSION['errorMessage'];
 							<?php
 								if ($requirementName && strlen($requirementName)){
 									echo "<h4>".$requirementName."</h4>";
-									echo "<h5> Choose A Course </h5>";
 								}
+								echo "<h5> Choose A Course </h5>";
 							 ?>
 							<form action="<?php echo $controller; ?>" id="courseForm" name="courseForm" method="post">
 								<select id="courseitem" name="courseitem">
@@ -228,7 +228,7 @@ $msg = $_SESSION['errorMessage'];
 									<?php
 										if (count($sListings) > 0){
 											foreach($sListings as $section){
-												echo "<option value=\"".$section->getCallNumber()."\"> Section ".$section->getCallNumber()."</option>";
+												echo "<option value=\"".$section->getCallNumber()."\">".$section->getCoursePrefix()."-".$section->getCourseNumber()." Section # ".$section->getCallNumber()."</option>";
 											}
 										}
 									?>
@@ -295,8 +295,32 @@ $msg = $_SESSION['errorMessage'];
 								});
 							});
 						</script>
-						<input id="courses" data-provide="typeahead" class="typeahead" type="text" placeholder="Courses" autocomplete="off" spellcheck="false" dir="auto">
+						<form id="sendCourse" name="sendCourse" action="<?php echo $controller; ?>" method="post">
+							<input type="hidden" value="typeahead" name="action">
+							<input id="courses" name="courses" data-provide="typeahead" class="typeahead" type="text" placeholder="Courses" autocomplete="off" spellcheck="false" dir="auto">
+						</form>
 
+						<!-- Displaying the sections-->
+						<div class="listInfo" id="sectionInfo2">
+							<h4 id="courseName" style="display:none;"></h4>
+							<h5> Choose A Section </h5>
+							<form id="sectionForm2" name="sectionForm2" action="<?php echo $controller; ?>" method="post">
+								<select id="sectionItem2" name="sectionItem2">
+									<option value="0">Choose A Section</option>
+
+								</select>
+							</form>
+						</div>
+
+						<!-- Displaying the meeting times of a section -->
+						<div id="meetings2" style="display:none;">
+
+						</div>
+
+						<!-- Displaying the sections-->
+						<div class="listInfo" id="scheduleInfo2" style="display:none;">
+							<h4>CURRENT SCHEDULE</h4>
+						</div>
 					</div>
 					<!--<div class="tab-pane" id="messages">...</div>
 					<div class="tab-pane" id="settings">...</div>-->
@@ -308,6 +332,32 @@ $msg = $_SESSION['errorMessage'];
 			</div>
 		</div><!-- /row fluid-->
     </div> <!-- /container -->
+
+	<!-- About Image Modal -->
+	<div class="modal hide fade" id="aboutModal" tabindex="-1" role="dialog" aria-labelledby="aboutModalLabel" aria-hidden="true">
+		<div class="modal-header">
+			<h3 id="aboutModalLabel">About</h3>
+		</div>
+		<div class="modal-body">
+			<img src="assets/images/coursepicker.png" alt="Course Picker">
+		</div>
+		<div class="modal-footer">
+			<a class="btn btn-primary" data-dismiss="modal" aria-hidden="true">Close</a>
+		</div>
+	</div>
+
+	<!-- Contact Image Modal -->
+	<div class="modal hide fade" id="contactModal" tabindex="-1" role="dialog" aria-labelledby="contactModalLabel" aria-hidden="true">
+		<div class="modal-header">
+			<h3 id="contactModalLabel">Contact</h3>
+		</div>
+		<div class="modal-body">
+			Tweet @janetalkstech or janeullah@gmail.com
+		</div>
+		<div class="modal-footer">
+			<a class="btn btn-primary" data-dismiss="modal" aria-hidden="true">Close</a>
+		</div>
+	</div>
 
 	<!-- PNG Image Modal -->
 	<div class="modal hide fade" id="pngModal" tabindex="-1" role="dialog" aria-labelledby="pngModalLabel" aria-hidden="true">

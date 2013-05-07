@@ -29,5 +29,6 @@
 	."\n";
 
 	print_r($csci1302);
-	echo $csci1302->toJSON();
+	//echo $csci1302->toJSON();
+	echo $csci1302;
 ?>

@@ -17,10 +17,11 @@
 	if ($sections){
 		echo count($sections) . " found for CSCI 1302.\n";
 		print_r($sections);
+		echo json_encode($sections);
 	}else{
 		echo "Sections for CSCI 1302 not found.\n";
 	}
-	
+
 	$sections2150 = $db->getSections("CSCI","2150");
 	if ($sections2150){
 		echo count($sections2150) . " found for CSCI 2150.\n";
@@ -58,4 +59,7 @@
 	}else{
 		echo "No section found.\n";
 	}
+
+	$csci1302 = $db->getSections("CSCI","1302");
+	echo json_encode($csci1302);
 ?>

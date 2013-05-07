@@ -132,6 +132,7 @@ $requestType = $_SERVER['REQUEST_METHOD'];
 if ($requestType === 'POST') {
     $reqId = get_post_var('requirementId');
     $courseitem = get_post_var("courseitem");
+    $typeaheadcourseitem = get_post_var("courses");
 	$addSection = get_post_var("add");
 	$del = get_post_var("delete");
     if ($reqId){
@@ -152,9 +153,11 @@ if ($requestType === 'POST') {
 			$_SESSION['courses'] = "[]";
 			$_SESSION['requirementName'] = "";
 		}
+		header("Location: http://apps.janeullah.com/coursepicker/schedule.php");
 	}else if ($courseitem){
 		$db = new DBHelper();
 		$pos = strpos($courseitem,"-");
+
 		if ($pos === false) {
 			$_SESSION['errorMessage'] = "No sections found for " . $courseitem;
 			$_SESSION['sections'] = "[]";
@@ -163,6 +166,29 @@ if ($requestType === 'POST') {
 			$_SESSION['errorMessage'] = "";
 			$_SESSION['sections'] = $sections;
 		}
+		header("Location: http://apps.janeullah.com/coursepicker/schedule.php");
+	}else if ($typeaheadcourseitem){
+		$db = new DBHelper();
+		$pos = strpos($typeaheadcourseitem,"-");
+		$results = "[";
+		if ($pos === false) {
+			$_SESSION['errorMessage'] = "No sections found for " . $typeaheadcourseitem;
+			$_SESSION['sections'] = "[]";
+		}else{
+			$sections = $db->getSections(substr($typeaheadcourseitem,0,$pos),substr($typeaheadcourseitem,$pos+1,strlen($typeaheadcourseitem)-1));
+			//echo substr($typeaheadcourseitem,0,$pos) . " " . substr($typeaheadcourseitem,$pos+1,strlen($typeaheadcourseitem)-1) ;
+			$_SESSION['errorMessage'] = "";
+			$_SESSION['sections'] = $sections;
+		}
+		//json_encode returns a garbage result. need to troubleshoot why so need manually creation of a json string.
+		foreach($sections as $section){
+			$results .= $section->toJSON() . ",";
+		}
+		if (strlen($results) > 1){
+			$results = substr($results,0,strlen($results)-1);
+		}
+		$results .= "]";
+		echo $results;
 	}else if ($addSection){
 		if ($addSection != 0){
 			$db = new DBHelper();
@@ -193,6 +219,7 @@ if ($requestType === 'POST') {
 		}else{
 			$_SESSION['errorMessage'] = "Please select a section to add first.";
 		}
+		header("Location: http://apps.janeullah.com/coursepicker/schedule.php");
 	}else if ($del){
 		$callNum = get_post_var("deleteSectionItem");
 		if ($callNum){
@@ -221,12 +248,13 @@ if ($requestType === 'POST') {
 		}else{
 			$_SESSION['errorMessage'] = "Please select a section to delete first.";
 		}
+		header("Location: http://apps.janeullah.com/coursepicker/schedule.php");
 	}else{
 		$_SESSION['errorMessage'] = "Unknown POST request";
 		$_SESSION['courses'] = "[]";
 		$_SESSION['sections'] = "[]";
+		header("Location: http://apps.janeullah.com/coursepicker/schedule.php");
 	}
-	header("Location: http://apps.janeullah.com/coursepicker/schedule.php");
 }else if ($requestType === 'GET'){
 	if ($_GET['page'] === "schedule"){
 		$init = $_SESSION['init'];

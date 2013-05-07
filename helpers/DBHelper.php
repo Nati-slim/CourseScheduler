@@ -218,7 +218,7 @@ class DBHelper{
 			}
 			return $sectionListing;
 		}catch(Exception $e){
-			echo $e->getMessage();
+			echo "getSections error: " . $e->getMessage();
 		}
 		return null;
 	}
