@@ -12,7 +12,9 @@ var CANVAS_WIDTH = 780;
 var CANVAS_HEIGHT = 750;
 var colorCounter = 0;
 var pngOn = false;
+var courseName = "";
 var searchIsOn = false;
+var ajaxCallSent = false;
 //array to store the added class sections as JSON objects
 var courseRectangles = new Array();
 var sectionsGrabbed = new Array();
@@ -85,7 +87,7 @@ function updateListeners(ctx,courseRectangles){
 				//add double click listener to the class meeting
 				var classmtg = courseRectangles[key];
 				if (classmtg.xCoord < x && classmtg.yCoord < y &&
-					classmtg.xCoord + CELL_WIDTH > x && classmtg.yCoord + CELL_HEIGHT > y){
+					classmtg.xCoord + CELL_WIDTH > x && classmtg.yCoord + classmtg.rectangleHeight > y){
 					console.log("Point is within " + classmtg.callNumber);
 					$('.courseinfo').remove();
 					//pass absolute coordinates to triggerOverlay
@@ -333,7 +335,8 @@ function findHeight(hourDiff, startMin, endMin){
 	var block = CELL_HEIGHT;
 	if (hourDiff > 1){
 		block = hourDiff*CELL_HEIGHT;
-		return block+startPixels+endPixels;
+		//return block+startPixels+endPixels;
+		return block+endPixels
 	}else if (hourDiff == 0){
 		return ((endMin-startMin)*CELL_HEIGHT)/60;
 	}else{
@@ -363,7 +366,7 @@ function drawMeeting(x,y,ctx,text,callNumber,startMinute,endMinute,startHour,end
 	ctx.strokeStyle = '#000000';
 	ctx.stroke();
 	//Store the coordinates of the drawn rectangles for use in click events
-	var meetingObject = {"xCoord": x, "yCoord": y, "callNumber": callNumber, "courseInfo": text, "courseName": courseName, "courseCredit": courseCredit, "lecturer": lecturer, "startHour": startHour, "startMinute": startMinute, "endHour": endHour, "endMinute": endMinute};
+	var meetingObject = {"xCoord": x, "yCoord": y, "rectangleHeight": height,"callNumber": callNumber, "courseInfo": text, "courseName": courseName, "courseCredit": courseCredit, "lecturer": lecturer, "startHour": startHour, "startMinute": startMinute, "endHour": endHour, "endMinute": endMinute};
 	courseRectangles.push(meetingObject);
 }
 
@@ -411,17 +414,6 @@ function initializeCanvas() {
 	updateListeners(ctx,courseRectangles);
 }
 
-
-function checkSubmission(id){
-	if (id == 0){
-		if ($('#pickRequirement').val() == 0){
-			return false;
-		}
-	}else if (id == 1){
-
-	}
-	return true;
-}
 
 $(document).ready(function(){
 	var item = $('#sectionItem');
@@ -524,22 +516,115 @@ $(document).ready(function(){
 
 
 /***************************************************
- *  CLICK TO SEARCH DATABASE
+ *  CLICK TO SEARCH DATABASE (AJAXY VERSION)
  * *************************************************/
-/*$(document).ready(function(){
-
-	$('#clickToSearch').on('click',function(){
-		searchIsOn = true;
-		$('#predefined').hide();
-		$('#searchCourses').show();
+$(document).ready(function(){
+	var msg;
+	var typeahead = $('#courses');
+	var item = $('#sectionItem2');
+	//When a change is detected in the typeahead box
+	typeahead.change(function(){
+		if (typeahead.val().length >= 9){
+			//parse value
+			var value = typeahead.val();
+			var dash = value.indexOf("-");
+			//proper selection is of the form: XXXX-3452 or XXXX-2564L
+			if (dash == 4){
+				var split = value.split(" ");
+				var prefix = split[0].substring(0,dash);
+				var num = split[0].substring(dash+1);
+				courseName = value.substring(dash+4).trim();
+				//Change the value
+				typeahead.val(prefix+"-"+num);
+				//TODO: switch to AJAX
+				//$('#sendCourse').submit();
+				$.ajax({
+					type: "POST",
+					url: 'classes/controllers/controller.php',
+					data: typeahead.serialize(),
+					success: function(response){
+						//response is JSON data of sections belonging to the course
+						//update the global sectionListings object with the new values.
+						//TODO:
+						//console.log(response);
+						sectionListings = response;
+						ajaxCallSent = true;
+						exposeSection(response);
+					}
+				});
+			}else{
+				msg = "Please enter or select a valid course.";
+			}
+		}else{
+			msg = "Please select a valid course.";
+		}
 	});
 
-
-	$('#clickGoBack').on('click',function(){
-		searchIsOn = false;
-		$('#searchCourses').hide();
-		$('#predefined').show();
+	//When user selects a section from the dropdown box.
+	item.change(function(){
+		if (item.val() != 0){
+			$('#meetings2').hide();
+			$('#meetings2').empty();
+			var sections = jQuery.parseJSON(sectionListings);
+			try{
+				Object.keys(sections).forEach(function(key){
+					var section = sections[key];
+					//console.log("Item #: " + item.val() + " Section #:" + section.callNumber);
+					if (section.callNumber == item.val()){
+						var mtgs = section.meetings;
+						$('#meetings2').append("<ol id=\"meetingDisplay2\">");
+						Object.keys(mtgs).forEach(function(day){
+							$('#meetings2 ol').append("<li>"+day + " " + mtgs[day]);
+						});
+						//Add Section button creation
+						$('#meetings2').append("<form id=\"addSectionForm2\" name=\"addSectionForm2\" action=\"classes/controllers/controller.php\" method=\"post\">");
+						$('#meetings2 form').append("<input type=\"hidden\" name=\"add\" value=\""+section.callNumber+"\">");
+						$('#meetings2 form').append("<input class=\"btn btn-primary\" type=\"submit\" id=\"addSectionButton\" value=\"Add Section\"></form>");
+						//Disable the Add Section button for unavailable sections
+						if (section.status != "Available"){
+							//Disable the submit button and replace the action attribute link
+							//for the clever git who re-enables the button. :) TODO: block adding
+							//full or cancelled course on the backend as well.
+							$('#addSectionButton2').attr("disabled", "disabled");
+							$('#addSectionButton2').addClass("btn-danger");
+							$('#addSectionButton2').val(section.status);
+							$('#addSectionForm2').attr("action","#");
+						}
+						$('#meetings2').show();
+						throw true;
+					}
+				});
+			}catch(e){
+				if (e!==true){
+					console.log("Error enumerating list of sections.");
+				}
+			}
+		}
 	});
-});*/
+});
+
+/**
+ * Expose the list of sections after user selects
+ * a course from the typeahead input
+ *
+ */
+function exposeSection(sectlistings){
+	var item = $('#sectionItem2');
+	$('#sectionItem2').empty().append("<option value=\"0\">Select A Section</option>");
+	$('#courseName').empty().append(courseName).show();
+	$('#meetings2').hide().empty();
+	var sections = jQuery.parseJSON(sectlistings);
+	try{
+		Object.keys(sections).forEach(function(key){
+			var section = sections[key];
+			console.log(section);
+			item.append("<option value=\""+section.callNumber+"\">"+section.coursePrefix+"-"+section.courseNumber+" Section # "+section.callNumber+"</option>");
+		});
+	}catch(e){
+		if (e!==true){
+			console.log("Error enumerating list of sections.");
+		}
+	}
+}
 
 
