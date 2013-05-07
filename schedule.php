@@ -92,6 +92,14 @@ $msg = $_SESSION['errorMessage'];
 	  .modal-body{
 		background-image:url('assets/images/escheresque.png') !important;
       }
+      .modal-header{
+		  background-color: rgb(168, 50, 50);
+		  color: #ffffff;
+	  }
+	  .modal-footer{
+		  background-color: rgb(168, 50, 50);
+		  color: #ffffff;
+	  }
 
       .listInfo{
 		  border: 2 solid #000000;
@@ -345,7 +353,7 @@ $msg = $_SESSION['errorMessage'];
 			<img src="assets/images/coursepicker.png" alt="Course Picker">
 		</div>
 		<div class="modal-footer">
-			<a class="btn btn-primary" data-dismiss="modal" aria-hidden="true">Close</a>
+			<a class="btn" data-dismiss="modal" aria-hidden="true">Close</a>
 		</div>
 	</div>
 
@@ -355,10 +363,11 @@ $msg = $_SESSION['errorMessage'];
 			<h3 id="contactModalLabel">Contact</h3>
 		</div>
 		<div class="modal-body">
-			Tweet @janetalkstech or janeullah@gmail.com
+			Tweet @janetalkstech or janeullah@gmail.com.
+			<a href="https://github.com/janoulle/CourseScheduler" title="Source Code for CoursePicker">Source code on Github</a> and license is <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/deed.en_US">CC BY NC SA</a>. I reserve the right to change the licensing at anytime, I'm not liable for any issues that result from you using this site or the code, etc. Use at your own risk.
 		</div>
 		<div class="modal-footer">
-			<a class="btn btn-primary" data-dismiss="modal" aria-hidden="true">Close</a>
+			<a class="btn" data-dismiss="modal" aria-hidden="true">Close</a>
 		</div>
 	</div>
 
@@ -371,7 +380,7 @@ $msg = $_SESSION['errorMessage'];
 
 		</div>
 		<div class="modal-footer">
-			<a class="btn btn-primary" data-dismiss="modal" aria-hidden="true">Close</a>
+			<a class="btn" data-dismiss="modal" aria-hidden="true">Close</a>
 		</div>
 	</div>
 	<?php include_once("includes/analyticstracking.php") ?>
