@@ -533,7 +533,7 @@ $(document).ready(function(){
 				var split = value.split(" ");
 				var prefix = split[0].substring(0,dash);
 				var num = split[0].substring(dash+1);
-				courseName = value.substring(dash+4).trim();
+				courseName = value.substring(dash+6).trim();
 				//Change the value
 				typeahead.val(prefix+"-"+num);
 				//TODO: switch to AJAX
@@ -579,7 +579,7 @@ $(document).ready(function(){
 						//Add Section button creation
 						$('#meetings2').append("<form id=\"addSectionForm2\" name=\"addSectionForm2\" action=\"classes/controllers/controller.php\" method=\"post\">");
 						$('#meetings2 form').append("<input type=\"hidden\" name=\"add\" value=\""+section.callNumber+"\">");
-						$('#meetings2 form').append("<input class=\"btn btn-primary\" type=\"submit\" id=\"addSectionButton\" value=\"Add Section\"></form>");
+						$('#meetings2 form').append("<input class=\"btn btn-primary\" type=\"submit\" id=\"addSectionButton2\" value=\"Add Section\"></form>");
 						//Disable the Add Section button for unavailable sections
 						if (section.status != "Available"){
 							//Disable the submit button and replace the action attribute link
@@ -627,4 +627,67 @@ function exposeSection(sectlistings){
 	}
 }
 
+/*********************************************
+ *
+ * FOR SAVING/RETRIEVING SCHEDULES
+ * *******************************************/
 
+//SAVE SCHEDULE TO DATABASE
+function saveSchedule(){
+	$.ajax({
+		type: "POST",
+		url: 'classes/controllers/controller.php',
+		data: { action : "Save"},
+		success: function(response){
+			console.log("Response: " + response);
+			return response;
+		}
+	});
+}
+
+$(document).ready(function(){
+	var savelink = $('#saveSchedule');
+	var sharelink = $('#shareSchedule');
+
+	//SHARE SCHEDULE TO DATABASE
+	sharelink.on('click',function(){
+		//save schedule to database
+		$('#shareModalBody').empty();
+		if (sched.length <= 0){
+			$('#shareModalBody').append("Please add at least 1 section to your schedule.");
+		}else{
+			$.ajax({
+				type: "POST",
+				url: 'classes/controllers/controller.php',
+				data: { action : "Save"},
+				success: function(response){
+					if (response != 0){
+						$('#shareModalBody').append(response);
+					}else{
+						$('#shareModalBody').append(response);
+					}
+				}
+			});
+		}
+	});
+
+
+	/*savelink.on('click',function(){
+		$.ajax({
+			type: "POST",
+			url: 'classes/controllers/controller.php',
+			data: { action : "Save"},
+			success: function(response){
+				if (response == 1){
+					alert("Saved schedule to database!");
+					/*savelink.html("Restore Schedule");
+					savelink.on('click',function(e){
+						e.preventDefault();
+					});
+				}else{
+					alert(response);
+				}
+			}
+		});
+	});*/
+});

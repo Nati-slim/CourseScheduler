@@ -17,8 +17,8 @@
 	if ($sections){
 		echo count($sections) . " found for CSCI 1302.\n";
 		print_r($sections);
-		echo json_encode($sections);
-		echo "last error: " . json_last_error();
+		//echo json_encode($sections);
+		//echo "last error: " . json_last_error();
 	}else{
 		echo "Sections for CSCI 1302 not found.\n";
 	}
@@ -62,5 +62,19 @@
 	}
 
 	$csci1302 = $db->getSections("CSCI","1302");
-	echo json_encode($csci1302);
+	//echo json_encode($csci1302);
+
+	echo $db->saveSchedule(1,2345,"jane");
+	echo $db->saveSchedule(2,2345,"matt");
+	echo $db->saveSchedule(1,1234,"ben");
+	echo $db->saveSchedule(1,3456,"nana"). "\n";
+
+	$res = $db->retrieveSchedule(1,2345);
+	var_dump($res);
+	$res = $db->getShortName(1,2345);
+	var_dump($res);
+	$res = $db->findLastSavedVersion(2345);
+	echo "Last version: " . $res. "\n";
+	$res = $db->findLastSavedVersion(4567);
+	echo "Last version: " . $res. "\n";
 ?>

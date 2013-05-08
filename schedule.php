@@ -81,47 +81,84 @@ $msg = $_SESSION['errorMessage'];
 		?>
 	</script>
     <script src="assets/js/coursepicker.js"></script>
+    <script src="assets/js/alertify.min.js"></script>
     <link href="assets/css/bootstrap.min.css" rel="stylesheet">
     <link href="assets/css/coursepicker.css" rel="stylesheet">
+    <link href="assets/css/alertify.core.css" rel="stylesheet" media="screen" />
+    <link href="assets/css/alertify.default.css" rel="stylesheet" media="screen" />
     <style>
-      body {
-        padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
-        background-image:url('assets/images/escheresque.png');
-        background-repeat:repeat;
-      }
-	  .modal-body{
-		background-image:url('assets/images/escheresque.png') !important;
-      }
-      .modal-header{
-		  background-color: rgb(168, 50, 50);
-		  color: #ffffff;
-	  }
-	  .modal-footer{
-		  background-color: rgb(168, 50, 50);
-		  color: #ffffff;
-	  }
+		body {
+			padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
+			background-image:url('assets/images/escheresque.png');
+			background-repeat:repeat;
+		}
+		.modal-body{
+			background-image:url('assets/images/escheresque.png') !important;
+		}
+		.modal-header{
+			background-color: rgb(168, 50, 50);
+			color: #ffffff;
+		}
+		.modal-footer{
+			background-color: rgb(168, 50, 50);
+			color: #ffffff;
+		}
+		.control-label{
+			font-weight: bold;
+			font-size: 120%;
+		}
 
-      .listInfo{
-		  border: 2 solid #000000;
-	  }
+		.listInfo{
+			border: 2 solid #000000;
+		}
 
-	  #pngModal{
-		  width:810px;
-	  }
+		#pngModal{
+			width:810px;
+		}
+
+		#captcha{
+			margin-left: 88px;
+		}
+
+		#shareModalBody{
+			font-size:130%;
+			font-weight:bold;
+		}
+
+		.navbar-inner {
+			background-color: rgb(168, 50, 50);
+		}
     </style>
     <link href="assets/css/bootstrap-responsive.css" rel="stylesheet">
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
       <script src="assets/js/html5shiv.js"></script>
     <![endif]-->
+    <!--[if IE]><script type="text/javascript" src="assets/js/excanvas.js"></script><![endif]-->
 
     <!-- Fav and touch icons -->
     <link rel="apple-touch-icon-precomposed" sizes="144x144" href="assets/ico/apple-touch-icon-144-precomposed.png">
     <link rel="apple-touch-icon-precomposed" sizes="114x114" href="assets/ico/apple-touch-icon-114-precomposed.png">
-      <link rel="apple-touch-icon-precomposed" sizes="72x72" href="assets/ico/apple-touch-icon-72-precomposed.png">
-                    <link rel="apple-touch-icon-precomposed" href="assets/ico/apple-touch-icon-57-precomposed.png">
-                                   <link rel="shortcut icon" href="assets/ico/favicon.png">
-
+	<link rel="apple-touch-icon-precomposed" sizes="72x72" href="assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="assets/ico/apple-touch-icon-57-precomposed.png">
+    <link rel="shortcut icon" href="assets/ico/favicon.png">
+	<script type="text/javascript">
+		$(document).ready(function(){
+			$('#sendMessage').submit(function(e){
+				e.preventDefault();
+                $.ajax({
+                    type:'POST',
+                    url: 'classes/controllers/auth.php',
+                    data:$(this).serialize(),
+                    success: function(response) {
+                        alertify.alert(response);
+                        //Recaptcha.reload();
+                    }
+                });
+                return false;
+			});
+		});
+	</script>
   </head>
 
 	<body>
@@ -139,7 +176,9 @@ $msg = $_SESSION['errorMessage'];
               <li class="active"><a href="http://apps.janeullah.com/coursepicker/schedule.php">Home</a></li>
               <li><a href="#aboutModal" data-toggle="modal">About</a></li>
               <li><a href="#contactModal" data-toggle="modal">Contact</a></li>
-              <li><a href="#pngModal" data-toggle="modal">Save Schedule</a></li>
+              <li><a href="#pngModal" data-toggle="modal">Download Schedule</a>
+              <!--<li><a href="#" id="saveSchedule">Save Schedule</a></li></li>-->
+              <li><a href="#shareModal" id="shareSchedule"  data-toggle="modal">Share Schedule</a></li></li>
             </ul>
           </div><!--/.nav-collapse -->
         </div>
@@ -342,6 +381,9 @@ $msg = $_SESSION['errorMessage'];
 				</canvas>
 			</div>
 		</div><!-- /row fluid-->
+		<div class="footer">
+			<p>© Jane Ullah 2013 - ∞</p>
+		</div>
     </div> <!-- /container -->
 
 	<!-- About Image Modal -->
@@ -350,7 +392,10 @@ $msg = $_SESSION['errorMessage'];
 			<h3 id="aboutModalLabel">About</h3>
 		</div>
 		<div class="modal-body">
-			<img src="assets/images/coursepicker.png" alt="Course Picker">
+			Created by <a href="http://janeullah.com" title="Jane Ullah">Jane Ullah</a>.
+			<a href="https://github.com/janoulle/CourseScheduler" title="Source Code for CoursePicker">Source code on Github</a> and license is <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/deed.en_US">CC BY NC SA</a>. I reserve the right to change the licensing at anytime, I'm not liable for any issues that result from you using this site or the code, etc. Use at your own risk.<br>
+			<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-nc-sa/3.0/88x31.png" /></a><br /><span xmlns:dct="http://purl.org/dc/terms/" href="http://purl.org/dc/dcmitype/Text" property="dct:title" rel="dct:type">Course Picker</span> by <a xmlns:cc="http://creativecommons.org/ns#" href="http://apps.janeullah.com/coursepicker/" property="cc:attributionName" rel="cc:attributionURL">Jane Ullah</a> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/deed.en_US">Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License</a>.<br />Based on a work at <a xmlns:dct="http://purl.org/dc/terms/" href="http://github.com/janoulle/CourseScheduler" rel="dct:source">http://github.com/janoulle/CourseScheduler</a>.
+			<img src="assets/images/coursepicker-515x394.png" style="width:515px;height:394px;" alt="Course Picker">
 		</div>
 		<div class="modal-footer">
 			<a class="btn" data-dismiss="modal" aria-hidden="true">Close</a>
@@ -363,11 +408,52 @@ $msg = $_SESSION['errorMessage'];
 			<h3 id="contactModalLabel">Contact</h3>
 		</div>
 		<div class="modal-body">
-			Tweet @janetalkstech or janeullah@gmail.com.
-			<a href="https://github.com/janoulle/CourseScheduler" title="Source Code for CoursePicker">Source code on Github</a> and license is <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/deed.en_US">CC BY NC SA</a>. I reserve the right to change the licensing at anytime, I'm not liable for any issues that result from you using this site or the code, etc. Use at your own risk.
+			<p id="formMessage" style="display:none;"></p>
+			<form class="form-horizontal" id="sendMessage" name="sendMessage" action="#" method="post">
+				<div class="control-group">
+					<label class="control-label" for="firstname">First Name</label>
+					<div class="controls">
+						<input tabindex="1" type="text" name="firstname" id="firstname" placeholder="First Name" required>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label" for="lastname">Last Name</label>
+					<div class="controls">
+						<input tabindex="2" type="text" name="lastname" id="lastname" placeholder="Last Name" required>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label" for="email">Email</label>
+					<div class="controls">
+						<input tabindex="3" type="email" name="email" id="email" placeholder="Email address" required>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label" for="message">Message</label>
+					<div class="controls">
+						<textarea tabindex="4" id="message" name="message" placeholder="Enter message" required></textarea>
+					</div>
+				</div>
+				<div class="control-group">
+					<div id="captcha">
+						<?php
+							require_once('../../auth/recaptcha/recaptchalib.php');
+							require_once('../../creds/captcha.inc');
+							$publickey = RECAPTCHA_JANEULLAH_PUBLIC;
+							echo recaptcha_get_html($publickey);
+						?>
+					</div>
+				</div>
+				<div class="control-group">
+					<div class="controls">
+						<input tabindex="6" class="btn btn-danger" type="reset" value="Clear">
+						<input tabindex="5" class="btn btn-primary" type="submit" value="Send">
+					</div>
+				</div>
+			</form>
 		</div>
 		<div class="modal-footer">
-			<a class="btn" data-dismiss="modal" aria-hidden="true">Close</a>
+			<a tabindex="7" class="btn" data-dismiss="modal" aria-hidden="true">Close</a>
 		</div>
 	</div>
 
@@ -383,6 +469,20 @@ $msg = $_SESSION['errorMessage'];
 			<a class="btn" data-dismiss="modal" aria-hidden="true">Close</a>
 		</div>
 	</div>
+
+	<!-- Share Modal -->
+	<div class="modal hide fade" id="shareModal" tabindex="-1" role="dialog" aria-labelledby="shareModalLabel" aria-hidden="true">
+		<div class="modal-header">
+			<h3 id="shareModalLabel">Copy and share the url</h3>
+		</div>
+		<div id="shareModalBody" class="modal-body">
+
+		</div>
+		<div class="modal-footer">
+			<a class="btn" data-dismiss="modal" aria-hidden="true">Close</a>
+		</div>
+	</div>
+
 	<?php include_once("includes/analyticstracking.php") ?>
 	</body>
 </html>

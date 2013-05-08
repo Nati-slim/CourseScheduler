@@ -4,7 +4,7 @@ $controller = "classes/controllers/controller.php";
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
+	<meta charset="utf-8">
     <title>Course Scheduler</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="A course scheduling app for the University of Georgia Computer Science students">
@@ -19,82 +19,87 @@ $controller = "classes/controllers/controller.php";
     <link href="assets/css/alertify.core.css" rel="stylesheet" media="screen" />
     <link href="assets/css/alertify.default.css" rel="stylesheet" media="screen" />
     <style type="text/css">
-      body {
-        padding-top: 20px;
-        padding-bottom: 60px;
-        background-image:url('assets/images/escheresque.png');
-        background-repeat:repeat;
+		body {
+			padding-top: 20px;
+			padding-bottom: 60px;
+			background-image:url('assets/images/escheresque.png');
+			background-repeat:repeat;
 
-      }
+		}
 
-      /* Custom container */
-      .container {
-        margin: 0 auto;
-        max-width: 1000px;
-      }
-      .container > hr {
-        margin: 60px 0;
-      }
+		/* Custom container */
+		.container {
+			margin: 0 auto;
+			max-width: 1000px;
+		}
+		.container > hr {
+			margin: 60px 0;
+		}
 
-      /* Main marketing message and sign up button */
-      .jumbotron {
-        margin: 80px 0;
-        text-align: center;
-      }
-      .jumbotron h1 {
-        font-size: 100px;
-        line-height: 1;
-      }
-      .jumbotron .lead {
-        font-size: 24px;
-        line-height: 1.25;
-      }
-      .jumbotron .btn {
-        font-size: 21px;
-        padding: 14px 24px;
-      }
+		/* Main marketing message and sign up button */
+		.jumbotron {
+			margin: 80px 0;
+			text-align: center;
+		}
+		.jumbotron h1 {
+			font-size: 100px;
+			line-height: 1;
+		}
+		.jumbotron .lead {
+			font-size: 24px;
+			line-height: 1.25;
+		}
+		.jumbotron .btn {
+			font-size: 21px;
+			padding: 14px 24px;
+		}
 
-      .jumbotron .hidden{
-		  display:none;
-	  }
+		.jumbotron .hidden{
+			display:none;
+		}
 
-      /* Supporting marketing content */
-      .marketing {
-        margin: 60px 0;
-      }
-      .marketing p + h4 {
-        margin-top: 28px;
-      }
+		/* Supporting marketing content */
+		.marketing {
+			margin: 60px 0;
+		}
+		.marketing p + h4 {
+			margin-top: 28px;
+		}
 
 
-      /* Customize the navbar links to be fill the entire space of the .navbar */
-      .navbar .navbar-inner {
-        padding: 0;
-      }
-      .navbar .nav {
-        margin: 0;
-        display: table;
-        width: 100%;
-      }
-      .navbar .nav li {
-        display: table-cell;
-        width: 1%;
-        float: none;
-      }
-      .navbar .nav li a {
-        font-weight: bold;
-        text-align: center;
-        border-left: 1px solid rgba(255,255,255,.75);
-        border-right: 1px solid rgba(0,0,0,.1);
-      }
-      .navbar .nav li:first-child a {
-        border-left: 0;
-        border-radius: 3px 0 0 3px;
-      }
-      .navbar .nav li:last-child a {
-        border-right: 0;
-        border-radius: 0 3px 3px 0;
-      }
+		/* Customize the navbar links to be fill the entire space of the .navbar */
+		.navbar .navbar-inner {
+			padding: 0;
+		}
+		.navbar .nav {
+			margin: 0;
+			display: table;
+			width: 100%;
+		}
+		.navbar .nav li {
+			display: table-cell;
+			width: 1%;
+			float: none;
+		}
+		.navbar .nav li a {
+			font-weight: bold;
+			text-align: center;
+			border-left: 1px solid rgba(255,255,255,.75);
+			border-right: 1px solid rgba(0,0,0,.1);
+		}
+		.navbar .nav li:first-child a {
+			border-left: 0;
+			border-radius: 3px 0 0 3px;
+		}
+		.navbar .nav li:last-child a {
+			border-right: 0;
+			border-radius: 0 3px 3px 0;
+		}
+
+		#captcha{
+			margin-left: 364px;
+			margin-bottom: 20px;
+		}
     </style>
     <link href="assets/css/bootstrap-responsive.css" rel="stylesheet">
 
