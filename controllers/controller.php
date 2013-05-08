@@ -16,10 +16,7 @@ session_start();
  * @return String $val value matching $_POST['key']
  */
 function get_post_var($var){
-	$val = $_POST[$var];
-	if (get_magic_quotes_gpc()){
-		$val = stripslashes($val);
-	}
+	$val = filter_var($_POST[$var],FILTER_SANITIZE_MAGIC_QUOTES);
 	return $val;
 }
 
@@ -30,7 +27,7 @@ function get_post_var($var){
  * @param integer $length default of 256 but you can change the length of the string generated
  * @return String $token generated string
  */
-function generateToken($length = 256){
+function generateToken($length = 60){
     if (function_exists('openssl_random_pseudo_bytes')){
         $token = base64_encode(openssl_random_pseudo_bytes($length,$strong));
         if ($strong){
@@ -135,7 +132,6 @@ if ($requestType === 'POST') {
     $typeaheadcourseitem = get_post_var("courses");
 	$addSection = get_post_var("add");
 	$del = get_post_var("delete");
-	$action = get_post_var("action");
 	//REQUIREMENT DROPDOWN
     if ($reqId){
 		$db = new DBHelper();
@@ -260,31 +256,7 @@ if ($requestType === 'POST') {
 			$_SESSION['errorMessage'] = "Please select a section to delete first.";
 		}
 		header("Location: http://apps.janeullah.com/coursepicker/schedule.php");
-	}//SAVE SCHEDULE TO DATABASE
-	else if ($action && strcasecmp($action,"Save") == 0){
-		$init = $_SESSION['init'];
-		if (strcmp($init,"initialized") != 0){
-			//Initialize user schedule object & set relevant $_SESSION variables
-			$userschedule = new UserSchedule(generateToken());
-			initialize($userschedule->getUserId(),$userschedule);
-		}
-		$userid = $_SESSION['userid'];
-		$serializedschedule = $_SESSION['schedObj'][$userid];
-		$db = new DBHelper();
-		//Find last saved version
-		$lastversion = $db->findLastSavedVersion($userid);
-		$status = $db->saveSchedule($lastversion+1,$userid,$serializedschedule);
-		$shortName = $db->getShortName($lastversion+1,$userid);
-		echo $lastversion . "**" . $status . " ** " . $shortName . "\n";
-		if (!$status){
-			$_SESSION['errorMessage'] = "Failed to save schedule.";
-		}
-		if ($status == 1){
-			echo $shortName;
-		}else{
-			echo 0;
-		}
-	}//FINAL ELSE
+	}//ELSE
 	else{
 		$_SESSION['errorMessage'] = "Unknown POST request";
 		$_SESSION['courses'] = "[]";

@@ -64,6 +64,7 @@
 	$csci1302 = $db->getSections("CSCI","1302");
 	//echo json_encode($csci1302);
 
+	$db->clearTable();
 	echo $db->saveSchedule(1,2345,"jane");
 	echo $db->saveSchedule(2,2345,"matt");
 	echo $db->saveSchedule(1,1234,"ben");
@@ -76,5 +77,7 @@
 	$res = $db->findLastSavedVersion(2345);
 	echo "Last version: " . $res. "\n";
 	$res = $db->findLastSavedVersion(4567);
+	echo "Last version: " . $res. "\n";
+	$res = $db->findLastSavedVersion(3456);
 	echo "Last version: " . $res. "\n";
 ?>

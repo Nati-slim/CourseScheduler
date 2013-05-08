@@ -176,9 +176,9 @@ $msg = $_SESSION['errorMessage'];
               <li class="active"><a href="http://apps.janeullah.com/coursepicker/schedule.php">Home</a></li>
               <li><a href="#aboutModal" data-toggle="modal">About</a></li>
               <li><a href="#contactModal" data-toggle="modal">Contact</a></li>
-              <li><a href="#pngModal" data-toggle="modal">Download Schedule</a>
+              <li><a href="#pngModal" data-toggle="modal">Download Schedule</a></li>
               <!--<li><a href="#" id="saveSchedule">Save Schedule</a></li></li>-->
-              <li><a href="#shareModal" id="shareSchedule"  data-toggle="modal">Share Schedule</a></li></li>
+              <li><a href="#shareModal" id="shareSchedule"  data-toggle="modal">Share Schedule</a></li>
             </ul>
           </div><!--/.nav-collapse -->
         </div>
@@ -393,8 +393,7 @@ $msg = $_SESSION['errorMessage'];
 		</div>
 		<div class="modal-body">
 			Created by <a href="http://janeullah.com" title="Jane Ullah">Jane Ullah</a>.
-			<a href="https://github.com/janoulle/CourseScheduler" title="Source Code for CoursePicker">Source code on Github</a> and license is <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/deed.en_US">CC BY NC SA</a>. I reserve the right to change the licensing at anytime, I'm not liable for any issues that result from you using this site or the code, etc. Use at your own risk.<br>
-			<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-nc-sa/3.0/88x31.png" /></a><br /><span xmlns:dct="http://purl.org/dc/terms/" href="http://purl.org/dc/dcmitype/Text" property="dct:title" rel="dct:type">Course Picker</span> by <a xmlns:cc="http://creativecommons.org/ns#" href="http://apps.janeullah.com/coursepicker/" property="cc:attributionName" rel="cc:attributionURL">Jane Ullah</a> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/deed.en_US">Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License</a>.<br />Based on a work at <a xmlns:dct="http://purl.org/dc/terms/" href="http://github.com/janoulle/CourseScheduler" rel="dct:source">http://github.com/janoulle/CourseScheduler</a>.
+			<a href="https://github.com/janoulle/CourseScheduler" title="Source Code for CoursePicker">Source code on Github</a> and licensed under the <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/deed.en_US">Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License</a>. I reserve the right to change the licensing at anytime, I'm not liable for any issues that result from you using this site or the code, etc. Use at your own risk.<br>
 			<img src="assets/images/coursepicker-515x394.png" style="width:515px;height:394px;" alt="Course Picker">
 		</div>
 		<div class="modal-footer">
@@ -429,9 +428,9 @@ $msg = $_SESSION['errorMessage'];
 					</div>
 				</div>
 				<div class="control-group">
-					<label class="control-label" for="message">Message</label>
+					<label class="control-label" for="messageMe">Message</label>
 					<div class="controls">
-						<textarea tabindex="4" id="message" name="message" placeholder="Enter message" required></textarea>
+						<textarea tabindex="4" id="messageMe" name="message" placeholder="Enter message" required></textarea>
 					</div>
 				</div>
 				<div class="control-group">

@@ -13,6 +13,7 @@ class DBHelper{
 	private $lastsavedversion;
 	private $retrieveschedules;
 	private $retrieveshortname;
+	private $truncateTable;
 	private $errorMessage;
 
 	/**
@@ -35,10 +36,28 @@ class DBHelper{
 				$this->retrieveschedules = $this->dbconn->prepare("SELECT * from Schedules where version = ? and userid = ?");
 				$this->lastsavedversion = $this->dbconn->prepare("SELECT MAX(version) from Schedules where userid = ?");
 				$this->retrieveshortname = $this->dbconn->prepare("SELECT * from Schedules where version = ? and userid = ?");
+				$this->truncateTable = $this->dbconn->prepare("truncate table Schedules");
 			}
 			$this->errorMessage = "";
 		} catch(Exception $e) {
 			echo 'ERROR: ' . $e->getMessage();
+		}
+	}
+
+	/**
+	 * Truncate the tables
+	 */
+	function clearTable(){
+		try{
+			if (!($this->truncateTable)){
+				echo "Prepare failed: (" . $this->dbconn->errno . ") " . $this->dbconn->error;
+			}else if (!($value = $this->truncateTable->execute())){
+				echo "Execute failed: (" . $this->truncateTable->errno . ") " . $this->truncateTable->error;
+			}else{
+				$this->errorMessage = "";
+			}
+		}catch(Exception $e){
+			$this->errorMessage = "Error with clearTable.";
 		}
 	}
 
@@ -77,18 +96,18 @@ class DBHelper{
 		$result = null;
 		try{
 			if (!($this->retrieveschedules)){
-				echo "Prepare failed: (" . $this->dbconn->errno . ") " . $this->dbconn->error;
+				$this->errorMessage = "Prepare failed: (" . $this->dbconn->errno . ") " . $this->dbconn->error;
 			}else if (!($this->retrieveschedules->bind_param("ds",$vId,$uId))){
-				echo "Binding parameters failed: (" . $this->retrieveschedules->errno . ") " . $this->retrieveschedules->error;
+				$this->errorMessage = "Binding parameters failed: (" . $this->retrieveschedules->errno . ") " . $this->retrieveschedules->error;
 			}else if (!($this->retrieveschedules->execute())){
-				echo "Execute failed: (" . $this->retrieveschedules->errno . ") " . $this->retrieveschedules->error;
+				$this->errorMessage = "Execute failed: (" . $this->retrieveschedules->errno . ") " . $this->retrieveschedules->error;
 			}else if (!(($stored = $this->retrieveschedules->store_result())) && $this->dbconn->errno){
 				//switched from using fetch() to store_result() because of mysql error 2014 about commands being out of sync
 				//storeresult buffers the fetched data
-				echo "Fetch failed (DB): (" . $this->dbconn->errno . ") " . $this->dbconn->error;
-				echo "Fetch failed (STMT): (" . $this->retrieveschedules->errno . ") " . $this->retrieveschedules->error;
+				$this->errorMessage = "Fetch failed (DB): (" . $this->dbconn->errno . ") " . $this->dbconn->error;
+				$this->errorMessage .= "Fetch failed (STMT): (" . $this->retrieveschedules->errno . ") " . $this->retrieveschedules->error;
 			}else if (!($this->retrieveschedules->bind_result($id,$version,$userid,$scheduleObject,$shortName))){
-				echo "Binding results failed: (" . $this->retrieveschedules->errno . ") " . $this->retrieveschedules->error;
+				$this->errorMessage = "Binding results failed: (" . $this->retrieveschedules->errno . ") " . $this->retrieveschedules->error;
 			}else{
 				if ($stored){
 					while($this->retrieveschedules->fetch()){
@@ -105,7 +124,6 @@ class DBHelper{
 			return $result;
 		}catch(Exception $e){
 			$this->errorMessage = $e->getMessage();
-			echo $this->errorMessage;
 		}
 		return $result;
 	}
@@ -121,18 +139,18 @@ class DBHelper{
 		$result = null;
 		try{
 			if (!($this->retrieveshortname)){
-				echo "Prepare failed: (" . $this->dbconn->errno . ") " . $this->dbconn->error;
+				$this->errorMessage = "Prepare failed: (" . $this->dbconn->errno . ") " . $this->dbconn->error;
 			}else if (!($this->retrieveshortname->bind_param("ds",$vId,$uId))){
-				echo "Binding parameters failed: (" . $this->retrieveshortname->errno . ") " . $this->retrieveshortname->error;
+				$this->errorMessage = "Binding parameters failed: (" . $this->retrieveshortname->errno . ") " . $this->retrieveshortname->error;
 			}else if (!($this->retrieveshortname->execute())){
-				echo "Execute failed: (" . $this->retrieveshortname->errno . ") " . $this->retrieveshortname->error;
+				$this->errorMessage = "Execute failed: (" . $this->retrieveshortname->errno . ") " . $this->retrieveshortname->error;
 			}else if (!(($stored = $this->retrieveshortname->store_result())) && $this->dbconn->errno){
 				//switched from using fetch() to store_result() because of mysql error 2014 about commands being out of sync
 				//storeresult buffers the fetched data
-				echo "Fetch failed (DB): (" . $this->dbconn->errno . ") " . $this->dbconn->error;
-				echo "Fetch failed (STMT): (" . $this->retrieveshortname->errno . ") " . $this->retrieveshortname->error;
+				$this->errorMessage = "Fetch failed (DB): (" . $this->dbconn->errno . ") " . $this->dbconn->error;
+				$this->errorMessage .= "Fetch failed (STMT): (" . $this->retrieveshortname->errno . ") " . $this->retrieveshortname->error;
 			}else if (!($this->retrieveshortname->bind_result($id,$version,$userid,$scheduleObject,$shortName))){
-				echo "Binding results failed: (" . $this->retrieveshortname->errno . ") " . $this->retrieveshortname->error;
+				$this->errorMessage = "Binding results failed: (" . $this->retrieveshortname->errno . ") " . $this->retrieveshortname->error;
 			}else{
 				if ($stored){
 					while($this->retrieveshortname->fetch()){
@@ -149,7 +167,6 @@ class DBHelper{
 			return $result;
 		}catch(Exception $e){
 			$this->errorMessage = $e->getMessage();
-			echo $this->errorMessage;
 		}
 		return null;
 	}
@@ -164,18 +181,18 @@ class DBHelper{
 		$result = 0;
 		try{
 			if (!($this->lastsavedversion)){
-				echo "Prepare failed: (" . $this->dbconn->errno . ") " . $this->dbconn->error;
+				$this->errorMessage = "Prepare failed: (" . $this->dbconn->errno . ") " . $this->dbconn->error;
 			}else if (!($this->lastsavedversion->bind_param("s",$uId))){
-				echo "Binding parameters failed: (" . $this->lastsavedversion->errno . ") " . $this->lastsavedversion->error;
+				$this->errorMessage = "Binding parameters failed: (" . $this->lastsavedversion->errno . ") " . $this->lastsavedversion->error;
 			}else if (!($this->lastsavedversion->execute())){
-				echo "Execute failed: (" . $this->lastsavedversion->errno . ") " . $this->lastsavedversion->error;
+				$this->errorMessage = "Execute failed: (" . $this->lastsavedversion->errno . ") " . $this->lastsavedversion->error;
 			}else if (!(($stored = $this->lastsavedversion->store_result())) && $this->dbconn->errno){
 				//switched from using fetch() to store_result() because of mysql error 2014 about commands being out of sync
 				//storeresult buffers the fetched data
-				echo "Fetch failed (DB): (" . $this->dbconn->errno . ") " . $this->dbconn->error;
-				echo "Fetch failed (STMT): (" . $this->lastsavedversion->errno . ") " . $this->lastsavedversion->error;
+				$this->errorMessage =  "Fetch failed (DB): (" . $this->dbconn->errno . ") " . $this->dbconn->error;
+				$this->errorMessage .= "Fetch failed (STMT): (" . $this->lastsavedversion->errno . ") " . $this->lastsavedversion->error;
 			}else if (!($this->lastsavedversion->bind_result($version))){
-				echo "Binding results failed: (" . $this->lastsavedversion->errno . ") " . $this->lastsavedversion->error;
+				$this->errorMessage = "Binding results failed: (" . $this->lastsavedversion->errno . ") " . $this->lastsavedversion->error;
 			}else{
 				if ($stored){
 					while($this->lastsavedversion->fetch()){
@@ -191,7 +208,6 @@ class DBHelper{
 			$this->lastsavedversion->free_result();
 		}catch(Exception $e){
 			$this->errorMessage = $e->getMessage();
-			echo $this->errorMessage;
 		}
 		return $result;
 	}
@@ -206,18 +222,18 @@ class DBHelper{
 		try{
 			$courseListing = array();
 			if (!($this->listcourses)){
-				echo "Prepare failed: (" . $this->dbconn->errno . ") " . $this->dbconn->error;
+				$this->errorMessage = "Prepare failed: (" . $this->dbconn->errno . ") " . $this->dbconn->error;
 			}else if (!($this->listcourses->bind_param("i",$id))){
-				echo "Binding parameters failed: (" . $this->listcourses->errno . ") " . $this->listcourses->error;
+				$this->errorMessage = "Binding parameters failed: (" . $this->listcourses->errno . ") " . $this->listcourses->error;
 			}else if (!($this->listcourses->execute())){
-				echo "Execute failed: (" . $this->listcourses->errno . ") " . $this->listcourses->error;
+				$this->errorMessage = "Execute failed: (" . $this->listcourses->errno . ") " . $this->listcourses->error;
 			}else if (!(($stored = $this->listcourses->store_result())) && $this->dbconn->errno){
 				//switched from using fetch() to store_result() because of mysql error 2014 about commands being out of sync
 				//storeresult buffers the fetched data
-				echo "Fetch failed (DB): (" . $this->dbconn->errno . ") " . $this->dbconn->error;
-				echo "Fetch failed (STMT): (" . $this->listcourses->errno . ") " . $this->listcourses->error;
+				$this->errorMessage = "Fetch failed (DB): (" . $this->dbconn->errno . ") " . $this->dbconn->error;
+				$this->errorMessage .= "Fetch failed (STMT): (" . $this->listcourses->errno . ") " . $this->listcourses->error;
 			}else if (!($this->listcourses->bind_result($requirementId,$coursePrefix,$courseNumber))){
-				echo "Binding results failed: (" . $this->listcourses->errno . ") " . $this->listcourses->error;
+				$this->errorMessage = "Binding results failed: (" . $this->listcourses->errno . ") " . $this->listcourses->error;
 			}else{
 				if ($stored){
 					while($this->listcourses->fetch()){
@@ -231,58 +247,7 @@ class DBHelper{
 			$this->listcourses->free_result();
 			return $courseListing;
 		}catch(Exception $e){
-			echo $e->getMessage();
-		}
-		$this->listcourses->close();
-		return null;
-	}
-
-	/**Retrieve a list of records that fulfill a particular requirement
-	 * Deprecate
-	 * @param int $id requirement Id
-	 * @return array() of course objects
-	 */
-	function getCourses($id){
-		try{
-			$courseListing = null;
-			$resultset = null;
-			if (!($this->listcourses)){
-				echo "Prepare failed: (" . $this->dbconn->errno . ") " . $this->dbconn->error;
-			}else if (!($this->listcourses->bind_param("i",$id))){
-				echo "Binding parameters failed: (" . $this->listcourses->errno . ") " . $this->listcourses->error;
-			}else if (!($this->listcourses->execute())){
-				echo "Execute failed: (" . $this->listcourses->errno . ") " . $this->listcourses->error;
-			}else if (!(($stored = $this->listcourses->store_result())) && $this->dbconn->errno){
-				//switched from using fetch() to store_result() because of mysql error 2014 about commands being out of sync
-				//storeresult buffers the fetched data
-				echo "Fetch failed (DB): (" . $this->dbconn->errno . ") " . $this->dbconn->error;
-				echo "Fetch failed (STMT): (" . $this->listcourses->errno . ") " . $this->listcourses->error;
-			}else if (!($this->listcourses->bind_result($requirementId,$coursePrefix,$courseNumber))){
-				echo "Binding results failed: (" . $this->listcourses->errno . ") " . $this->listcourses->error;
-			}else{
-				if ($stored){
-					$recordcount = $this->listcourses->num_rows;
-					$fieldcount = $this->listcourses->field_count;
-					while($this->listcourses->fetch()){
-						$course = new Course($coursePrefix,$courseNumber);
-						$sections = $this->getSections($coursePrefix,$courseNumber);
-						if ($sections != null){
-							foreach($sections as $section){
-								if (!($course->addSection($section))){
-									echo "Problem adding section to course object - " . $course->getErrorMessage() . "\n";
-								}
-							}
-						}
-						$courseListing[] = $course;
-					}
-				}else{
-					$this->errorMessage = "Error storing results.";
-				}
-			}
-			$this->listcourses->free_result();
-			return $courseListing;
-		}catch(Exception $e){
-			echo $e->getMessage();
+			$this->errorMessage = $e->getMessage();
 		}
 		$this->listcourses->close();
 		return null;
@@ -299,18 +264,18 @@ class DBHelper{
 		try{
 			$course = null;
 			if (!($this->singlecourse)){
-				echo "Prepare failed: (" . $this->dbconn->errno . ") " . $this->dbconn->error;
+				$this->errorMessage = "Prepare failed: (" . $this->dbconn->errno . ") " . $this->dbconn->error;
 			}else if (!($this->singlecourse->bind_param("iss",$id,$prefix,$number))){
-				echo "Binding parameters failed: (" . $this->singlecourse->errno . ") " . $this->singlecourse->error;
+				$this->errorMessage = "Binding parameters failed: (" . $this->singlecourse->errno . ") " . $this->singlecourse->error;
 			}else if (!($this->singlecourse->execute())){
-				echo "Execute failed: (" . $this->singlecourse->errno . ") " . $this->singlecourse->error;
+				$this->errorMessage = "Execute failed: (" . $this->singlecourse->errno . ") " . $this->singlecourse->error;
 			}else if (!($this->singlecourse->store_result()) && $this->dbconn->errno){
 				//switched from using fetch() to store_result() because of mysql error 2014 about commands being out of sync
 				//storeresult buffers the fetched data
-				echo "Fetch failed (DB): (" . $this->dbconn->errno . ") " . $this->dbconn->error;
-				echo "Fetch failed (STMT): (" . $this->singlecourse->errno . ") " . $this->singlecourse->error;
+				$this->errorMessage = "Fetch failed (DB): (" . $this->dbconn->errno . ") " . $this->dbconn->error;
+				$this->errorMessage .= "Fetch failed (STMT): (" . $this->singlecourse->errno . ") " . $this->singlecourse->error;
 			}else if (!($this->singlecourse->bind_result($requirementId,$coursePrefix,$courseNumber))){
-				echo "Binding results failed: (" . $this->singlecourse->errno . ") " . $this->singlecourse->error;
+				$this->errorMessage = "Binding results failed: (" . $this->singlecourse->errno . ") " . $this->singlecourse->error;
 			}else if ($requirementId){
 				//YAY!
 				$course = new Course($coursePrefix,$courseNumber);
@@ -318,14 +283,14 @@ class DBHelper{
 				if ($sections != null){
 					foreach($sections as $section){
 						if (!($course->addSection($section))){
-							echo "Problem adding section to course object - " . $course->getErrorMessage() . "\n";
+							$this->errorMessage = "Problem adding section to course object - " . $course->getErrorMessage() . "\n";
 						}
 					}
 				}
 				return $course;
 			}
 		}catch(Exception $e){
-			echo $e->getMessage();
+			$this->errorMessage = $e->getMessage();
 		}
 		return null;
 	}
@@ -339,13 +304,13 @@ class DBHelper{
 		try{
 			$sectionListing = array();
 			if (!($this->listsections)){
-				echo "Prepare failed: (" . $this->dbconn->errno . ") " . $this->dbconn->error;
+				$this->errorMessage = "Prepare failed: (" . $this->dbconn->errno . ") " . $this->dbconn->error;
 			}else if (!($this->listsections->bind_param("ss",$prefix,$number))){
-				echo "Binding parameters failed: (" . $this->listsections->errno . ") " . $this->listsections->error;
+				$this->errorMessage = "Binding parameters failed: (" . $this->listsections->errno . ") " . $this->listsections->error;
 			}else if (!($this->listsections->execute())){
-				echo "Execute failed: (" . $this->listsections->errno . ") " . $this->listsections->error;
+				$this->errorMessage = "Execute failed: (" . $this->listsections->errno . ") " . $this->listsections->error;
 			}else if (!($this->listsections->bind_result($term,$callNumber,$coursePrefix,$courseNumber,$courseName,$lecturer,$available,$credithours,$session,$days,$startTime,$endTime,$castaken,$casreq,$dastaken,$dasreq,$totaltaken,$totalreq,$totalallowed,$building,$room,$sch,$currprog))){
-				echo "Binding results failed: (" . $this->listsections->errno . ") " . $this->listsections->error;
+				$this->errorMessage = "Binding results failed: (" . $this->listsections->errno . ") " . $this->listsections->error;
 			}else{
 				$cNo = 0;
 				$section = null;
@@ -370,18 +335,17 @@ class DBHelper{
 						}
 						$this->errorMessage = "";
 					}else{
-						echo "No match found.\n";
 						$this->errorMessage = "Found one of those funky VR or AR thingies.";
 					}
 				}
 				if ($this->dbconn->errno){
-					echo "Fetch failed (DB): (" . $this->dbconn->errno . ") " . $this->dbconn->error;
-					echo "Fetch failed (STMT): (" . $this->listsections->errno . ") " . $this->listsections->error;
+					$this->errorMessage = "Fetch failed (DB): (" . $this->dbconn->errno . ") " . $this->dbconn->error;
+					$this->errorMessage .= "Fetch failed (STMT): (" . $this->listsections->errno . ") " . $this->listsections->error;
 				}
 			}
 			return $sectionListing;
 		}catch(Exception $e){
-			echo "getSections error: " . $e->getMessage();
+			$this->errorMessage = $e->getMessage();
 		}
 		return null;
 	}
@@ -395,15 +359,15 @@ class DBHelper{
 		try{
 			$section = null;
 			if (!($this->singlesection)){
-				echo "Prepare failed: (" . $this->dbconn->errno . ") " . $this->dbconn->error;
+				$this->errorMessage = "Prepare failed: (" . $this->dbconn->errno . ") " . $this->dbconn->error;
 			}else if (!($this->singlesection->bind_param("i",$callNumber))){
-				echo "Binding parameters failed: (" . $this->singlesection->errno . ") " . $this->singlesection->error;
+				$this->errorMessage = "Binding parameters failed: (" . $this->singlesection->errno . ") " . $this->singlesection->error;
 			}else if (!($this->singlesection->execute())){
-				echo "Execute failed: (" . $this->singlesection->errno . ") " . $this->singlesection->error;
+				$this->errorMessage = "Execute failed: (" . $this->singlesection->errno . ") " . $this->singlesection->error;
 			}else if (!($this->singlesection->execute())){
-				echo "Execute failed: (" . $this->singlesection->errno . ") " . $this->singlesection->error;
+				$this->errorMessage = "Execute failed: (" . $this->singlesection->errno . ") " . $this->singlesection->error;
 			}else if (!($this->singlesection->bind_result($term,$callNumber,$coursePrefix,$courseNumber,$courseName,$lecturer,$available,$credithours,$session,$days,$startTime,$endTime,$castaken,$casreq,$dastaken,$dasreq,$totaltaken,$totalreq,$totalallowed,$building,$room,$sch,$currprog))){
-				echo "Binding results failed: (" . $this->singlesection->errno . ") " . $this->singlesection->error;
+				$this->errorMessage = "Binding results failed: (" . $this->singlesection->errno . ") " . $this->singlesection->error;
 			}else{
 				$cNo = 0;
 				while ($this->singlesection->fetch() && !($this->dbconn->errno)){
@@ -426,13 +390,12 @@ class DBHelper{
 						}
 						$this->errorMessage = "";
 					}else{
-						echo "No match found.\n";
 						$this->errorMessage = "Found one of those funky VR or AR thingies.";
 					}
 				}
 				if ($this->dbconn->errno){
-					echo "Fetch failed (DB): (" . $this->dbconn->errno . ") " . $this->dbconn->error;
-					echo "Fetch failed (STMT): (" . $this->singlesection->errno . ") " . $this->singlesection->error;
+					$this->errorMessage = "Fetch failed (DB): (" . $this->dbconn->errno . ") " . $this->dbconn->error;
+					$this->errorMessage .= "Fetch failed (STMT): (" . $this->singlesection->errno . ") " . $this->singlesection->error;
 					$this->errorMessage = "Db error.";
 				}else{
 					$this->errorMessage = "No section found.";
@@ -440,7 +403,7 @@ class DBHelper{
 			}
 			return $section;
 		}catch(Exception $e){
-			echo $e->getMessage();
+			$this->errorMessage = $e->getMessage();
 		}
 		return null;
 	}

@@ -14,20 +14,21 @@
 <!-- End Google Analytics -->
 <!-- Start of StatCounter Code for Default Guide -->
 <script type="text/javascript">
-var sc_project=8920740;
-var sc_invisible=1;
-var sc_security="705da947";
-var scJsHost = (("https:" == document.location.protocol) ?
-"https://secure." : "http://www.");
-document.write("<sc"+"ript type='text/javascript' src='" +
-scJsHost+
-"statcounter.com/counter/counter.js'></"+"script>");
+	//<![CDATA[
+	var sc_project=8920740;
+	var sc_invisible=1;
+	var sc_security="705da947";
+	var scJsHost = (("https:" == document.location.protocol) ?
+	"https://secure." : "http://www.");
+	document.write("<script type='text/javascript' src='" +
+	scJsHost+
+	"statcounter.com/counter/counter_xhtml.js'></"+"script>");
+	//]]>
 </script>
 <noscript>
 	<div class="statcounter">
-		<a title="free hit counters" href="http://statcounter.com/" target="_blank">
-		<img class="statcounter" src="http://c.statcounter.com/8920740/0/705da947/1/" alt="free hit counters">
-		</a>
+		<a title="free web stats" href="http://statcounter.com/" class="statcounter"><img
+class="statcounter" src="http://c.statcounter.com/8920740/0/705da947/1/" alt="free web stats" /></a>
 	</div>
 </noscript>
 <!-- End of StatCounter Code for Default Guide -->

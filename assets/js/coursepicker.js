@@ -632,19 +632,6 @@ function exposeSection(sectlistings){
  * FOR SAVING/RETRIEVING SCHEDULES
  * *******************************************/
 
-//SAVE SCHEDULE TO DATABASE
-function saveSchedule(){
-	$.ajax({
-		type: "POST",
-		url: 'classes/controllers/controller.php',
-		data: { action : "Save"},
-		success: function(response){
-			console.log("Response: " + response);
-			return response;
-		}
-	});
-}
-
 $(document).ready(function(){
 	var savelink = $('#saveSchedule');
 	var sharelink = $('#shareSchedule');
@@ -658,36 +645,12 @@ $(document).ready(function(){
 		}else{
 			$.ajax({
 				type: "POST",
-				url: 'classes/controllers/controller.php',
-				data: { action : "Save"},
+				url: 'classes/controllers/sharingcontroller.php',
+				data: { action : "Share"},
 				success: function(response){
-					if (response != 0){
-						$('#shareModalBody').append(response);
-					}else{
-						$('#shareModalBody').append(response);
-					}
+					$('#shareModalBody').append(response);
 				}
 			});
 		}
 	});
-
-
-	/*savelink.on('click',function(){
-		$.ajax({
-			type: "POST",
-			url: 'classes/controllers/controller.php',
-			data: { action : "Save"},
-			success: function(response){
-				if (response == 1){
-					alert("Saved schedule to database!");
-					/*savelink.html("Restore Schedule");
-					savelink.on('click',function(e){
-						e.preventDefault();
-					});
-				}else{
-					alert(response);
-				}
-			}
-		});
-	});*/
 });
