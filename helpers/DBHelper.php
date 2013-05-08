@@ -13,6 +13,8 @@ class DBHelper{
 	private $lastsavedversion;
 	private $retrieveschedules;
 	private $retrieveshortname;
+	private $findschedule;
+	PRIVATE $findSingleSchedule;
 	private $truncateTable;
 	private $errorMessage;
 
@@ -37,6 +39,8 @@ class DBHelper{
 				$this->lastsavedversion = $this->dbconn->prepare("SELECT MAX(version) from Schedules where userid = ?");
 				$this->retrieveshortname = $this->dbconn->prepare("SELECT * from Schedules where version = ? and userid = ?");
 				$this->truncateTable = $this->dbconn->prepare("truncate table Schedules");
+				$this->findschedule = $this->dbconn->prepare("SELECT  MAX(version), scheduleObject from Schedules where shortName = ?");
+				$this->findSingleSchedule = $this->dbconn->prepare("SELECT * from Schedules where shortName =?");
 			}
 			$this->errorMessage = "";
 		} catch(Exception $e) {
@@ -57,8 +61,49 @@ class DBHelper{
 				$this->errorMessage = "";
 			}
 		}catch(Exception $e){
-			$this->errorMessage = "Error with clearTable.";
+			$this->errorMessage = "Error with clearTable: " . $e->getMessage();
 		}
+	}
+
+	/**
+	 * Get the UserSchedule object
+	 * @param String $shortName shortname to identify the schedule object in the database
+	 * @return UserSchedule object
+	 */
+	function getSingleSchedule($shortName){
+		$result = null;
+		try{
+			if (!($this->findSingleSchedule)){
+				$this->errorMessage = "Prepare failed: (" . $this->dbconn->errno . ") " . $this->dbconn->error;
+			}else if (!($this->findSingleSchedule->bind_param("s",$shortName))){
+				$this->errorMessage = "Binding parameters failed: (" . $this->findSingleSchedule->errno . ") " . $this->findSingleSchedule->error;
+			}else if (!($this->findSingleSchedule->execute())){
+				$this->errorMessage = "Execute failed: (" . $this->findSingleSchedule->errno . ") " . $this->findSingleSchedule->error;
+			}else if (!(($stored = $this->findSingleSchedule->store_result())) && $this->dbconn->errno){
+				//switched from using fetch() to store_result() because of mysql error 2014 about commands being out of sync
+				//storeresult buffers the fetched data
+				$this->errorMessage = "Fetch failed (DB): (" . $this->dbconn->errno . ") " . $this->dbconn->error;
+				$this->errorMessage .= "Fetch failed (STMT): (" . $this->findSingleSchedule->errno . ") " . $this->findSingleSchedule->error;
+			}else if (!($this->findSingleSchedule->bind_result($id,$version,$userid,$scheduleObject,$shortName))){
+				$this->errorMessage = "Binding results failed: (" . $this->findSingleSchedule->errno . ") " . $this->findSingleSchedule->error;
+			}else{
+				if ($stored){
+					while($this->findSingleSchedule->fetch()){
+						$result = $scheduleObject;
+					}
+					if (!$userid){
+						$result = null;
+					}
+				}else{
+					$this->errorMessage = "Error storing results of getShortName.";
+				}
+			}
+			$this->findSingleSchedule->free_result();
+			return $result;
+		}catch(Exception $e){
+			$this->errorMessage = $e->getMessage();
+		}
+		return $result;
 	}
 
 	/**

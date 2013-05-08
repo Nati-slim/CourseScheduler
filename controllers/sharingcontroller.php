@@ -20,6 +20,11 @@ function get_post_var($var){
 	return $val;
 }
 
+function get_get_var($var){
+	$val = filter_var($_GET[$var],FILTER_SANITIZE_MAGIC_QUOTES);
+	return $val;
+}
+
 /**
  * Generate a cryptographically secure 256 bit string
  * and returns said string
@@ -91,14 +96,9 @@ function doPost(){
 		}
 		//$resultingversion = $db->retrieveSchedule($lastversion+1,$_SESSION['userid']);
 		$shortName = $db->getShortName($lastversion,$_SESSION['userid']);
-		return $shortName . "hwwe";
-	}else if ($action && strcasecmp($action,"Save") == 0){
-		//check if schedule exists
-		$db = new DBHelper();
-		$userid = $_SESSION['userid'];
-		$lastversion = $db->findLastSavedVersion($userid);
+		return $shortName;
 	}else{
-		return "Invalid request";
+		return "-1";
 	}
 }
 
@@ -106,7 +106,13 @@ function doPost(){
  * processing GET requests
  */
 function doGet(){
-
+	$schedDigest = get_get_var("schedule");
+	if ($schedDigest){
+		//check if schedule exists
+		$db = new DBHelper();
+		$schedule = $db->getSingleSchedule($schedDigest);
+		return unserialize($schedule);
+	}
 }
 
 //ROUTE REQUEST
@@ -115,7 +121,9 @@ if ($requestType === 'POST') {
 	$res = doPost();
 	echo $res;
 }else if ($requestType === 'GET'){
-	echo doGet();
+	$res = doGet();
+	header("Location: http://apps.janeullah.com/coursepicker/share/");
+	//echo $res;
 }else{
 	echo "Unknown request type.";
 }
