@@ -10,16 +10,13 @@ $resp = recaptcha_check_answer ($privatekey,
 
 
 /**
- * Function to undo effects of magic quotes
  * Returns the $_POST value matching the provided key
+ * with the filter (FILTER_SANITIZE_MAGIC_QUOTES)
  * @param String $var key in $_POST variable
  * @return String $val value matching $_POST['key']
  */
 function get_post_var($var){
-	$val = $_POST[$var];
-	if (get_magic_quotes_gpc()){
-		$val = stripslashes($val);
-	}
+	$val = filter_var($_POST[$var],FILTER_SANITIZE_MAGIC_QUOTES);
 	return $val;
 }
 
@@ -109,7 +106,6 @@ if (!$resp->is_valid) {
 	}else{
 		$ip = get_ip_address();
 		echo sendMail($name,$email,$message,$ip);
-		echo 1;
 	}
 }
 ?>

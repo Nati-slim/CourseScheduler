@@ -10,8 +10,8 @@ require_once("../helpers/UserSchedule.php");
 session_start();
 //error_reporting(0);
 /**
- * Function to undo effects of magic quotes
  * Returns the $_POST value matching the provided key
+ * with the filter (FILTER_SANITIZE_MAGIC_QUOTES)
  * @param String $var key in $_POST variable
  * @return String $val value matching $_POST['key']
  */
@@ -20,6 +20,12 @@ function get_post_var($var){
 	return $val;
 }
 
+/**
+ * Returns the $_GET value matching the provided key
+ * with the filter FILTER_SANITIZE_MAGIC_QUOTES
+ * @param String $var key in $_POST variable
+ * @return String $val value matching $_GET['key']
+ */
 function get_get_var($var){
 	$val = filter_var($_GET[$var],FILTER_SANITIZE_MAGIC_QUOTES);
 	return $val;
@@ -58,7 +64,9 @@ function initialize($userid,$schedule){
 
 /**
  * Function to save the user's schedule to the database
- *
+ * @param integer $version Last saved version of user's schedule in database
+ * @param DBHelper $db
+ * @return boolean $status of the save
  */
 function saveSchedule($version,$db){
 	//SAVE SCHEDULE TO DATABASE
@@ -108,8 +116,8 @@ function doPost(){
 function doGet(){
 	$schedDigest = get_get_var("schedule");
 	if ($schedDigest){
-		//check if schedule exists
 		$db = new DBHelper();
+		//Get the user schedule object and return an unserialized version
 		$schedule = $db->getSingleSchedule($schedDigest);
 		return unserialize($schedule);
 	}

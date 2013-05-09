@@ -20,18 +20,12 @@
 			<h3 id="contactModalLabel">Contact</h3>
 		</div>
 		<div class="modal-body">
-			<p id="formMessage" style="display:none;"></p>
-			<form class="form-horizontal" id="sendMessage" name="sendMessage" action="#" method="post">
+			<p id="formMessage" class="infoMessage" style="display:none;"></p>
+			<form class="form-horizontal" id="sendMessage" name="sendMessage" action="<?php echo $emailurl;?>" method="post">
 				<div class="control-group">
-					<label class="control-label" for="firstname">First Name</label>
+					<label class="control-label" for="name">Name</label>
 					<div class="controls">
-						<input tabindex="1" type="text" name="firstname" id="firstname" placeholder="First Name" required>
-					</div>
-				</div>
-				<div class="control-group">
-					<label class="control-label" for="lastname">Last Name</label>
-					<div class="controls">
-						<input tabindex="2" type="text" name="lastname" id="lastname" placeholder="Last Name" required>
+						<input tabindex="2" type="text" name="name" id="name" placeholder="Name" required>
 					</div>
 				</div>
 				<div class="control-group">

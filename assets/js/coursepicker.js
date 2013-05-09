@@ -636,19 +636,25 @@ $(document).ready(function(){
 	var savelink = $('#saveSchedule');
 	var sharelink = $('#shareSchedule');
 
-	//SHARE SCHEDULE TO DATABASE
+	//SHARE SCHEDULE CODE
 	sharelink.on('click',function(){
-		//save schedule to database
 		$('#shareModalBody').empty();
 		if (sched.length <= 0){
 			$('#shareModalBody').append("Please add at least 1 section to your schedule.");
 		}else{
+			//Make ajax call to share schedule
 			$.ajax({
 				type: "POST",
-				url: 'classes/controllers/sharingcontroller.php',
+				url: 'http://apps.janeullah.com/coursepicker/classes/controllers/sharingcontroller.php',
 				data: { action : "Share"},
 				success: function(response){
-					$('#shareModalBody').append(response);
+					if (response != -1){
+						var url = "http://apps.janeullah.com/coursepicker/classes/controllers/sharingcontroller.php?schedule="+response;
+						var msg = "<a href=\""+url+"\" title=\"Share your schedule\">"+"Share</a>";
+						$('#shareModalBody').append(msg);
+					}else{
+						$('#shareModalBody').append("Problem retrieving short URL.");
+					}
 				}
 			});
 		}

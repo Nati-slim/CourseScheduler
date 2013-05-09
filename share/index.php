@@ -12,7 +12,50 @@ function __autoload($class_name) {
     include "../classes/helpers/" . $class_name . '.php';
 }
 $schedule = $_SESSION['schedule'][$_SESSION['userid']];
-//echo $courseName;
+////////////////////////////////////////////////////////////
+/*$cListings = $_SESSION['courses'];
+$sListings = $_SESSION['sections'];
+$requirementName = $_SESSION['requirementName'];
+$lenCourses = count($cListings);
+$lenSections = count($sListings);
+$data = "[]";
+$sects = "[]";
+//echo "a: " . $lenCourses . "b: ". $cListings . "c " .$sListings ."d:". $lenSections;
+if ($lenCourses > 0){
+	//Copy output buffer to a variable
+	ob_start();
+	echo "[";
+	for ($i = 0; $i < $lenCourses; $i++){
+		if ($i < $lenCourses-1){
+			echo $cListings[$i] . ",";
+		}else{
+			echo $cListings[$i];
+		}
+	}
+	echo "]";
+	$data = ob_get_contents();
+	ob_end_clean();
+}
+
+if ($lenSections > 0){
+	//Copy output buffer to a variable
+	ob_start();
+	echo "[";
+	for ($i = 0; $i < $lenSections; $i++){
+		if ($i < $lenSections-1){
+			echo $sListings[$i] . ",";
+		}else{
+			echo $sListings[$i];
+		}
+	}
+	echo "]";
+	$sects = ob_get_contents();
+	ob_end_clean();
+	if (gettype($sListings[0]) == "object"){
+		$courseName = $sListings[0]->getCourseName();
+	}
+}*/
+///////////////////////////////////////////////////////
 $msg = $_SESSION['errorMessage'];
 $title = "Course Picker";
 $longdesc = "";
@@ -20,6 +63,7 @@ $shortdesc = "A course scheuling app for the University of Georgia Computer Scie
 $asseturl = "http://apps.janeullah.com/coursepicker/assets";
 $captchaurl = "../../../creds/captcha.inc";
 $recaptchaurl = "../../../auth/recaptcha/recaptchalib.php";
+$emailurl = "../classes/controllers/auth.php";
 ?>
 <!DOCTYPE html>
 <html lang="en">

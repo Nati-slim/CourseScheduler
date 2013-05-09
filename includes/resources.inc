@@ -62,3 +62,25 @@
 	<link rel="apple-touch-icon-precomposed" sizes="72x72" href="<?php echo $asseturl ."/ico/apple-touch-icon-72-precomposed.png";?>">
     <link rel="apple-touch-icon-precomposed" href="<?php echo $asseturl ."/ico/apple-touch-icon-57-precomposed.png";?>">
     <link rel="shortcut icon" href="<?php echo $asseturl ."assets/ico/favicon.png";?>">
+	<script type="text/javascript">
+		$(document).ready(function(){
+			$('#sendMessage').submit(function(e){
+				e.preventDefault();
+                $.ajax({
+                    type:'POST',
+                    url: 'classes/controllers/auth.php',
+                    data:$(this).serialize(),
+                    success: function(response) {
+                        $('#formMessage').append(response);
+                        $('#formMessage').show();
+                        setTimeout(function(){
+								$('#formMessage').empty();
+                                $('#formMessage').hide();
+                            }, 4000);
+                        Recaptcha.reload();
+                    }
+                });
+                return false;
+			});
+		});
+	</script>

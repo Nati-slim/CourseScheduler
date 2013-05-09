@@ -62,6 +62,7 @@ $shortdesc = "A course scheuling app for the University of Georgia Computer Scie
 $asseturl = "http://apps.janeullah.com/coursepicker/assets";
 $captchaurl = "../../creds/captcha.inc";
 $recaptchaurl = "../../auth/recaptcha/recaptchalib.php";
+$emailurl = "classes/controllers/auth.php";
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -84,23 +85,6 @@ $recaptchaurl = "../../auth/recaptcha/recaptchalib.php";
 		?>
 	</script>
 	<?php require_once("includes/resources.inc"); ?>
-	<script type="text/javascript">
-		$(document).ready(function(){
-			$('#sendMessage').submit(function(e){
-				e.preventDefault();
-                $.ajax({
-                    type:'POST',
-                    url: 'classes/controllers/auth.php',
-                    data:$(this).serialize(),
-                    success: function(response) {
-                        alertify.alert(response);
-                        //Recaptcha.reload();
-                    }
-                });
-                return false;
-			});
-		});
-	</script>
   </head>
 
 	<body>
@@ -135,7 +119,7 @@ $recaptchaurl = "../../auth/recaptcha/recaptchalib.php";
 				  <li class="active"><a href="#loadcourses" data-toggle="tab">Load Courses</a></li>
 				  <li><a href="#search" data-toggle="tab">Search</a></li>
 				</ul>
-				<p class="infoMessage" id="message">
+				<p class="infoMessage">
 					<?php echo $msg ?>
 				</p>
 				<div class="tab-content">
