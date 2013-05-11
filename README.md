@@ -10,12 +10,14 @@ There will be architectural and design differences from this group project and t
 5/5/2013
 ========
 
-v. 0.1 is officially released! :) Features:
-i) Adding & Deletion of sections
-ii) Saving your schedule as a .png file works
-iii) Added a contact form with recaptcha for sending comments/questions my way
-iv) Commented php files as much as possible but please ask away if anything is not comprehensible
-v) Saves the user's schedule in the $_SESSION object which means if you clear your cookies, the schedule will be gone as well.
+v. 0.1 is officially released! :) 
+---------------------------------
+Features:
+i. Adding & Deletion of sections
+ii. Saving your schedule as a .png file works
+iii. Added a contact form with recaptcha for sending comments/questions my way
+iv. Commented php files as much as possible but please ask away if anything is not comprehensible
+v. Saves the user's schedule in the $_SESSION object which means if you clear your cookies, the schedule will be gone as well.
 
 
 5/10/2013
