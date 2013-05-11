@@ -419,6 +419,7 @@ $(document).ready(function(){
 	var item = $('#sectionItem');
 	var cItem = $('#courseitem');
 	var reqItem = $('#requirementId');
+	$('html, body').css("cursor", "wait");
 
 	//Dump out the course list and section list when requirement selection changes
 	reqItem.change(function(){
@@ -430,6 +431,7 @@ $(document).ready(function(){
 		if (reqItem.val() == 0){
 			$('#message').html("Please select a requirement.");
 		}else{
+			$('html, body').css("cursor", "auto");
 			$('#message').html("");
 			//Submit the form if the user has selected a valid requirement
 			$('#pickRequirement').submit();
@@ -447,6 +449,7 @@ $(document).ready(function(){
 		if (cItem.val() == 0){
 			$('#message').html("Please choose a course.");
 		}else{
+			$('html, body').css("cursor", "auto");
 			$('#message').html("");
 			$('#courseForm').submit();
 		}
@@ -463,6 +466,8 @@ $(document).ready(function(){
 					var section = sections[key];
 					//console.log("Item #: " + item.val() + " Section #:" + section.callNumber);
 					if (section.callNumber == item.val()){
+						$('html, body').css("cursor", "auto");
+						$('#sectionMark').removeClass("hidden");
 						var mtgs = section.meetings;
 						$('#meetings').append("<ol id=\"meetingDisplay\">");
 						Object.keys(mtgs).forEach(function(day){
@@ -522,6 +527,7 @@ $(document).ready(function(){
 	var msg;
 	var typeahead = $('#courses');
 	var item = $('#sectionItem2');
+	$('html, body').css("cursor", "wait");
 	//When a change is detected in the typeahead box
 	typeahead.change(function(){
 		if (typeahead.val().length >= 9){
@@ -547,6 +553,7 @@ $(document).ready(function(){
 						//update the global sectionListings object with the new values.
 						//TODO:
 						//console.log(response);
+						$('html, body').css("cursor", "auto");
 						sectionListings = response;
 						ajaxCallSent = true;
 						exposeSection(response);
@@ -571,6 +578,7 @@ $(document).ready(function(){
 					var section = sections[key];
 					//console.log("Item #: " + item.val() + " Section #:" + section.callNumber);
 					if (section.callNumber == item.val()){
+						$('html, body').css("cursor", "auto");
 						var mtgs = section.meetings;
 						$('#meetings2').append("<ol id=\"meetingDisplay2\">");
 						Object.keys(mtgs).forEach(function(day){

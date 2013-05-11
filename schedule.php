@@ -162,13 +162,17 @@ $emailurl = "classes/controllers/auth.php";
 									</optgroup>
 								</select>
 							</form>
+							<span id="requirementMark" class="marks hidden" style="margin-top:-55px;">&#x2714;</span>
 						</div>
 
 						<!-- Displaying the courses -->
 						<div class="listInfo" id="courseInfo">
 							<?php
-								if ($requirementName && strlen($requirementName)){
+								if ($requirementName && strlen($requirementName) > 5){
 									echo "<h4>".$requirementName."</h4>";
+									echo "<script type=\"text/javascript\">
+										$('#requirementMark').removeClass(\"hidden\");
+									</script>";
 								}
 								echo "<h5> Choose A Course </h5>";
 							 ?>
@@ -184,6 +188,7 @@ $emailurl = "classes/controllers/auth.php";
 									?>
 								</select>
 							</form>
+							<span id="courseMark" class="marks hidden" style="margin-top:-50px;">&#x2714;</span>
 						</div>
 
 						<!-- HIDDEN / POP-UP DIV -->
@@ -195,7 +200,12 @@ $emailurl = "classes/controllers/auth.php";
 						<!-- Displaying the sections-->
 						<div class="listInfo" id="sectionInfo">
 							<?php
-								echo "<h4>".$courseName."</h4>";
+								if ($courseName && strlen($courseName) > 0){
+									echo "<h4>".$courseName."</h4>";
+									echo "<script type=\"text/javascript\">
+										$('#courseMark').removeClass(\"hidden\");
+									</script>";
+								}
 								echo "<h5> Choose A Section </h5>";
 							?>
 							<form id="sectionForm" name="sectionForm" action="<?php echo $controller; ?>" method="post">
@@ -210,6 +220,7 @@ $emailurl = "classes/controllers/auth.php";
 									?>
 								</select>
 							</form>
+							<span id="sectionMark" class="marks hidden" style="margin-top:-55px;">&#x2714;</span>
 						</div>
 
 						<!-- Displaying the meeting times of a section -->
