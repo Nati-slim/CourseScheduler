@@ -27,7 +27,7 @@ function get_post_var($var){
  * @param integer $length default of 256 but you can change the length of the string generated
  * @return String $token generated string
  */
-function generateToken($length = 60){
+function generateToken($length = 40){
     if (function_exists('openssl_random_pseudo_bytes')){
         $token = base64_encode(openssl_random_pseudo_bytes($length,$strong));
         if ($strong){

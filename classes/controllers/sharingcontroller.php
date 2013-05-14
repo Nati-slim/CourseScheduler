@@ -94,7 +94,7 @@ function doPost(){
 		$db = new DBHelper();
 		$userid = $_SESSION['userid'];
 		$lastversion = $db->findLastSavedVersion($userid);
-		//return $lastversion;
+		//return $lastversion . $userid;
 		if ($lastversion == 0){
 			$status = saveSchedule($lastversion,$db);
 			if (!$status){

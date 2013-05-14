@@ -419,7 +419,6 @@ $(document).ready(function(){
 	var item = $('#sectionItem');
 	var cItem = $('#courseitem');
 	var reqItem = $('#requirementId');
-	$('html, body').css("cursor", "wait");
 
 	//Dump out the course list and section list when requirement selection changes
 	reqItem.change(function(){
@@ -527,7 +526,6 @@ $(document).ready(function(){
 	var msg;
 	var typeahead = $('#courses');
 	var item = $('#sectionItem2');
-	$('html, body').css("cursor", "wait");
 	//When a change is detected in the typeahead box
 	typeahead.change(function(){
 		if (typeahead.val().length >= 9){
@@ -536,6 +534,8 @@ $(document).ready(function(){
 			var dash = value.indexOf("-");
 			//proper selection is of the form: XXXX-3452 or XXXX-2564L
 			if (dash == 4){
+
+				$('html, body').css("cursor", "wait");
 				var split = value.split(" ");
 				var prefix = split[0].substring(0,dash);
 				var num = split[0].substring(dash+1);
@@ -660,6 +660,7 @@ $(document).ready(function(){
 						var url = "http://apps.janeullah.com/coursepicker/classes/controllers/sharingcontroller.php?schedule="+response;
 						var msg = "<a href=\""+url+"\" title=\"Share your schedule\">"+"Share</a>";
 						$('#shareModalBody').append(msg);
+						console.log(response);
 					}else{
 						$('#shareModalBody').append("Problem retrieving short URL.");
 					}

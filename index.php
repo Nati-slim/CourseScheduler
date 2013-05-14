@@ -184,14 +184,14 @@ $controller = "classes/controllers/controller.php";
 
 
 	<div id="jumbo1" class="jumbotron hidden">
-		<p class="lead">Course Picker is developed by <a href="http://janeullah.com">Jane Ullah</a>. 'Twas born out of a class project taught at UGA (CSCI 4300) and was originally written in Java. This web application is written in PHP and shares some of the DNA of the original project. Also, this application is for the Fall 2013 semester's courses.
+		<p class="lead">Course Picker is developed by <a href="http://janeullah.com" title="Jane Ullah">Jane Ullah</a>. This is a course scheduler for the Fall 2013 semester at UGA. <a href="https://github.com/janoulle/CourseScheduler">View the source code</a> on Github.
 		</p>
 		<p>If you clear your browser's cookies, your schedule will be lost, take a picture! (it'll last longer. :)). You need to enable JavaScript to use this site.
 		</p>
 	</div>
 
 	<div id="jumbo2" class="jumbotron hidden">
-		<p class="lead">Tweet @janetalkstech or firstnamelastname@gmail.com (substitute appropriately).</p>
+		<p class="lead">Tweet <a href="https://twitter.com/janetalkstech" title="@janetalkstech on Twitter">@janetalkstech</a> or firstnamelastname@gmail.com (substitute appropriately).</p>
 		<form id="sendMessage" name="sendMessage" action="#" method="post">
 			<div class="control-group">
 				<label class="control-label" for="name">Name</label>
@@ -233,7 +233,7 @@ $controller = "classes/controllers/controller.php";
 
 
       <div class="footer">
-        <p>&copy; Jane Ullah</p>
+        <p>&copy; <a href="http://janeullah.com" title="Jane Ullah">Jane Ullah</a></p>
       </div>
 
     </div> <!-- /container -->
