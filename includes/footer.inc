@@ -7,7 +7,7 @@
 		<div class="modal-body">
 			Created by <a href="http://janeullah.com" title="Jane Ullah">Jane Ullah</a>.
 			<a href="https://github.com/janoulle/CourseScheduler" title="Source Code for CoursePicker">Source code on Github</a> and licensed under the <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/deed.en_US">Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License</a>. I reserve the right to change the licensing at anytime, I'm not liable for any issues that result from you using this site or the code, etc. Use at your own risk.<br>
-			<img src="<?php echo $asseturl . "/images/coursepicker-515x394.png";?>" style="width:515px;height:394px;" alt="Course Picker">
+			<img src="<?php echo $asseturl . "/images/coursepicker.png";?>" style="width:250px;height:188px;" alt="Course Picker">
 		</div>
 		<div class="modal-footer">
 			<a class="btn" data-dismiss="modal" aria-hidden="true">Close</a>

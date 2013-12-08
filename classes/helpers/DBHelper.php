@@ -14,7 +14,7 @@ class DBHelper{
 	private $retrieveschedules;
 	private $retrieveshortname;
 	private $findschedule;
-	PRIVATE $findSingleSchedule;
+	private $findSingleSchedule;
 	private $truncateTable;
 	private $errorMessage;
 
@@ -407,8 +407,6 @@ class DBHelper{
 				$this->errorMessage = "Prepare failed: (" . $this->dbconn->errno . ") " . $this->dbconn->error;
 			}else if (!($this->singlesection->bind_param("i",$callNumber))){
 				$this->errorMessage = "Binding parameters failed: (" . $this->singlesection->errno . ") " . $this->singlesection->error;
-			}else if (!($this->singlesection->execute())){
-				$this->errorMessage = "Execute failed: (" . $this->singlesection->errno . ") " . $this->singlesection->error;
 			}else if (!($this->singlesection->execute())){
 				$this->errorMessage = "Execute failed: (" . $this->singlesection->errno . ") " . $this->singlesection->error;
 			}else if (!($this->singlesection->bind_result($term,$callNumber,$coursePrefix,$courseNumber,$courseName,$lecturer,$available,$credithours,$session,$days,$startTime,$endTime,$castaken,$casreq,$dastaken,$dasreq,$totaltaken,$totalreq,$totalallowed,$building,$room,$sch,$currprog))){

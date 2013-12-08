@@ -21,6 +21,7 @@ var sectionsGrabbed = new Array();
 var canvasItem, canvasContext;
 var courseListing;
 var xPos, yPos;
+var url;
 /**
 * Array object to store the sections from selecting a course
 * Makes use of the fact that data is already in the session object so
@@ -45,7 +46,7 @@ function createImage(canvas){
 	try{
 		//Create a URL containing a representation of the image in the format specified
 		//default is .png
-		var url = canvas.toDataURL();
+		url = canvas.toDataURL();
         //Grab the img div
         var imgDiv = document.getElementById("canvasImage");
 		//Create the image object
@@ -641,7 +642,7 @@ function exposeSection(sectlistings){
  * *******************************************/
 
 $(document).ready(function(){
-	var savelink = $('#saveSchedule');
+	var downloadlink = $('#downloadSchedule');
 	var sharelink = $('#shareSchedule');
 
 	//SHARE SCHEDULE CODE
@@ -667,5 +668,19 @@ $(document).ready(function(){
 				}
 			});
 		}
+	});
+
+	//SAVE SCHEDULE
+	downloadlink.on('click',function(){
+		$.ajax({
+			type: "POST",
+			url: 'http://apps.janeullah.com/coursepicker/classes/controllers/imagehandling.php',
+			data: {save : url},
+			success: function(response){
+				if (response != 1){
+					alertify.alert("Failed to save image to disk");
+				}
+			}
+		});
 	});
 });

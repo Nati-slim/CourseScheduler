@@ -101,10 +101,10 @@ $emailurl = "classes/controllers/auth.php";
             <ul class="nav">
               <li class="active"><a href="http://apps.janeullah.com/coursepicker/schedule.php">Home</a></li>
               <li><a href="#aboutModal" data-toggle="modal">About</a></li>
-              <li><a href="#contactModal" data-toggle="modal">Contact</a></li>
-              <li><a href="#pngModal" data-toggle="modal">Download Schedule</a></li>
+              <li><a href="#contactModal" id="contactMe" data-toggle="modal">Contact</a></li>
+              <li><a href="#pngModal" id="downloadSchedule" data-toggle="modal">Download Schedule</a></li>
               <!--<li><a href="#" id="saveSchedule">Save Schedule</a></li></li>-->
-              <li><a href="#shareModal" id="shareSchedule"  data-toggle="modal">Share Schedule</a></li>
+              <!--<li><a href="#shareModal" id="shareSchedule"  data-toggle="modal">Share Schedule</a></li>-->
             </ul>
           </div><!--/.nav-collapse -->
         </div>
