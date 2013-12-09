@@ -29,7 +29,7 @@ class ReportListingHelper{
 				$this->getlistofferings = $this->dbconn->prepare("select * from ReportsAvailable");
 				$this->getsingleoffering = $this->dbconn->prepare("select * from ReportsAvailable where id = ?");
 				$this->deleteoffering = $this->dbconn->prepare("delete from ReportsAvailable where id = ?");
-				$this->addsingleoffering = $this->dbconn->prepare("insert into ReportsAvailable (id,name,term,campus,lastModified) value(DEFAULT,?,?,?,?)");
+				$this->addsingleoffering = $this->dbconn->prepare("insert into ReportsAvailable (id,name,term,campus,lastModified) values(DEFAULT,?,?,?,?)");
 				$this->getlatestoffering = $this->dbconn->prepare("select max(lastModified) from ReportsAvailable");
 				$this->getofferingbycampus = $this->dbconn->prepare("select * from ReportsAvailable where campus = ?");
 				$this->getofferingbyterm = $this->dbconn->prepare("select * from ReportsAvailable where term = ?");
