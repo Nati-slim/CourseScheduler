@@ -1,6 +1,5 @@
 <?php
 //place this file in a directory not accessible over the internet
-require_once("../../../../creds/coursepicker.inc");
 require_once("../helpers/Course.php");
 
 class CourseHelper{
@@ -16,7 +15,7 @@ class CourseHelper{
 	 */
 	function __construct(){
 		try {
-			$this->dbconn = new mysqli(DB_HOST,DB_USER,DB_PASSWORD,DB_NAME);
+			$this->dbconn = new mysqli("localhost","demo","demo","Picker");
 			if ($this->dbconn->connect_errno){
 				$this->errorMessage = "Failed to connect to MySQL: (" . $this->dbconn->connect_errno . ") " . $this->dbconn->error;
 			}else{
