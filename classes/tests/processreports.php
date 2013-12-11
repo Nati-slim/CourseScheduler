@@ -29,6 +29,8 @@ foreach($files as $file){
 	$lastItem = array_pop($explosion);
 	$list = array();
 	$tplist = array();
+	$prev = "";
+
 	foreach($explosion as $courseDetails){
 		$line = explode("\",\"",$courseDetails);
 		$course = array();
@@ -58,16 +60,20 @@ foreach($files as $file){
 		$list[] = $course;
 
 		//typeahead stuff
-		$tpcourse = array();
-		$tpcourse['coursePrefix'] = $course['coursePrefix'];
-		$tpcourse['courseNumber'] = trim($course['courseNumber']);
-		$tpcourse['courseName'] = $course['courseName'];
-		$tpcourse['lecturer'] = $course['lecturer'];
-		$tpcourse['value'] = $course['coursePrefix'] . "-" . trim($course['courseNumber']);
-		$tokens = explode(" ",$course['courseName']);
-		array_unshift($tokens,$course['coursePrefix'],$course['courseNumber']);
-		$tpcourse['tokens'] = $tokens;
-		$tplist[] = $tpcourse;
+		$unique_id = $course['coursePrefix'] . "-" . trim($course['courseNumber']);
+		if (strcmp($unique_id,$prev) != 0){
+			$tpcourse = array();
+			$tpcourse['coursePrefix'] = $course['coursePrefix'];
+			$tpcourse['courseNumber'] = trim($course['courseNumber']);
+			$tpcourse['courseName'] = $course['courseName'];
+			$tpcourse['value'] = $unique_id;
+			$tokens = explode(" ",$course['courseName']);
+			array_unshift($tokens,$course['coursePrefix'],$course['courseNumber']);
+			$tpcourse['tokens'] = $tokens;
+			$tplist[] = $tpcourse;
+		}
+		$prev = $unique_id;
+
 	}
 	//echo json_encode($list) . "\n";
 	$indexname = '';
