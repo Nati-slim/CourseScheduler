@@ -43,13 +43,13 @@ foreach($files as $file){
 		$course['days'] = trim($line[9]);
 		$course['startTime'] = trim($line[10]);
 		$course['endTime'] = trim($line[11]);
-		$course['casTaken'] = $line[12];
+		/*$course['casTaken'] = $line[12];
 		$course['casRequired'] = $line[13];
 		$course['dasTaken'] = $line[14];
 		$course['dasRequired'] = $line[15];
 		$course['totalTaken'] = $line[16];
 		$course['totalRequired'] = $line[17];
-		$course['totalAllowed'] = $line[18];
+		$course['totalAllowed'] = $line[18];*/
 		$course['building'] = $line[19];
 		$course['room'] = $line[20];
 		$course['sch'] = $line[21];
