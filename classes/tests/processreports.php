@@ -28,13 +28,14 @@ foreach($files as $file){
 	$lastItem = end($explosion);
 	$lastItem = array_pop($explosion);
 	$list = array();
+	$tplist = array();
 	foreach($explosion as $courseDetails){
 		$line = explode("\",\"",$courseDetails);
 		$course = array();
 		$course['term'] = substr($line[0],1);
 		$course['callNumber'] = $line[1];
 		$course['coursePrefix'] = $line[2];
-		$course['courseNumber'] = $line[3];
+		$course['courseNumber'] = trim($line[3]);
 		$course['courseName'] = trim($line[4]);
 		$course['lecturer'] = trim($line[5]);
 		$course['available'] = trim($line[6]);
@@ -55,40 +56,65 @@ foreach($files as $file){
 		$course['sch'] = $line[21];
 		$course['currentProgram'] = substr($line[22],0,-1);
 		$list[] = $course;
+
+		//typeahead stuff
+		$tpcourse = array();
+		$tpcourse['coursePrefix'] = $course['coursePrefix'];
+		$tpcourse['courseNumber'] = trim($course['courseNumber']);
+		$tpcourse['courseName'] = $course['courseName'];
+		$tpcourse['lecturer'] = $course['lecturer'];
+		$tpcourse['value'] = $course['coursePrefix'] . "-" . trim($course['courseNumber']);
+		$tokens = explode(" ",$course['courseName']);
+		array_unshift($tokens,$course['coursePrefix'],$course['courseNumber']);
+		$tpcourse['tokens'] = $tokens;
+		$tplist[] = $tpcourse;
 	}
 	//echo json_encode($list) . "\n";
 	$indexname = '';
 	$filename = "../../assets/json/courses.json";
+	$tpfilename = "../../assets/json/tp-courses.json";
 	if ($counter == 0){
 		$masterList['201405-UNIV'] = $list;
 		$filename = '../../assets/json/201405-UNIV.json';
+		$tpfilename = '../../assets/json/tp-201405-UNIV.json';
 	}else if ($counter == 1){
 		$masterList['201402-UNIV'] = $list;
 		$filename = '../../assets/json/201402-UNIV.json';
+		$tpfilename = '../../assets/json/tp-201402-UNIV.json';
 	}else if ($counter == 2){
 		$masterList['201308-UNIV'] = $list;
-		$filename = '../../assets/json/201308-UNIV.json';		
+		$filename = '../../assets/json/201308-UNIV.json';
+		$tpfilename = '../../assets/json/tp-201308-UNIV.json';	
 	}else if ($counter == 3){
 		$masterList['201305-UNIV'] = $list;
 		$filename = '../../assets/json/201305-UNIV.json';
+		$tpfilename = '../../assets/json/tp-201305-UNIV.json';
 	}else if ($counter == 4){
 		$masterList['201405-GWIN'] = $list;
 		$filename = '../../assets/json/201405-GWIN.json';
+		$tpfilename = '../../assets/json/tp-201405-GWIN.json';
 	}else if ($counter == 5){
 		$masterList['201402-GWIN'] = $list;
 		$filename = '../../assets/json/201402-GWIN.json';
+		$tpfilename = '../../assets/json/tp-201402-GWIN.json';
 	}else if ($counter == 6){
 		$masterList['201308-GWIN'] = $list;
 		$filename = '../../assets/json/201308-GWIN.json';
+		$tpfilename = '../../assets/json/tp-201308-GWIN.json';
 	}else if ($counter == 7){
 		$masterList['201305-GWIN'] = $list;
 		$filename = '../../assets/json/201305-GWIN.json';
+		$tpfilename = '../../assets/json/tp-201305-GWIN.json';
 	}
 	
 	//Write to file
 	$fp = fopen($filename,"w");
 	fwrite($fp, json_encode($list));
 	fclose($fp);
+
+	$tpw = fopen($tpfilename,"w");
+	fwrite($tpw,json_encode($tplist));
+	fclose($tpw);
 	$counter++;
 }
 
