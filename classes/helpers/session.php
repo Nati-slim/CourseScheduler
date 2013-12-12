@@ -1,15 +1,15 @@
 <?php
 define('SECRET','>hxJ%.v>`iVok[Hc72oV7@%z-CN(]RF^-E&jE,+L6vnB[@;j*.}{OA8/[pU]|n?&');
 define('HASH',md5(dirname(__FILE__) . SECRET) );
-define('KEY','dt_sess_' . HASH);
+define('KEY','cp_sess_' . HASH);
 
 //http://www.cs.wcupa.edu/~rkline/php/sessions.html
 class Session {
 
     function __construct(){
         session_save_path(dirname($_SERVER['DOCUMENT_ROOT']) . '/sessions');
-        session_set_cookie_params(86400,"/","dawgtransit.com",false,true);
-        session_name('DawgTransit');
+        session_set_cookie_params(86400,"/","janeullah.com",false,true);
+        session_name('CoursePicker');
         session_start();        
     }
     

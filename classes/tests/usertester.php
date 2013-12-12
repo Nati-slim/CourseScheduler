@@ -4,6 +4,7 @@
 	require_once("../helpers/Meeting.php");
 	require_once("../helpers/UserSchedule.php");
 	require_once("../helpers/DBHelper.php");
+	session_start();
 	$schedule = new UserSchedule(rand(1,12366468));
 	$mtg1 = new Meeting(12345, "M", "0215P", "0330P");
 	$mtg2 = new Meeting(12345, "W", "0930A", "1045A");
@@ -80,11 +81,23 @@
 	if ($schedule->isOverlap($mtg11,$mtg18)){
 		echo "mtg11/mtg18 Overlap detected between " . $mtg11->getMeetingTime() . " and " . $mtg18->getMeetingTime() . "\n";
 	}
-	echo $schedule->toJSON();
+	
 
 	if ($schedule->deleteSection(12345)){
 		echo "Section 12345 deleted.";
 	}else{
 		echo $schedule->getErrorMessage();
 	}
+
+	echo "<br/><br/>";
+	$_SESSION['SCHED'] = base64_encode(serialize($schedule));
+	$a = serialize($schedule);
+	$b = unserialize($a);
+	$_SESSION['UNSCHED'] = unserialize(base64_encode($_SESSION['SCHED']));
+	echo "Serialized: " . $_SESSION['SCHED'] . "<br/>";
+	echo "Unserialized: " . $_SESSION['UNSCHED'] . "<br/>";
+	echo "<br/><br/>";
+	echo "<br/><br/>";
+	echo "a: " . $a. "<br/>";
+	echo "b: " . $b. "<br/>";
 ?>

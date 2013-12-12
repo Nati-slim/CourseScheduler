@@ -4,8 +4,12 @@ require_once("../helpers/Section.php");
 require_once("../helpers/Meeting.php");
 require_once("../helpers/CourseHelper.php");
 require_once("../helpers/UserSchedule.php");
-session_start();
+require_once("../helpers/session.php");
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+$session = new Session();
 $result = array();
+
 
 /**
  * Function to undo effects of magic quotes
@@ -34,11 +38,22 @@ function generateToken($length = 40){
  * @param UserSchedule object $schedule
  */
 function initialize($userid,$schedule){
-	$_SESSION['init'] = "initialized";
-	$_SESSION['schedule'][$userid] = $schedule->to_json();
-	$_SESSION['schedObj'][$userid] = serialize($schedule);
-	$_SESSION['userid'] = $userid;
-	$_SESSION['errorMessage'] = "";
+	$session->init = "initialized";
+	$session->schedule = $schedule->to_json();
+	$session->scheduleArray = array();
+	$session->scheduleArray = serialize($schedule->to_array());
+	$session->userid = $userid;
+	$session->errorMessage = "";
+}
+
+function reconstructSchedule($arr){
+	$userschedule = new UserSchedule($arr['userid']);
+	$userschedule->setErrorMessage($arr['errorMessage']);
+	$index = 2;
+	while ($index < count($arr)){
+		$userschedule[$index] = $arr[$index];
+		$index++;
+	}
 }
 
 $requestType = $_SERVER['REQUEST_METHOD'];
@@ -46,73 +61,67 @@ if ($requestType === 'POST') {
 	$action = get_post_var("action");
 	if (strcmp($action,"addSection") == 0){
 		$callNum = get_post_var("addSectionCallNumber");
-		$db = new CourseHelper();
-		$isFirst = false;
-		$init = $_SESSION['init'];
-		if (strcmp($init,"initialized") != 0){
+		if (!isset($session->init)){
 			//Initialize user schedule object & set relevant $_SESSION variables
 			$userschedule = new UserSchedule(generateToken());
 			initialize($userschedule->getUserId(),$userschedule);
-			$isFirst = true;
+		}else{
+			$userschedule = unserialize($session->scheduleArray);
 		}
-
-		$userid = $_SESSION['userid'];
-		if (!$isFirst){
-			$userschedule = unserialize($_SESSION['schedObj'][$userid]);
-		}
-		$semesterSelected = isset($_SESSION['semesterSelected']) ? $_SESSION['semesterSelected']:"201402-UNIV";
+		$semesterSelected = isset($session->semesterSelected) ? $session->semesterSelected:"201402-UNIV";
 		$arrayVal = explode("-",$semesterSelected);
+		
+		$db = new CourseHelper();
 		$section = $db->getSingleSection($arrayVal[0],$callNum,$arrayVal[1]);
 		try{
 			if ($section){
-				if (strcasecmp($section->getStatus(),"Available") == 0){
+				if (strcmp($section->getStatus(),"Available") == 0){
 					$status = $userschedule->addSection($section);
 					if (!$status){
 						$result['errorMessage'] = $userschedule->getErrorMessage();
-						$_SESSION['errorMessage'] = $userschedule->getErrorMessage();
-						echo json_encode($result);
+						$session->errorMessage = $userschedule->getErrorMessage();
+						//echo json_encode($result);
 					}else{
-						$_SESSION['errorMessage'] = "";
-						$_SESSION['infoMessage'] = "Section " . $callNum. " (". $section->getCoursePrefix()."-".$section->getCourseNumber().") added!";
-						$_SESSION['schedule'][$userid] = $userschedule->to_json();
-						$_SESSION['schedObj'][$userid] = serialize($userschedule);						
-						echo $userschedule->to_json();
+						$session->errorMessage = "";
+						$session->userid = $userschedule->getUserId();;
+						$session->infoMessage = "Section " . $callNum. " (". $section->getCoursePrefix()."-".$section->getCourseNumber().") added!";
+						$session->schedule = $userschedule->to_json();	
+						$session->scheduleArray = serialize($userschedule->to_array());		
+						//echo $userschedule->to_json();
 					}
 				}else{
 					$result['callNumber'] = $callNum;
 					$result['term'] = $arrayVal[0];
 					$result['currentProgram']=  $arrayVal[1];
 					$result['errorMessage'] = "Invalid section chosen.";
-					$_SESSION['errorMessage'] = "Section is not Available";
-					echo json_encode($result);
+					$session->errorMessage = "Section is not Available";
+					//echo json_encode($result);
 				}
 			}else{
 				$result['callNumber'] = $callNum;
 				$result['term'] = $arrayVal[0];
 				$result['currentProgram']=  $arrayVal[1];
 				$result['errorMessage'] = "Invalid section chosen.";
-				$_SESSION['errorMessage'] = "Invalid section chosen.";
-				echo json_encode($result);
+				$session->errorMessage = "Invalid section chosen.";
+				//echo json_encode($result);
 			}
 		}catch(Exception $e){
 			$result['callNumber'] = $callNum;
 			$result['term'] = $arrayVal[0];
 			$result['currentProgram']=  $arrayVal[1];
 			$result['errorMessage'] = $e->getMessage();
-			$_SESSION['errorMessage'] = $e->getMessage();
-			echo json_encode($result);
+			$session->errorMessage = $e->getMessage();
+			//echo json_encode($result);
 		}
-	}else if ($deleteSection){
-
-
 	}else{
 		$result['errorMessage'] = "Invalid action.";
-		$_SESSION['errorMessage'] = "Invalid action.";
-		echo json_encode($result);
+		$session->errorMessage = "Invalid action.";
+		//echo json_encode($result);
 	}
 }else{
 	$result['errorMessage'] = "Invalid Server Request Type found.";
-	$_SESSION['errorMessage'] = "Invalid Server Request Type found.";
-	echo json_encode($result);
+	$session->errorMessage = "Invalid Server Request Type found.";
+	//echo json_encode($result);
 }
+header("Location: http://apps.janeullah.com/coursepicker/new.php");	
 ?>

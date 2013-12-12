@@ -176,6 +176,8 @@ class UserSchedule{
 		foreach($this->schedule as $section){
 			$result[$section->getCallNumber()] = $section->to_array();
 		}
+		$result['userid'] = $this->getUserId();
+		$result['errorMessage'] = $this->getErrorMessage();
 		return $result;
 	}
 
@@ -214,5 +216,9 @@ class UserSchedule{
 		$output .= "}";
 		return $output;
 	}
+
+    /*public function __sleep(){
+		return array('schedule','userid','errorMessage');
+    }*/
 }
 ?>

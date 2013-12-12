@@ -1,18 +1,12 @@
 <?php
-session_save_path(dirname($_SERVER['DOCUMENT_ROOT']) . '/sessions');
-session_set_cookie_params(86400,"/","apps.janeullah.com",false,true);
-session_name('CoursePicker');
-session_start();
+require_once("classes/helpers/session.php");
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+$session = new Session();
 $controller = "classes/controllers/controller.php";
-$errorMessage = $_SESSION['errorMessage'];
+$errorMessage = $session->errorMessage;
 $uga_file = file_get_contents("assets/json/uga_building_names.json");
-/**
- * http://php.net/manual/en/language.oop5.autoload.php
- * Autoload the class files for deserializing
- */
-function __autoload($class_name) {
-    include "classes/helpers/" . $class_name . '.php';
-}
+
 
 /**
  * Function to undo effects of magic quotes
@@ -26,18 +20,18 @@ function get_post_var($var){
 }
 
 //Spring 2014
-if (isset($_SESSION['semesterSelected'])){
-	$semesterSelected = $_SESSION['semesterSelected'];
+if (isset($session->semesterSelected)){
+	$semesterSelected = $session->semesterSelected;
 }else{
 	$semesterSelected = "201402-UNIV";
-	$_SESSION['semesterSelected'] = $semesterSelected;
+	$session->semesterSelected = $semesterSelected;
 }
 
-if (isset($_SESSION['jsonURL'])){
-	$jsonURL = $_SESSION['jsonURL'];
+if (isset($session->jsonURL)){
+	$jsonURL = $session->jsonURL;
 }else{
 	$jsonURL = "assets/json/tp/tp-201402-UNIV.json";
-	$_SESSION['jsonURL'] = $jsonURL;
+	$session->jsonURL = $jsonURL;
 }
 
 
@@ -63,16 +57,16 @@ if ($requestType === 'POST') {
 		$semesterSelected = "201402-UNIV";
 		$jsonURL = "assets/json/tp/tp-201402-UNIV.json";
 	}
-	$_SESSION["jsonURL"] = $jsonURL;
-	$_SESSION["semesterSelected"] = $semesterSelected;
+	$session->jsonURL = $jsonURL;
+	$session->semesterSelected = $semesterSelected;
 }
 
-$sched = $_SESSION['schedule'][$_SESSION['userid']];
+$sched = $session->schedule;
 if (!isset($sched)){
 	$sched = "{}";
 }
-$cListings = $_SESSION['courses'];
-$sListings = $_SESSION['sections'];
+$cListings = $session->courses;
+$sListings = $session->sections;
 $lenCourses = count($cListings);
 $lenSections = count($sListings);
 $data = "[]";
@@ -98,8 +92,6 @@ $emailurl = "classes/controllers/auth.php";
 		<?php
 			try{
 				echo "var sched = '".$sched."';";
-				echo "var courseListings = '".$data."';";
-				echo "var sectionListings = '".$sects."';";
 			}catch(Exception $e){
 				echo "console.log(\"Problem getting schedule.\");";
 			}
@@ -226,14 +218,15 @@ $emailurl = "classes/controllers/auth.php";
 							$.ajax({
 								type: "POST",
   								url: 'classes/controllers/coursecontroller.php',
-  								data: { action : "getSections", selectedSemester : semSelected, courseEntry : courseValue},
+  								data: { action : "getSections", semesterSelected : semSelected, courseEntry : courseValue},
 								dataType: "json"
 							})
 							.done(function(msg){
+								console.log("POST done.");
   								populateSections(msg);
 							})
 							.fail(function(msg){
-								alertify.alert("Error getting sections.");
+								console.log(msg + "Error getting sections.");
 							});
 						});
 					});
