@@ -39,10 +39,16 @@ if ($requestType === 'POST') {
 			if (count($courseArray) == 2 && count($semesterArray) == 2){
 				$db = new CourseHelper();
 				//$term,$coursePrefix,$courseNumber,$campus
-				$courseSections = $db->getSections($semesterArray[0],$courseArray[0],$courseArray[1],$semesterArray[1]);
-				$_SESSION['sections'] = $courseSections;
-				$_SESSION['errorMessage'] = "";
-				echo getSectionJSON($courseSections);
+				try{
+					$courseSections = $db->getSections($semesterArray[0],$courseArray[0],$courseArray[1],$semesterArray[1]);
+					$_SESSION['sections'] = $courseSections;
+					$_SESSION['errorMessage'] = "";
+					echo getSectionJSON($courseSections);
+				}catch(Exception $e){
+					$result['errorMessage'] = $e->getMessage();
+					$_SESSION['errorMessage'] = $e->getMessage();
+					echo json_encode($result);
+				}
 			}else{
 				$result['errorMessage'] = "Invalid parameters found.";	
 				$_SESSION['errorMessage'] = "Invalid parameters found.";	

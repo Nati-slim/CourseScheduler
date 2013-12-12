@@ -26,7 +26,7 @@ class CourseHelper{
 			}else{
 				//echo $this->dbconn->host_info . "\n";
 				$this->gettermcourses = $this->dbconn->prepare("select * from courses where term = ? and currentProgram = ?");
-				$this->getcoursesections = $this->dbconn->prepare("select * from courses where term = ? and coursePrefix = ? and courseNumber = ? and currentProgram = ?");
+				$this->getcoursesections = $this->dbconn->prepare("select * from courses where term = ? and coursePrefix = ? and courseNumber = ? and currentProgram = ? order by available asc");
 				$this->addcourse = $this->dbconn->prepare("insert into courses (id,term,callNumber,coursePrefix,courseNumber,courseName,lecturer,available,creditHours,session,days,startTime,endTime,casTaken,casRequired,dasTaken,dasRequired,totalTaken,totalRequired,totalAllowed,
 building,room,sch,currentProgram) values(DEFAULT,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 				$this->getsinglesection = $this->dbconn->prepare("select * from courses where term = ? and callNumber = ? and currentProgram = ?");

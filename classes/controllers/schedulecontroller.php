@@ -3,6 +3,7 @@ require_once("../helpers/Course.php");
 require_once("../helpers/Section.php");
 require_once("../helpers/Meeting.php");
 require_once("../helpers/CourseHelper.php");
+require_once("../helpers/UserSchedule.php");
 session_start();
 $result = array();
 
@@ -42,52 +43,76 @@ function initialize($userid,$schedule){
 
 $requestType = $_SERVER['REQUEST_METHOD'];
 if ($requestType === 'POST') {
-	$addSectionCallNumber = get_post_var("addSection");
-	$deleteSection = get_post_var("deleteSection");
-	if ($addSectionCallNumber){
-		if ($addSectionCallNumber != 0){
-			$db = new CourseHelper();
-			$init = $_SESSION['init'];
-			$isFirst = false;
-			if (strcmp($init,"initialized") != 0){
-				//Initialize user schedule object & set relevant $_SESSION variables
-				$userschedule = new UserSchedule(generateToken());
-				initialize($userschedule->getUserId(),$userschedule);
-				$isFirst = true;
-			}
+	$action = get_post_var("action");
+	if (strcmp($action,"addSection") == 0){
+		$callNum = get_post_var("addSectionCallNumber");
+		$db = new CourseHelper();
+		$isFirst = false;
+		$init = $_SESSION['init'];
+		if (strcmp($init,"initialized") != 0){
+			//Initialize user schedule object & set relevant $_SESSION variables
+			$userschedule = new UserSchedule(generateToken());
+			initialize($userschedule->getUserId(),$userschedule);
+			$isFirst = true;
+		}
 
-			$userid = $_SESSION['userid'];
-			$userschedulejson = $_SESSION['schedule'][$userid];
-			if (!$isFirst){
-				$userschedule = unserialize($_SESSION['schedObj'][$userid]);
-			}
-			$section = $db->getSingleSection($addSectionCallNumber);
-			try{
+		$userid = $_SESSION['userid'];
+		if (!$isFirst){
+			$userschedule = unserialize($_SESSION['schedObj'][$userid]);
+		}
+		$semesterSelected = isset($_SESSION['semesterSelected']) ? $_SESSION['semesterSelected']:"201402-UNIV";
+		$arrayVal = explode("-",$semesterSelected);
+		$section = $db->getSingleSection($arrayVal[0],$callNum,$arrayVal[1]);
+		try{
+			if ($section){
 				if (strcasecmp($section->getStatus(),"Available") == 0){
 					$status = $userschedule->addSection($section);
 					if (!$status){
+						$result['errorMessage'] = $userschedule->getErrorMessage();
 						$_SESSION['errorMessage'] = $userschedule->getErrorMessage();
+						echo json_encode($result);
 					}else{
-						$_SESSION['errorMessage'] = "Section " . $addSection. " (". $section->getCoursePrefix()."-".$section->getCourseNumber().") added!";
-						$_SESSION['schedule'][$userschedule->getUserId()] = $userschedule->toJSON();
-						$_SESSION['schedObj'][$userid] = serialize($userschedule);
+						$_SESSION['errorMessage'] = "";
+						$_SESSION['infoMessage'] = "Section " . $callNum. " (". $section->getCoursePrefix()."-".$section->getCourseNumber().") added!";
+						$_SESSION['schedule'][$userid] = $userschedule->to_json();
+						$_SESSION['schedObj'][$userid] = serialize($userschedule);						
+						echo $userschedule->to_json();
 					}
 				}else{
+					$result['callNumber'] = $callNum;
+					$result['term'] = $arrayVal[0];
+					$result['currentProgram']=  $arrayVal[1];
+					$result['errorMessage'] = "Invalid section chosen.";
 					$_SESSION['errorMessage'] = "Section is not Available";
+					echo json_encode($result);
 				}
-			}catch(Exception $e){
-				$_SESSION['errorMessage'] = $e->getMessage();
+			}else{
+				$result['callNumber'] = $callNum;
+				$result['term'] = $arrayVal[0];
+				$result['currentProgram']=  $arrayVal[1];
+				$result['errorMessage'] = "Invalid section chosen.";
+				$_SESSION['errorMessage'] = "Invalid section chosen.";
+				echo json_encode($result);
 			}
-		}else{
-			$_SESSION['errorMessage'] = "Please select a section to add first.";
+		}catch(Exception $e){
+			$result['callNumber'] = $callNum;
+			$result['term'] = $arrayVal[0];
+			$result['currentProgram']=  $arrayVal[1];
+			$result['errorMessage'] = $e->getMessage();
+			$_SESSION['errorMessage'] = $e->getMessage();
+			echo json_encode($result);
 		}
 	}else if ($deleteSection){
 
 
-	}else[
-
+	}else{
+		$result['errorMessage'] = "Invalid action.";
+		$_SESSION['errorMessage'] = "Invalid action.";
+		echo json_encode($result);
 	}
 }else{
-
+	$result['errorMessage'] = "Invalid Server Request Type found.";
+	$_SESSION['errorMessage'] = "Invalid Server Request Type found.";
+	echo json_encode($result);
 }
 ?>
