@@ -130,19 +130,25 @@ $emailurl = "classes/controllers/auth.php";
 
 		function populateSections(data){
 			console.log(data);
+			$('#sectionsFound').empty();
 			var size = Object.keys(data).length;
 			var sectionDiv;
 			var allSections = "<span id=\"sectionFoundHeader\" class=\"intro\">Sections Found:<span class=\"badge pull-right\">" + size + "</span></span><br/>"; 
 			Object.keys(data).forEach(function(key){
 				var section = data[key];
-				sectionDiv = "<div class=\"individualSection\"> <span class=\"glyphicon glyphicon-plus pull-right\"></span>";
-				sectionDiv += "<span class=\"heading\">" + section.courseName + "</span>";
+				sectionDiv = "<div class=\"individualSection\"> <span onclick=\"addSection(" +  section.callNumber + ")\" class=\"glyphicon glyphicon-plus pull-right\"></span>";
+				sectionDiv += "<span class=\"heading\">" + section.courseName + " #" + section.callNumber + "</span>";
 				sectionDiv += section.coursePrefix + "-" + section.courseNumber + "<br/>";
-				sectionDiv += "callNumber: " + section.callNumber;
+				sectionDiv += "Lecturer: " + section.lecturer + "<br/>";
+				sectionDiv += "Available: " + section.status + "<br/>";
 				sectionDiv += "</div>";
 				allSections += sectionDiv;
 			});
 			$('#sectionsFound').append(allSections);
+		}
+
+		function addSection(callNumber){
+			console.log(callNumber);
 		}
 
 	</script>
@@ -203,6 +209,7 @@ $emailurl = "classes/controllers/auth.php";
 				<input type="hidden" name="selectedSemester" id="selectedSemester" value="<?php echo $semesterSelected; ?>" />
 				<input class="typeahead" type="text" id="courseEntry" name="courseEntry" placeholder="e.g. CSCI 1302" />
 
+
 				<div id="sectionsFound">
 
 				</div>
@@ -246,13 +253,6 @@ $emailurl = "classes/controllers/auth.php";
 								dataType: "json",
   								success: function(data, textStatus, jqXHR){
 									populateSections(data);
-									/*var obj = $.parseJSON(data);
-									//console.log(data);
-									Object.keys(data).forEach(function(key){
-										//access via data[key].property
-										console.log(data[key]);
-										populateSections(size,data[key]);
-									});*/
 								}
 							});
 						});
