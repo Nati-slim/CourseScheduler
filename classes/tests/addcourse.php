@@ -34,15 +34,15 @@ function processLine($line){
 
 $db = new CourseHelper();
 //open the csv files
-//$fp1 = file_get_contents('../../offerings/athens/sorted_course_offering_UNIV_201405.csv');
-//$fp2 = file_get_contents('../../offerings/athens/sorted_course_offering_UNIV_201402.csv');
-//$fp3 = file_get_contents('../../offerings/athens/sorted_course_offering_UNIV_201308.csv');
-//$fp4 = file_get_contents('../../offerings/athens/sorted_course_offering_UNIV_201305.csv');
-//$fp5 = file_get_contents('../../offerings/gwinnett/sorted_course_offering_GWIN_201405.csv');
-//$fp6 = file_get_contents('../../offerings/gwinnett/sorted_course_offering_GWIN_201402.csv');
-//$fp7 = file_get_contents('../../offerings/gwinnett/sorted_course_offering_GWIN_201308.csv');
-$fp8 = file_get_contents('../../offerings/gwinnett/sorted_course_offering_GWIN_201305.csv');
-$explosion = explode("\n",$fp8);
+//$fp1 = file_get_contents('../../../../csv/offerings/athens/sorted_course_offering_UNIV_201405.csv');
+$fp2 = file_get_contents('../../../../csv/offerings/athens/sorted_course_offering_UNIV_201402.csv');
+/*$fp3 = file_get_contents('../../../../csv/offerings/athens/sorted_course_offering_UNIV_201308.csv');
+$fp4 = file_get_contents('../../../../csv/offerings/athens/sorted_course_offering_UNIV_201305.csv');
+$fp5 = file_get_contents('../../../../csv/offerings/gwinnett/sorted_course_offering_GWIN_201405.csv');
+$fp6 = file_get_contents('../../../../csv/offerings/gwinnett/sorted_course_offering_GWIN_201402.csv');
+$fp7 = file_get_contents('../../../../csv/offerings/gwinnett/sorted_course_offering_GWIN_201308.csv');
+$fp8 = file_get_contents('../../../../csv/offerings/gwinnett/sorted_course_offering_GWIN_201305.csv');*/
+$explosion = explode("\n",$fp2);
 foreach($explosion as $courseDetails){
 		$line = explode("\",\"",$courseDetails);
 		//print_r($line);

@@ -1,0 +1,13 @@
+.tt-courseShortname{
+	font-weight: bold
+}
+
+.tt-courseName{
+	font-size: 14px;
+}
+
+.tt-lecturer{
+	float: right;
+	font-style: italic;
+}
+

@@ -185,5 +185,14 @@ class Meeting{
 	public function __toString(){
 		return $this->time;
 	}
+
+    public function to_json() {
+        $arayValues = array();
+		$arrayValues['day'] = $this->day;
+		$arrayValues['startTime'] = $this->startTime;
+		$arrayValues['endTime'] = $this->endTime;
+		$arrayValues['callNumber'] = $this->callNumber;
+		return json_encode($arrayValues);
+    }
 }
 ?>

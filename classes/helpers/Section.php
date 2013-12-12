@@ -117,6 +117,10 @@ class Section{
 		return $this->meetings;
 	}
 
+	public function setMeetings($mtgArray){
+		$this->meetings = $mtgArray;	
+	}
+
 	/**
 	 * Setter for the building number
 	 * @param int $buildingNumber e.g. 1040
@@ -177,6 +181,7 @@ class Section{
 		return false;
 	}
 
+	
 	/**
 	 * Returns the error Message string.
 	 * @return String $errorMessage
@@ -192,6 +197,47 @@ class Section{
 	 */
 	public function setErrorMessage($err){
 		$this->errorMessage = $err;
+	}
+
+	/**
+	* Returns an array of the section values as a JSON-encoded object
+	*/
+    public function to_json() {
+        $arrayValues = array();
+		$arrayValues['courseName'] = $this->courseName;
+		$arrayValues['coursePrefix'] = $this->coursePrefix;
+		$arrayValues['courseNumber'] = $this->courseNumber;
+		$arrayValues['callNumber'] = $this->callNumber;
+		$arrayValues['lecturer'] = $this->lecturer;
+		$arrayValues['status'] = $this->status;
+		$arrayValues['buildingNumber'] = $this->buildingNumber;
+		$arrayValues['roomNumber'] = $this->roomNumber;
+		$arrayValues['meetings'] = $this->getMeetingsJSON();
+		$arrayValues['errorMessage'] = $this->errorMessage;
+		return json_encode($arrayValues);
+    }
+
+    public function to_array() {
+        $arrayValues = array();
+		$arrayValues['courseName'] = $this->courseName;
+		$arrayValues['coursePrefix'] = $this->coursePrefix;
+		$arrayValues['courseNumber'] = $this->courseNumber;
+		$arrayValues['callNumber'] = $this->callNumber;
+		$arrayValues['lecturer'] = $this->lecturer;
+		$arrayValues['status'] = $this->status;
+		$arrayValues['buildingNumber'] = $this->buildingNumber;
+		$arrayValues['roomNumber'] = $this->roomNumber;
+		$arrayValues['meetings'] = $this->getMeetingsJSON();
+		$arrayValues['errorMessage'] = $this->errorMessage;
+		return $arrayValues;
+    }
+
+	public function getMeetingsJSON(){
+		$res = array();	
+		foreach($this->meetings as $mtg){
+			$res[$mtg->getDay()] = $mtg->getMeetingTime();
+		}
+		return $res;
 	}
 
 	/**

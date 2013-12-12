@@ -1,0 +1,25 @@
+#scheduleCanvas{
+    /*CSS rule for displaying the canvas object */
+	display:inline;
+	border: 2px solid #000000;
+}
+
+#canvasImage{
+    width:780px;
+    height:730px;
+}
+
+#courseEntry{
+	width: 213px;
+	height: 40px;
+	padding: 8px 12px;
+	line-height: 30px;
+	-webkit-border-radius: 8px;
+	-moz-border-radius: 8px;
+	border-radius: 8px;
+	outline: none;
+}
+
+#courseEntry:focus{
+	border: 2px solid #0097cf;
+}
