@@ -132,17 +132,15 @@ $emailurl = "classes/controllers/auth.php";
 			console.log(data);
 			$('#sectionsFound').empty();
 			var size = Object.keys(data).length;
+			var counter = 0;
 			var sectionDiv;
 			var allSections = "<span id=\"sectionFoundHeader\" class=\"intro\">Sections Found:<span class=\"badge pull-right\">" + size + "</span></span><br/>"; 
 			Object.keys(data).forEach(function(key){
 				var section = data[key];
-				sectionDiv = "<div class=\"individualSection\"> <span onclick=\"addSection(" +  section.callNumber + ")\" class=\"glyphicon glyphicon-plus pull-right\"></span>";
-				sectionDiv += "<span class=\"heading\">" + section.courseName + " #" + section.callNumber + "</span>";
-				sectionDiv += section.coursePrefix + "-" + section.courseNumber + "<br/>";
-				sectionDiv += "Lecturer: " + section.lecturer + "<br/>";
-				sectionDiv += "Available: " + section.status + "<br/>";
-				sectionDiv += "</div>";
+				console.log(generateDiv(counter,section));
+				sectionDiv = generateDiv(counter,section);
 				allSections += sectionDiv;
+				counter++;
 			});
 			$('#sectionsFound').append(allSections);
 		}
@@ -151,6 +149,29 @@ $emailurl = "classes/controllers/auth.php";
 			console.log(callNumber);
 		}
 
+		/*
+		 Generate divs for the accordion
+		*/
+		function generateDiv(index,section){
+			var msg = "";
+			msg += "<div class=\"panel panel-default\"><div class=\"panel-heading\"><h4 class=\"panel-title\">";
+			msg += "<a data-toggle=\"collapse\" data-parent=\"#accordion\" href=\"#collapse" + index+ "\">";
+          	msg += section.courseName + " # " + section.callNumber + "</a></h4></div>";
+			if (index > 0){
+				msg += "<div id=\"collapse" + index + "\" class=\"panel-collapse collapse\">";
+			}else{
+				msg += "<div id=\"collapse" + index + "\" class=\"panel-collapse collapse in\">";
+			}
+      		msg += "<div class=\"panel-body\">";
+			msg += "Lecturer: " + section.lecturer + "<br/>";
+			msg += "Available: " + section.status + "<br/>";
+			var mtgs = section.meetings;
+			Object.keys(mtgs).forEach(function(key){
+				msg += key + " : " + mtgs[key] + "<br/>";
+			});
+      		msg += "</div><!--panelBody--></div><!--panelCollapse--></div><!--panelDefault-->";
+			return msg;
+		}
 	</script>
 
   </head>

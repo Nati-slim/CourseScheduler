@@ -16,6 +16,17 @@ div.individualSection{
 
 div.individualSection span.heading{
 	display: block;
-	background-color: #6495ED;
+	background-color: #3c763d; /*6495ED;*/
 	color: #ffffff;
+}
+
+
+#dummyHeader{
+	-webkit-border-radius: 20px;
+    -khtml-border-radius: 20px;
+	-moz-border-radius: 20px;
+	border-radius: 20px;
+	background-color: #428bca;
+	font-size: 18px;
+	padding: 2px;
 }
