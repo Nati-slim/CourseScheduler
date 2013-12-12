@@ -173,11 +173,11 @@ class UserSchedule{
 
 	public function to_array(){
 		$result = array();
+		$result['userid'] = $this->getUserId();
+		$result['errorMessage'] = $this->getErrorMessage();
 		foreach($this->schedule as $section){
 			$result[$section->getCallNumber()] = $section->to_array();
 		}
-		$result['userid'] = $this->getUserId();
-		$result['errorMessage'] = $this->getErrorMessage();
 		return $result;
 	}
 

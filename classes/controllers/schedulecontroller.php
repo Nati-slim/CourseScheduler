@@ -39,10 +39,9 @@ function generateToken($length = 40){
  */
 function initialize($userid,$schedule){
 	$session->init = "initialized";
-	$session->schedule = $schedule->to_json();
-	$session->scheduleArray = array();
-	$session->scheduleArray = serialize($schedule->to_array());
 	$session->userid = $userid;
+	$session->schedule = $schedule->to_json();
+	$session->scheduleObj = serialize($schedule->to_array());
 	$session->errorMessage = "";
 }
 
@@ -54,6 +53,7 @@ function reconstructSchedule($arr){
 		$userschedule[$index] = $arr[$index];
 		$index++;
 	}
+	return $userschedule;
 }
 
 $requestType = $_SERVER['REQUEST_METHOD'];
@@ -61,13 +61,16 @@ if ($requestType === 'POST') {
 	$action = get_post_var("action");
 	if (strcmp($action,"addSection") == 0){
 		$callNum = get_post_var("addSectionCallNumber");
-		if (!isset($session->init)){
+		if (!isset($session->scheduleObj)){
 			//Initialize user schedule object & set relevant $_SESSION variables
 			$userschedule = new UserSchedule(generateToken());
 			initialize($userschedule->getUserId(),$userschedule);
+			$userid = $userschedule->getUserId();
 		}else{
-			$userschedule = unserialize($session->scheduleArray);
-		}
+			$userid = $session->userid;
+			$userschedule = unserialize($session->scheduleObj);	
+		}	
+		
 		$semesterSelected = isset($session->semesterSelected) ? $session->semesterSelected:"201402-UNIV";
 		$arrayVal = explode("-",$semesterSelected);
 		
@@ -76,6 +79,7 @@ if ($requestType === 'POST') {
 		try{
 			if ($section){
 				if (strcmp($section->getStatus(),"Available") == 0){
+					//print_r($userschedule);
 					$status = $userschedule->addSection($section);
 					if (!$status){
 						$result['errorMessage'] = $userschedule->getErrorMessage();
@@ -86,7 +90,7 @@ if ($requestType === 'POST') {
 						$session->userid = $userschedule->getUserId();;
 						$session->infoMessage = "Section " . $callNum. " (". $section->getCoursePrefix()."-".$section->getCourseNumber().") added!";
 						$session->schedule = $userschedule->to_json();	
-						$session->scheduleArray = serialize($userschedule->to_array());		
+						$session->scheduleObj = serialize($userschedule);	
 						//echo $userschedule->to_json();
 					}
 				}else{

@@ -222,7 +222,7 @@ $emailurl = "classes/controllers/auth.php";
 								dataType: "json"
 							})
 							.done(function(msg){
-								console.log("POST done.");
+								//console.log("POST done.");
   								populateSections(msg);
 							})
 							.fail(function(msg){

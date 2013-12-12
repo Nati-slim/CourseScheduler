@@ -77,8 +77,6 @@ $emailurl = "classes/controllers/auth.php";
 		<?php
 			try{
 				echo "var sched = '".$sched."';";
-				echo "var courseListings = '".$data."';";
-				echo "var sectionListings = '".$sects."';";
 			}catch(Exception $e){
 				echo "console.log(\"Problem getting schedule.\");";
 			}

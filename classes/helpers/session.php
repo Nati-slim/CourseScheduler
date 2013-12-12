@@ -25,11 +25,12 @@ class Session {
 
     // __toString
     public function __toString() {
-        $sess = $_SESSION[KEY];
+		return isset($_SESSION[KEY]) ? print_r($_SESSION[KEY],true) : "null";
+        /*$sess = $_SESSION[KEY];
         foreach ($sess as $key => $value) {
             if (!isset($value)) unset($sess[$key]); 
         }
-        return print_r($sess,true);
+        print_r($sess,true);*/
     }
         
     //__isset: if (isset($_SESSION[KEY]['var'])) 
