@@ -131,6 +131,23 @@ $emailurl = "classes/controllers/auth.php";
 		function populateSections(data){
 			console.log(data);
 			var size = Object.keys(data).length;
+			var sectionDiv;
+			var allSections = "<span id=\"sectionFoundHeader\" class=\"intro\">Sections Found:<span class=\"badge pull-right\">" + size + "</span></span><br/>"; 
+			Object.keys(data).forEach(function(key){
+				var section = data[key];
+				sectionDiv = "<div class=\"individualSection\"> <span class=\"glyphicon glyphicon-plus pull-right\"></span>";
+				sectionDiv += "<span class=\"heading\">" + section.courseName + "</span>";
+				sectionDiv += section.coursePrefix + "-" + section.courseNumber + "<br/>";
+				sectionDiv += "callNumber: " + section.callNumber;
+				sectionDiv += "</div>";
+				allSections += sectionDiv;
+			});
+			$('#sectionsFound').append(allSections);
+		}
+
+		function oldpopulate(data){
+			console.log(data);
+			var size = Object.keys(data).length;
 			var selectDiv = "<span id=\"sectionFoundHeader\" class=\"intro\">Sections Found:<span class=\"badge pull-right\">" + size + "</span></span><br/>"; 
 			selectDiv += "<select class=\"form-control\" id=\"sectionsFoundSelect\">";
 			selectDiv += "<option value=\"0\">Choose Section</option>";
@@ -141,6 +158,7 @@ $emailurl = "classes/controllers/auth.php";
 			selectDiv += "</select>";
 			$('#sectionsFound').append(selectDiv);
 		}
+
 	</script>
 
   </head>
@@ -202,6 +220,7 @@ $emailurl = "classes/controllers/auth.php";
 				<div id="sectionsFound">
 
 				</div>
+
 				<div id="userSchedule" style="display:none;">
 					Hey Hey hey Hey hey hey hey Hey Hey hey Hey hey hey hey Hey Hey hey Hey hey hey hey
 					<div class="individualSection">
