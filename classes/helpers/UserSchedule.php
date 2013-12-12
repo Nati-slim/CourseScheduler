@@ -163,6 +163,22 @@ class UserSchedule{
 		$this->errorMessage = $err;
 	}
 
+	public function to_json(){
+		$result = array();
+		foreach($this->schedule as $section){
+			$result[$section->getCallNumber()] = $section->to_array();
+		}
+		return json_encode($result);
+	}
+
+	public function to_array(){
+		$result = array();
+		foreach($this->schedule as $section){
+			$result[$section->getCallNumber()] = $section->to_array();
+		}
+		return $result;
+	}
+
 	/**
 	 * Return a string version of the UserSchedule object
 	 * which should be valid JSON output for use in drawing the schedule

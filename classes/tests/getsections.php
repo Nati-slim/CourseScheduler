@@ -44,4 +44,12 @@ if (count($sections) > 0){
 }else{
 	echo "Error: " . $db->errorMessage;
 }
+
+echo "Testing get single section" . "<br/>";
+$section = $db->getSingleSection('201405',72446,'UNIV');
+if ($section){
+	print_r($section);
+}else{
+	echo "Error: " . $db->errorMessage;
+}
 ?>

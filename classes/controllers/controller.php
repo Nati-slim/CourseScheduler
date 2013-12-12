@@ -33,9 +33,8 @@ function generateToken($length = 40){
         if ($strong){
             return $token;
         }
-    } else{
-        return sha1(uniqid(mt_rand(), true));
     }
+	return sha1(uniqid(mt_rand(), true));
 }
 
 /**

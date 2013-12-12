@@ -1,8 +1,7 @@
-#sectionsFound, #userSchedule{
+#userSchedule{
 	display: block;
 	padding-top: 1em;
 }
-
 
 div.individualSection{
 	margin-top: 3px;
@@ -30,3 +29,4 @@ div.individualSection span.heading{
 	font-size: 18px;
 	padding: 2px;
 }
+

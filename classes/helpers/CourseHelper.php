@@ -8,6 +8,7 @@ require_once("../helpers/Meeting.php");
 class CourseHelper{
 	private $gettermcourses;
 	private $getcoursesections;
+	private $getsinglesection;
 	private $addcourse;
 	private $truncatetable;
 	public $errorMessage;
@@ -28,6 +29,7 @@ class CourseHelper{
 				$this->getcoursesections = $this->dbconn->prepare("select * from courses where term = ? and coursePrefix = ? and courseNumber = ? and currentProgram = ?");
 				$this->addcourse = $this->dbconn->prepare("insert into courses (id,term,callNumber,coursePrefix,courseNumber,courseName,lecturer,available,creditHours,session,days,startTime,endTime,casTaken,casRequired,dasTaken,dasRequired,totalTaken,totalRequired,totalAllowed,
 building,room,sch,currentProgram) values(DEFAULT,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+				$this->getsinglesection = $this->dbconn->prepare("select * from courses where term = ? and callNumber = ? and currentProgram = ?");
 				$this->truncateTable = $this->dbconn->prepare("truncate table courses");
 				$this->errorMessage = "";
 			}			
@@ -135,6 +137,61 @@ building,room,sch,currentProgram) values(DEFAULT,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?
 			$this->errorMessage = "Error with getSections: " . $e->getMessage();
 		}
 		return $sections;
+	}
+
+	function getSingleSection($term,$callNumber,$currentProgram){
+		$section = null;
+		try{
+			if (!($this->getsinglesection)){
+				$this->errorMessage = "Prepare failed: (" . $this->dbconn->errno . ") " . $this->dbconn->error;
+			}else if (!($this->getsinglesection->bind_param("sds",$term,$callNumber,$currentProgram))){
+				$this->errorMessage = "Binding parameters failed: (" . $this->getsinglesection->errno . ") " . $this->getsinglesection->error;
+			}else if (!($this->getsinglesection->execute())){
+				$this->errorMessage = "Execute failed: (" . $this->getsinglesection->errno . ") " . $this->getsinglesection->error;
+			}else if (!(($stored = $this->getsinglesection->store_result())) && $this->dbconn->errno){
+				//switched from using fetch() to store_result() because of mysql error 2014 about commands being out of sync
+				//storeresult buffers the fetched data
+				$this->errorMessage = "Fetch failed (DB): (" . $this->dbconn->errno . ") " . $this->dbconn->error;
+				$this->errorMessage .= "Fetch for getSingleSection failed (STMT): (" . $this->getsinglesection->errno . ") " . $this->getsinglesection->error;
+			}else if (!($this->getsinglesection->bind_result($id,$term,$callNumber,$coursePrefix,$courseNumber,$courseName,$lecturer,$available,$creditHours,$session,$days,$startTime,$endTime,$casTaken,$casRequired,$dasTaken,$dasRequired,$totalTaken,$totalRequired,$totalAllowed,$building,$room,$sch,$currentProgram))){
+				$this->errorMessage = "Binding for getSingleSection results failed: (" . $this->getsinglesection->errno . ") " . $this->getsinglesection->error;
+			}else{
+				if ($stored){
+					$prevCallNumber = 0;
+					while($this->getsinglesection->fetch()){
+						if ($callNumber != $prevCallNumber){
+							$section = new Section($courseName, $coursePrefix, $courseNumber, $callNumber, $available, $creditHours, $lecturer);
+							$section->setBuildingNumber($building);
+							$section->setRoomNumber($room);
+							$prevCallNumber = $callNumber;
+						}
+						
+						//array of days e.g. M T W R F
+						$mtgs = $this->parseDays($days);
+						//Meeting objects
+						$meetings = array();
+						foreach ($mtgs as $mtg){
+							//12345, "M", "0215P", "0330P");
+							if (strcmp($mtg,'A') == 0 || strcmp($mtg,'V') == 0){
+								$meeting = new Meeting($callNumber,$mtg,$startTime,$endTime);									
+								$section->addMeeting($meeting);
+								break;
+							}else{
+								$meeting = new Meeting($callNumber,$mtg,$startTime,$endTime);									
+								$section->addMeeting($meeting);
+							}
+						}
+					}
+					$this->errorMessage = "";
+				}else{
+					$this->errorMessage = "Error storing results.";
+				}
+			}
+			$this->getsinglesection->free_result();
+		}catch(Exception $e){
+			$this->errorMessage = $e->getMessage();
+		}
+		return $section;
 	}
 
 

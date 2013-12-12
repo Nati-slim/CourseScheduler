@@ -5,8 +5,7 @@ session_name('CoursePicker');
 session_start();
 $controller = "classes/controllers/controller.php";
 $errorMessage = $_SESSION['errorMessage'];
-
-
+$uga_file = file_get_contents("assets/json/uga_building_names.json");
 /**
  * http://php.net/manual/en/language.oop5.autoload.php
  * Autoload the class files for deserializing
@@ -114,13 +113,13 @@ $emailurl = "classes/controllers/auth.php";
     <script src="assets/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>	
 	<script src="http://twitter.github.com/hogan.js/builds/2.0.0/hogan-2.0.0.js" type="text/javascript"></script>
     <script src="assets/js/alertify.min.js" type="text/javascript"></script>
+	<?php echo "<script type=\"text/javascript\"> var uga_buildings = $.parseJSON(" . json_encode($uga_file) . "); </script>"; ?>
 	<script type="text/javascript">
 		$(function(){
 			$('#semesterSelection').change(function(){
 				clearLocalStorage();
             	$('#semesterSelectionForm').submit();
-			});
-
+			});			
 		});
 
 		function clearLocalStorage() {
@@ -131,18 +130,36 @@ $emailurl = "classes/controllers/auth.php";
 		function populateSections(data){
 			console.log(data);
 			$('#sectionsFound').empty();
+			$('#sectionFoundHeader').remove();
 			var size = Object.keys(data).length;
 			var counter = 0;
 			var sectionDiv;
-			var allSections = "<span id=\"sectionFoundHeader\" class=\"intro\">Sections Found:<span class=\"badge pull-right\">" + size + "</span></span><br/>"; 
+			var allSections = "";
+			var heading = "<span id=\"sectionFoundHeader\" class=\"intro\"><span id=\"collapseColumn\" title=\"Collapse this column\" class=\"glyphicon glyphicon-arrow-up pull-left\"></span>Sections Found:<span class=\"badge pull-right\">" + size + "</span><br/></span>";
+			/*Insert the head before the according div*/ 
+			$('#sectionsFound').before(heading);
 			Object.keys(data).forEach(function(key){
 				var section = data[key];
-				console.log(generateDiv(counter,section));
 				sectionDiv = generateDiv(counter,section);
 				allSections += sectionDiv;
 				counter++;
 			});
+			/* Add the created divs to the main body of the accordion*/
 			$('#sectionsFound').append(allSections);
+
+			/* Add listener to the up/down sign for collapsing the column*/
+			$('#collapseColumn').on('click',function(){
+				var title = $('#collapseColumn').attr("title");
+				if (title == "Collapse this column"){
+					$('#collapseColumn').removeClass("glyphicon glyphicon-arrow-up pull-left").addClass("glyphicon glyphicon-arrow-down pull-left");
+					$('#collapseColumn').attr("title","Expand this column");
+					$('#sectionsFound').hide();
+				}else{
+					$('#collapseColumn').removeClass("glyphicon glyphicon-arrow-down pull-left").addClass("glyphicon glyphicon-arrow-up pull-left");
+					$('#collapseColumn').attr("title","Collapse this column");
+					$('#sectionsFound').show();
+				}
+			});
 		}
 
 		function addSection(callNumber){
@@ -150,11 +167,38 @@ $emailurl = "classes/controllers/auth.php";
 		}
 
 		/*
+		Retrieve the human-friendly version of UGA buildings.
+		*/
+		function getBuildingName(buildingNumber){
+			var result = buildingNumber;
+			try{
+				Object.keys(uga_buildings).forEach(function(key){
+					if (buildingNumber == key){
+						result =  uga_buildings[key];
+						console.log("Found: " + result);
+						throw true;
+					}
+				});
+			}catch(e){
+				if (e !== true){
+					console.log("Error enumerating through list of buildings");
+				}
+			}
+			return result;
+		}
+
+		/*
 		 Generate divs for the accordion
 		*/
 		function generateDiv(index,section){
 			var msg = "";
-			msg += "<div class=\"panel panel-default\"><div class=\"panel-heading\"><h4 class=\"panel-title\">";
+			msg += "<div class=\"panel panel-default\">";
+			if (section.status === 'Available'){
+				msg += "<div class=\"panel-heading\" style=\"background-color: #1C91FF\">";
+			}else{
+				msg += "<div class=\"panel-heading\" style=\"color:#ffffff;background-color: #DE0707\">";
+			}
+			msg += "<h4 class=\"panel-title\">";
 			msg += "<a data-toggle=\"collapse\" data-parent=\"#accordion\" href=\"#collapse" + index+ "\">";
           	msg += section.courseName + " # " + section.callNumber + "</a></h4></div>";
 			if (index > 0){
@@ -165,10 +209,15 @@ $emailurl = "classes/controllers/auth.php";
       		msg += "<div class=\"panel-body\">";
 			msg += "Lecturer: " + section.lecturer + "<br/>";
 			msg += "Available: " + section.status + "<br/>";
+			msg += "Building: " + getBuildingName(section.buildingNumber) + "<br/>";
+			msg += "Room: " + section.roomNumber + "<br/>";
 			var mtgs = section.meetings;
 			Object.keys(mtgs).forEach(function(key){
 				msg += key + " : " + mtgs[key] + "<br/>";
 			});
+			if (section.status === 'Available'){
+				msg += "<span title=\"Add this section to your schedule!\" onclick=\"addSection(" + section.callNumber + ")\" class=\"glyphicon glyphicon-plus pull-right\"></span>";
+			}
       		msg += "</div><!--panelBody--></div><!--panelCollapse--></div><!--panelDefault-->";
 			return msg;
 		}
@@ -229,9 +278,10 @@ $emailurl = "classes/controllers/auth.php";
 				<input id="jsonURL" name="jsonURL" type="hidden" value="<?php echo $jsonURL;?>" />
 				<input type="hidden" name="selectedSemester" id="selectedSemester" value="<?php echo $semesterSelected; ?>" />
 				<input class="typeahead" type="text" id="courseEntry" name="courseEntry" placeholder="e.g. CSCI 1302" />
+				<br/><br/>
 
 
-				<div id="sectionsFound">
+				<div class="panel-group" id="sectionsFound">
 
 				</div>
 

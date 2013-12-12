@@ -1,12 +1,11 @@
 <?php
-session_save_path(dirname($_SERVER['DOCUMENT_ROOT']) . '/sessions');
-session_set_cookie_params(86400,"/","apps.janeullah.com",false,true);
-session_name('CoursePicker');
 require_once("../helpers/Course.php");
 require_once("../helpers/Section.php");
 require_once("../helpers/Meeting.php");
 require_once("../helpers/CourseHelper.php");
 session_start();
+
+$_SESSION['errorMessage'] = "";
 $result = array();
 
 /**
@@ -42,22 +41,27 @@ if ($requestType === 'POST') {
 				//$term,$coursePrefix,$courseNumber,$campus
 				$courseSections = $db->getSections($semesterArray[0],$courseArray[0],$courseArray[1],$semesterArray[1]);
 				$_SESSION['sections'] = $courseSections;
+				$_SESSION['errorMessage'] = "";
 				echo getSectionJSON($courseSections);
 			}else{
 				$result['errorMessage'] = "Invalid parameters found.";	
+				$_SESSION['errorMessage'] = "Invalid parameters found.";	
 				echo json_encode($result);
 				//echo '"{ \"errorMessage\" : \"Invalid parameters found.\" }"';
 			}
 		}else{
 			$result['errorMessage'] = "Invalid parameters found.";
+			$_SESSION['errorMessage'] = "Invalid parameters found.";
 			echo json_encode($result);
 		}
 	}else{
 		$result['errorMessage'] = "No action found.";
+		$_SESSION['errorMessage'] = "No action found.";
 		echo json_encode($result);
 	}
 }else{
 	$result['errorMessage'] = "Invalid request.";
+	$_SESSION['errorMessage'] = "Invalid request.";
 	echo json_encode($result);
 }
 ?>
