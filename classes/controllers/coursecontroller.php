@@ -7,6 +7,7 @@ require_once("../helpers/Section.php");
 require_once("../helpers/Meeting.php");
 require_once("../helpers/CourseHelper.php");
 session_start();
+$result = array();
 
 /**
  * Function to undo effects of magic quotes
@@ -30,7 +31,6 @@ function getSectionJSON($sections){
 $requestType = $_SERVER['REQUEST_METHOD'];
 if ($requestType === 'POST') {
 	$action = get_post_var('action');
-	$result = array();
 	if (strcmp($action,"getSections") == 0){
 		$semester = get_post_var('selectedSemester');
 		$course = get_post_var('courseEntry');
@@ -41,17 +41,23 @@ if ($requestType === 'POST') {
 				$db = new CourseHelper();
 				//$term,$coursePrefix,$courseNumber,$campus
 				$courseSections = $db->getSections($semesterArray[0],$courseArray[0],$courseArray[1],$semesterArray[1]);
-				echo json_encode(getSectionJSON($courseSections));
+				$_SESSION['sections'] = $courseSections;
+				echo getSectionJSON($courseSections);
 			}else{
-				echo '"{ \"errorMessage\" : \"Invalid parameters found.\" }"';
+				$result['errorMessage'] = "Invalid parameters found.";	
+				echo json_encode($result);
+				//echo '"{ \"errorMessage\" : \"Invalid parameters found.\" }"';
 			}
 		}else{
-			echo '"{ \"errorMessage\" : \"Invalid parameters found.\" }"';
+			$result['errorMessage'] = "Invalid parameters found.";
+			echo json_encode($result);
 		}
 	}else{
-		echo '"{ \"errorMessage\" : \"No action found.\" }"';
+		$result['errorMessage'] = "No action found.";
+		echo json_encode($result);
 	}
 }else{
-	echo '"{ \"errorMessage\" : \"Invalid request.\" }"';
+	$result['errorMessage'] = "Invalid request.";
+	echo json_encode($result);
 }
 ?>

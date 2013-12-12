@@ -149,5 +149,38 @@ class Course{
 		$output .= "]}";
 		return $output;
 	}
+
+	/*
+	private $courseNumber;
+	private $coursePrefix;
+	private $courseName;
+	private $sectionListings;
+	private $errorMessage;
+	*/
+    public function to_json() {
+        $arrayValues = array();
+		$arrayValues['courseName'] = $this->courseName;
+		$arrayValues['coursePrefix'] = $this->coursePrefix;
+		$arrayValues['courseNumber'] = $this->courseNumber;
+		$arrayValues['sectionListing'] = $this->getSectionsArray();
+		return json_encode($arrayValues);
+    }
+
+    public function to_array() {
+        $arrayValues = array();
+		$arrayValues['courseName'] = $this->courseName;
+		$arrayValues['coursePrefix'] = $this->coursePrefix;
+		$arrayValues['courseNumber'] = $this->courseNumber;
+		$arrayValues['sectionListing'] = $this->getSectionsArray();
+		return $arrayValues;
+    }
+
+	public function getSectionsArray(){
+		$res = array();	
+		foreach($this->sectionListings as $section){
+			$res[$section->getCallNumber()] = $section->to_array();
+		}
+		return $res;
+	}
 }
 ?>

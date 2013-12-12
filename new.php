@@ -209,8 +209,13 @@ $emailurl = "classes/controllers/auth.php";
 								type: "POST",
   								url: 'classes/controllers/coursecontroller.php',
   								data: { action : "getSections", selectedSemester : semSelected, courseEntry : courseValue},
+								dataType: "json",
   								success: function(data, textStatus, jqXHR){
-									console.log($.parseJSON(data));
+									//var obj = $.parseJSON(data);
+									//console.log(data);
+									Object.keys(data).forEach(function(key){
+										console.log(data[key]);
+									});
 								}
 							});
 						});

@@ -194,5 +194,14 @@ class Meeting{
 		$arrayValues['callNumber'] = $this->callNumber;
 		return json_encode($arrayValues);
     }
+
+    public function to_array() {
+        $arayValues = array();
+		$arrayValues['day'] = $this->day;
+		$arrayValues['startTime'] = $this->startTime;
+		$arrayValues['endTime'] = $this->endTime;
+		$arrayValues['callNumber'] = $this->callNumber;
+		return $arrayValues;
+    }
 }
 ?>

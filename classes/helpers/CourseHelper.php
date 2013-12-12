@@ -137,6 +137,7 @@ building,room,sch,currentProgram) values(DEFAULT,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?
 		return $sections;
 	}
 
+
 	/**
 	 * Get the Course object; Returns null if not present in table.
 	 * @param int $id to identify the Course object in the database

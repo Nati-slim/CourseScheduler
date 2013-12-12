@@ -212,7 +212,7 @@ class Section{
 		$arrayValues['status'] = $this->status;
 		$arrayValues['buildingNumber'] = $this->buildingNumber;
 		$arrayValues['roomNumber'] = $this->roomNumber;
-		$arrayValues['meetings'] = $this->getMeetingsJSON();
+		$arrayValues['meetings'] = $this->getMeetingsArray();
 		$arrayValues['errorMessage'] = $this->errorMessage;
 		return json_encode($arrayValues);
     }
@@ -227,12 +227,12 @@ class Section{
 		$arrayValues['status'] = $this->status;
 		$arrayValues['buildingNumber'] = $this->buildingNumber;
 		$arrayValues['roomNumber'] = $this->roomNumber;
-		$arrayValues['meetings'] = $this->getMeetingsJSON();
+		$arrayValues['meetings'] = $this->getMeetingsArray();
 		$arrayValues['errorMessage'] = $this->errorMessage;
 		return $arrayValues;
     }
 
-	public function getMeetingsJSON(){
+	public function getMeetingsArray(){
 		$res = array();	
 		foreach($this->meetings as $mtg){
 			$res[$mtg->getDay()] = $mtg->getMeetingTime();
