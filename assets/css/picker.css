@@ -23,3 +23,18 @@
 #courseEntry:focus{
 	border: 2px solid #0097cf;
 }
+
+span.intro{
+	font-size: 18px;
+	font-weight: bold;
+}
+
+#dummyHeader{
+	-webkit-border-radius: 20px;
+    -khtml-border-radius: 20px;
+	-moz-border-radius: 20px;
+	border-radius: 20px;
+	background-color: #428bca;
+	font-size: 18px;
+	padding: 2px;
+}

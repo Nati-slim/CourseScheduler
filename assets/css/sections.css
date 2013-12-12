@@ -1,0 +1,21 @@
+#sectionsFound, #userSchedule{
+	display: block;
+	padding-top: 1em;
+}
+
+
+div.individualSection{
+	margin-top: 3px;
+	padding: 4px;
+	border: 2px solid #999;
+    -moz-border-radius: 20px;
+    -webkit-border-radius: 20px;
+    -khtml-border-radius: 20px;
+    border-radius: 20px;
+}
+
+div.individualSection span.heading{
+	display: block;
+	background-color: #6495ED;
+	color: #ffffff;
+}

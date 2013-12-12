@@ -96,6 +96,7 @@ $emailurl = "classes/controllers/auth.php";
     <link href="assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link href="assets/bootstrap/css/offcanvas.css" rel="stylesheet">
     <link href="assets/css/picker.css" rel="stylesheet">
+    <link href="assets/css/sections.css" rel="stylesheet">
     <link href="assets/css/typeahead.js-bootstrap.css" rel="stylesheet">
     <link href="assets/css/tt-suggestions.css" rel="stylesheet">
     <link href="assets/css/alertify.bootstrap.css" media="screen">
@@ -126,6 +127,20 @@ $emailurl = "classes/controllers/auth.php";
         	localStorage.clear();
         	return false;
     	}
+
+		function populateSections(data){
+			console.log(data);
+			var size = Object.keys(data).length;
+			var selectDiv = "<span id=\"sectionFoundHeader\" class=\"intro\">Sections Found:<span class=\"badge pull-right\">" + size + "</span></span><br/>"; 
+			selectDiv += "<select class=\"form-control\" id=\"sectionsFoundSelect\">";
+			selectDiv += "<option value=\"0\">Choose Section</option>";
+			Object.keys(data).forEach(function(key){
+				var section = data[key];
+				selectDiv += "<option value=\"" + section.callNumber + "\">Section #" + section.callNumber + "</option>";
+			});
+			selectDiv += "</select>";
+			$('#sectionsFound').append(selectDiv);
+		}
 	</script>
 
   </head>
@@ -160,7 +175,7 @@ $emailurl = "classes/controllers/auth.php";
 				<?php
 				}
 				?>
-				<span>Change Semester/Campus:</span><br/>
+				<span class="intro">Change Semester/Campus:</span><br/>
 				<form id="semesterSelectionForm" name="semesterSelectionForm" method="post" action="new.php">
 					<select class="form-control" id="semesterSelection" name="semesterSelection">
 						<option value="0">Select Campus</option>
@@ -179,12 +194,26 @@ $emailurl = "classes/controllers/auth.php";
 					</select>
 				</form>
 				<br/>
-				<span>Search:</span>				
+				<span class="intro">Search:</span>				
 				<input id="jsonURL" name="jsonURL" type="hidden" value="<?php echo $jsonURL;?>" />
-				<form id="courseEntryForm" name="" method="post" action="#">
-					<input type="hidden" name="selectedSemester" id="selectedSemester" value="<?php echo $semesterSelected; ?>" />
-					<input class="typeahead" type="text" id="courseEntry" name="courseEntry" placeholder="e.g. CSCI 1302" />
-				</form>
+				<input type="hidden" name="selectedSemester" id="selectedSemester" value="<?php echo $semesterSelected; ?>" />
+				<input class="typeahead" type="text" id="courseEntry" name="courseEntry" placeholder="e.g. CSCI 1302" />
+
+				<div id="sectionsFound">
+
+				</div>
+				<div id="userSchedule" style="display:none;">
+					Hey Hey hey Hey hey hey hey Hey Hey hey Hey hey hey hey Hey Hey hey Hey hey hey hey
+					<div class="individualSection">
+						<!--<span class="glyphicon glyphicon-trash pull-right"></span>-->
+						<span class="heading">Heading</span>
+						Bye Bye Bye Bye Bye Bye Bye Bye Bye Bye Bye Bye Bye Bye Bye Bye Bye Bye Bye Bye Bye Bye Bye Bye
+					</div>
+					<div class="individualSection">
+						<span class="heading">Heading</span>
+						You You You You You You You You You You You You You You You You You You You You You You You You You You
+					</div>
+				</div>
 				<script src="assets/js/typeahead.min.js" type="text/javascript"></script>
 				<script type="text/javascript">
 					/*http://stackoverflow.com/questions/18019653/typeahead-js-get-selected-datum
@@ -211,11 +240,14 @@ $emailurl = "classes/controllers/auth.php";
   								data: { action : "getSections", selectedSemester : semSelected, courseEntry : courseValue},
 								dataType: "json",
   								success: function(data, textStatus, jqXHR){
-									//var obj = $.parseJSON(data);
+									populateSections(data);
+									/*var obj = $.parseJSON(data);
 									//console.log(data);
 									Object.keys(data).forEach(function(key){
+										//access via data[key].property
 										console.log(data[key]);
-									});
+										populateSections(size,data[key]);
+									});*/
 								}
 							});
 						});
