@@ -151,7 +151,15 @@ $emailurl = "classes/controllers/auth.php";
     	<div class="row">
 		    <div class="col-xs-6 col-md-3" id="leftdiv">
 				<p id="infoMessage" class="alert alert-info" style="font-weight:bold;color:white;background-color:#4AA7FF">Selected: <?php echo $semesters[$semesterSelected]; ?></p>
-				<p id="errorMessage" style="display:none;" class="alert alert-warning"><?php echo $errorMessage;?></p>
+				<?php if (strlen($errorMessage) > 0) { 
+					echo "<script type=\"text/javascript\"> $('#errorMessage').show(); </script>";	
+				?>
+					<p id="errorMessage" class="alert alert-warning"><?php echo $errorMessage;?></p>
+				<?php  }else if (strlen($errorMessage) == 0){	
+					echo "<script type=\"text/javascript\"> $('#errorMessage').hide(); </script>";
+				?>
+					
+				<?php } ?>				
 			
 				<span class="intro">Change Semester/Campus:</span><br/>
 				<form id="semesterSelectionForm" name="semesterSelectionForm" method="post" action="new.php">
@@ -186,7 +194,7 @@ $emailurl = "classes/controllers/auth.php";
 				<div id="userSchedule" style="display:none;">
 					Hey Hey hey Hey hey hey hey Hey Hey hey Hey hey hey hey Hey Hey hey Hey hey hey hey
 					<div class="individualSection">
-						<!--<span class="glyphicon glyphicon-trash pull-right"></span>-->
+						<span class="glyphicon glyphicon-trash pull-right"></span>
 						<span class="heading">Heading</span>
 						Bye Bye Bye Bye Bye Bye Bye Bye Bye Bye Bye Bye Bye Bye Bye Bye Bye Bye Bye Bye Bye Bye Bye Bye
 					</div>

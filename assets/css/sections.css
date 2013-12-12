@@ -3,6 +3,11 @@
 	padding-top: 1em;
 }
 
+span.underline{
+	display:inline;
+	text-decoration: underline;
+}
+
 div.individualSection{
 	margin-top: 3px;
 	padding: 4px;
@@ -15,10 +20,14 @@ div.individualSection{
 
 div.individualSection span.heading{
 	display: block;
-	background-color: #3c763d; /*6495ED;*/
-	color: #ffffff;
+	border: 2px solid #999;
+    -moz-border-radius: 15px;
+    -webkit-border-radius: 15px;
+    -khtml-border-radius: 15px;
+    border-radius: 15px;
+	background-color: #FFE4B5; /*6495ED;*/
+	color: #000000;
 }
-
 
 #dummyHeader{
 	-webkit-border-radius: 20px;
@@ -28,5 +37,24 @@ div.individualSection span.heading{
 	background-color: #428bca;
 	font-size: 18px;
 	padding: 2px;
+}
+
+span.row1{
+	font-weight:bold;
+}
+
+span.row1.right{
+	float:left;
+}
+
+span.row1.left{
+	float:right;
+}
+
+span.row2.right{
+	display:block;
+	font-style:italic;
+	font-weight:bold;
+	text-align:center;
 }
 
