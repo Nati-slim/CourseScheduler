@@ -145,20 +145,6 @@ $emailurl = "classes/controllers/auth.php";
 			$('#sectionsFound').append(allSections);
 		}
 
-		function oldpopulate(data){
-			console.log(data);
-			var size = Object.keys(data).length;
-			var selectDiv = "<span id=\"sectionFoundHeader\" class=\"intro\">Sections Found:<span class=\"badge pull-right\">" + size + "</span></span><br/>"; 
-			selectDiv += "<select class=\"form-control\" id=\"sectionsFoundSelect\">";
-			selectDiv += "<option value=\"0\">Choose Section</option>";
-			Object.keys(data).forEach(function(key){
-				var section = data[key];
-				selectDiv += "<option value=\"" + section.callNumber + "\">Section #" + section.callNumber + "</option>";
-			});
-			selectDiv += "</select>";
-			$('#sectionsFound').append(selectDiv);
-		}
-
 	</script>
 
   </head>
