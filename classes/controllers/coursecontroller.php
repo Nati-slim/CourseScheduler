@@ -4,9 +4,6 @@ require_once("../helpers/Section.php");
 require_once("../helpers/Meeting.php");
 require_once("../helpers/CourseHelper.php");
 require_once("../helpers/session.php");
-
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
 $session = new Session();
 $result = array();
 
@@ -30,6 +27,7 @@ function getSectionJSON($sections){
 	}
 	return json_encode($result);
 }
+
 
 function initialize(){
 	//Initialize user schedule object & set relevant $_SESSION variables
@@ -57,8 +55,10 @@ if ($requestType === 'POST') {
 				//$term,$coursePrefix,$courseNumber,$campus
 				try{
 					$courseSections = $db->getSections($semesterArray[0],$courseArray[0],$courseArray[1],$semesterArray[1]);
+					$session->courseSections = $courseSections;
+					$session->courseSectionsJSON = getSectionJSON($courseSections);
 					$session->errorMessage = "";
-					echo getSectionJSON($courseSections);
+					echo $session->courseSectionsJSON;
 				}catch(Exception $e){
 					$result['errorMessage'] = $e->getMessage();
 					$session->errorMessage = $e->getMessage();
@@ -68,11 +68,34 @@ if ($requestType === 'POST') {
 				$result['errorMessage'] = "Invalid parameters found.";	
 				$session->errorMessage = "Invalid parameters found.";	
 				echo json_encode($result);
-				//echo '"{ \"errorMessage\" : \"Invalid parameters found.\" }"';
 			}
 		}else{
 			$result['errorMessage'] = "Invalid parameters found.";
 			$session->errorMessage = "Invalid parameters found.";
+			echo json_encode($result);
+		}
+	}else if (strcmp($action,"filterSections") == 0){
+		$options = array();
+		$options['Available'] = get_post_var('Available');
+		$options['Full']= get_post_var('Full');
+		$options['Cancelled'] = get_post_var('Cancelled');
+		$options = array_filter($options,'strlen');
+		if (!isset($session->courseSections)){
+			$result['errorMessage'] = "Please select a course first.";
+			$session->errorMessage = "Please select a course first.";
+			echo json_encode($result);
+		}else if (count($options) == 3){
+			echo $session->courseSectionsJSON;
+		}else{			
+			$courseSections = $session->courseSections;
+			$result = array();
+			foreach($courseSections as $section){
+				if ($section->getStatus() == $options[$section->getStatus()]){
+					$result[$section->getCallNumber()] = $section;
+				}
+			}
+			$result['errorMessage'] = "";
+			$session->errorMessage = "";
 			echo json_encode($result);
 		}
 	}else{

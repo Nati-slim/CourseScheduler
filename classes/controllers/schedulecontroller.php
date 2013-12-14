@@ -156,9 +156,15 @@ if ($requestType === 'POST') {
 		if (isset($userid)){
 			$userschedule = unserialize($session->scheduleObj);	
 			if ($userid == $userschedule->getUserId()){
-				$userschedule->emptySchedule();
+				/*$sched = $userschedule->getSchedule();
+				foreach($sched as $section){
+					$userschedule->deleteSection($section->getCallNumber());
+				}
 				$session->schedule = $userschedule->to_json();	
-				$session->scheduleObj = serialize($userschedule);	
+				$session->scheduleObj = serialize($userschedule->to_array());	*/
+				$session->unsetAll();
+				$userschedule = new UserSchedule($userid);
+				initialize($userid,$userschedule);
 				$result['errorMessage'] = "";
 				$session->errorMessage = "";
 			}else{
@@ -169,7 +175,7 @@ if ($requestType === 'POST') {
 			$result['errorMessage'] = "Unauthorized to perform this action.";
 			$session->errorMessage = "Unauthorized to perform this action.";
 		}
-		header("Location: http://apps.janeullah.com/coursepicker/new.php");	
+		echo json_encode($result);
 	}else if (strcmp($action,"downloadSchedule") == 0){
 		//send json data
 		$imgDataUrl = get_post_var('dataUrl');

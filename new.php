@@ -62,20 +62,17 @@ if ($requestType === 'POST') {
 }
 
 $sched = $session->schedule;
-try{
-	$scheduleDecoded = json_decode($sched);
-}catch(Exception $e){
-	echo $e->message;
-}
+$sectionListingsJSON = $session->courseSectionsJSON;
+
 if (!isset($sched)){
 	$sched = "{}";
 }
-$cListings = $session->courses;
-$sListings = $session->sections;
-$lenCourses = count($cListings);
-$lenSections = count($sListings);
-$data = "[]";
-$sects = "[]";
+
+if (!isset($sectionListingsJSON)){
+	$sectionListingsJSON = "{}";
+}
+
+
 $title = "Course Picker";
 $longdesc = "";
 $shortdesc = "A course scheuling app for the University of Georgia Computer Science students";
@@ -97,6 +94,7 @@ $emailurl = "classes/controllers/auth.php";
 		<?php
 			try{
 				echo "var sched = '". $sched . "';";
+				echo "var sListings = '". $sectionListingsJSON . "';";
 			}catch(Exception $e){
 				echo "console.log(\"Problem getting schedule.\");";
 			}
@@ -198,6 +196,14 @@ $emailurl = "classes/controllers/auth.php";
 				<input class="form-control" type="text" id="courseEntry" name="courseEntry" placeholder="e.g. CSCI 1302" />
 				<br/><br/>
 
+				<div id="controlCheckboxes" style="display:none;" class="checkboxes">
+					<form method="post" action="classes/controllers/coursecontroller.php" id="checkboxForm" name="checkboxForm"></form>
+						<input type="hidden" name="action" id="action" value="filterSections" />
+						<input checked type="checkbox" class="checkedElement" id="Available" name="Available" value="Available"/>Available
+						<input checked type="checkbox" class="checkedElement" id="Full" name="Full" value="Full"/>Full
+						<input checked type="checkbox" class="checkedElement" id="Cancelled" name="Cancelled" value="Cancelled"/>Cancelled
+					</form>
+				</div>
 
 				<div class="panel-group" id="sectionsFound">
 
@@ -235,10 +241,14 @@ $emailurl = "classes/controllers/auth.php";
 							})
 							.done(function(msg){
 								$('body').css('cursor', 'auto');
+								//console.log(msg);
+								sListings = msg;
   								populateSections(msg);
 							})
 							.fail(function(msg){
+								$('body').css('cursor', 'auto');
 								console.log(msg + "Error getting sections.");
+								alertify.alert("Error getting sections.");
 							});
 						});
 					});

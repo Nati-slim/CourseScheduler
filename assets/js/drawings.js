@@ -1,11 +1,13 @@
+var selectOptions;
 		$(function(){
 			$('#semesterSelection').change(function(){
 				clearLocalStorage();
             	$('#semesterSelectionForm').submit();
 			});	
 			
+			//Add schedule
 			try{
-				console.log(sched);
+				//console.log(sched);
 				//Gets converted to JSON object
 				schedule = $.parseJSON(sched);
 				var size = Object.size(schedule);
@@ -44,49 +46,40 @@
 						$('#userSchedule').append(classDiv);
 						//console.log(section);
 					}); //object keys
-					var removeAll = "<form id=\"removeAllSectionsForm\" name=\"removeAllSectionsForm\" action=\"classes/controllers/schedulecontroller.php\" method=\"post\">";
-					removeAll += "<input type=\"hidden\" id=\"action\" name=\"action\" value=\"removeAllSections\" />";
-					removeAll += "<input class=\"form-control rounded-corners\" id=\"removeAllButton\" type=\"submit\" value=\"Remove All\" />";
-					removeAll += "</form>";
+					var removeAll = "<input class=\"form-control rounded-corners\" onclick=\"removeAll()\" name=\"removeAllButton\" id=\"removeAllButton\" type=\"submit\" value=\"Remove All\" />";
 					$('#userSchedule').append(removeAll);
 					$('#userSchedule').show();
 					addMouseOverEffects();
-					addRemoveAllListener();
 				}
 			}catch(e){
 				console.log(e);
 			}
+			
 		});
 		
-		function addRemoveAllListener(){
-
-			$('#removeAllButton').on('click',function(){
-				$.ajax({
-					type: "POST",
-					url: 'classes/controllers/schedulecontroller.php',
-					data: { action : "removeAllSections"}
-				})
-				.done(function(msg){
-					/*debugger;
-					console.log(msg);
-					var msgObj = JSON.parse(msg);
-					console.log(msgObj);
-					if (msgObj.errorMessage.length == 0){
-						$('#errorMessage').empty().hide();
-						setTimeout(function(){
-							location.reload();
-						},5000);
-					}else{
-						$('#errorMessage').show().append(msgObj.errorMessage);
-					}*/
-				})
-				.fail(function(msg){
-					console.log("Error: " + msg.responseTextvalue);				
-					/*Object.keys(msg).forEach(function(key){
-						console.log("key: " + key + "value: " + msg[key]);
-					});*/
-				});
-				
+		function removeAll(){
+			$('body').css('cursor', 'wait');
+			$.ajax({
+				type: "POST",
+				url: 'classes/controllers/schedulecontroller.php',
+				data: { action : "removeAllSections"},
+				dataType: "json"
+			})
+			.done(function(msg){
+				$('body').css('cursor', 'auto');
+				console.log(msg);
+				if (msg.errorMessage.length == 0){
+					$('#errorMessage').empty().hide();
+					setTimeout(function(){
+						location.reload();
+					},1000);
+				}else{
+					$('#errorMessage').show().append(msgObj.errorMessage);
+				}
+			})
+			.fail(function(msg){
+				$('body').css('cursor', 'auto');
+				console.log("Error: " + msg.responseTextvalue);				
 			});
 		}
 
@@ -125,12 +118,32 @@
         	localStorage.clear();
         	return false;
     	}
+    	
+    	/* Add listener to checkboxes and return an array of currently selected items*/
+    	function addCheckboxListener(){
+			$('.checkedElement').change(function(){
+				var ischecked = $(this).context.checked;
+				var selection = $(this).val();
+				console.log("isChecked: " + ischecked + " selection: " + selection);
+				var options = [];
+				//Available, Full, Cancelled
+				$('.checkedElement').each(function( index ) {
+					if ($(this).context.checked){
+						options.push($(this).val());
+					}					
+				});
+				$('#checkboxForm').submit();			
+				//updateSectionList(options);
+			});			
+		}
+		
 
 		/*
 		 * Called after submission of user's course-number selection
 		 * 
 		 **/
 		function populateSections(data){
+			$('#controlCheckboxes').show();
 			//console.log(data);
 			$('#sectionsFound').empty();
 			$('#sectionsFound').show();
@@ -143,6 +156,7 @@
 			var counter = 0;
 			var sectionDiv;
 			var allSections = "";
+			sListings = data;
 			var heading = "<span id=\"sectionFoundHeader\" class=\"intro\"><span id=\"collapseColumn\" title=\"Collapse this column\" class=\"glyphicon glyphicon-arrow-up pull-left\"></span>Sections Found:<span class=\"badge pull-right\">" + size + "</span><br/></span>";
 			/*Insert the head before the according div*/ 
 			$('#sectionsFound').before(heading);
@@ -164,7 +178,8 @@
 				}else{
 					collapseDiv();
 				}
-			});
+			});			
+			addCheckboxListener();
 		}
 		
 		function collapseDiv(){
@@ -202,9 +217,9 @@
 			})
 			.fail(function(msg){
 				console.log("Error: " + msg.responseTextvalue);				
-				/*Object.keys(msg).forEach(function(key){
+				Object.keys(msg).forEach(function(key){
 					console.log("key: " + key + "value: " + msg[key]);
-				});*/
+				});
 			});
 		}
 
@@ -214,7 +229,9 @@
 			$(formName).submit();
 		}
 
-
+		/*
+		 * Remove a single section
+		 */ 
 		function removeSection(callNumber){
 			var formName = "#removeSectionForm_" + callNumber;
 			console.log(formName);
@@ -231,18 +248,11 @@
 				$(schedSectionID).hide('slow', function(){ 
 					$(schedSectionID).remove(); 
 				});
-				setTimeout(function () { location.reload(true); }, 2000);
+				setTimeout(function () { location.reload(true); }, 1000);
   			})
   			.fail(function(msg){
 				console.log("Error: " + msg.responseTextvalue);
 			});
-			//$(formName).submit();
-		}
-		
-		function removeSectionIffy(callNumber){
-			var formName = "#removeSectionForm_" + callNumber;
-			console.log(formName);
-			$(formName).submit();
 		}
 		
 		/*
@@ -302,6 +312,6 @@
 				msg += "<span title=\"Add this section to your schedule!\" onclick=\"addSection(" + section.callNumber + ")\" class=\"glyphicon glyphicon-plus pull-right plus-sign\"></span></form>";
 			}
       		msg += "</div><!--panelBody--></div><!--panelCollapse--></div><!--panelDefault-->";
+      		//console.log(msg);
 			return msg;
 		}
-

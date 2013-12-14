@@ -147,10 +147,6 @@ class UserSchedule{
 	public function getSchedule(){
 		return $this->schedule;
 	}
-	
-	public function emptySchedule(){
-		$this->schedule = array();
-	}
 
 	/**
 	 * Returns the user id
