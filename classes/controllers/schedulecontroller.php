@@ -87,7 +87,7 @@ if ($requestType === 'POST') {
 						//echo json_encode($result);
 					}else{
 						$session->errorMessage = "";
-						$session->userid = $userschedule->getUserId();;
+						$session->userid = $userschedule->getUserId();
 						$session->infoMessage = "Section " . $callNum. " (". $section->getCoursePrefix()."-".$section->getCourseNumber().") added!";
 						$session->schedule = $userschedule->to_json();	
 						$session->scheduleObj = serialize($userschedule);	
@@ -117,15 +117,45 @@ if ($requestType === 'POST') {
 			$session->errorMessage = $e->getMessage();
 			//echo json_encode($result);
 		}
+		header("Location: http://apps.janeullah.com/coursepicker/new.php");	
+	}else if (strcmp($action,"removeSection") == 0){
+		$callNum = get_post_var("sectionToBeRemoved");
+		$userid = $session->userid;
+		if ($callNum){			
+			if (isset($userid)){
+				$userschedule = unserialize($session->scheduleObj);	
+				$status = $userschedule->deleteSection($callNum);
+				if (!$status){
+					$result['errorMessage'] = $userschedule->getErrorMessage();
+					$session->errorMessage = $userschedule->getErrorMessage();
+					echo json_encode($result);
+				}else{
+					$session->errorMessage = "";
+					$session->userid = $userschedule->getUserId();;
+					$session->infoMessage = "Section " . $callNum . " deleted!";
+					$session->schedule = $userschedule->to_json();	
+					$session->scheduleObj = serialize($userschedule);	
+					echo $userschedule->to_json();
+				}
+			}else{
+				$result['callNumber'] = $callNum;
+				$result['errorMessage'] = "Unauthorized to perform this action.";
+				$session->errorMessage = "Unauthorized to perform this action.";
+				echo json_encode($result);
+			}
+		}else{
+			$result['errorMessage'] = "Invalid section number.";
+			$session->errorMessage = "Invalid section number.";
+			echo json_encode($result);
+		}				
 	}else{
 		$result['errorMessage'] = "Invalid action.";
 		$session->errorMessage = "Invalid action.";
-		//echo json_encode($result);
+		echo json_encode($result);
 	}
 }else{
 	$result['errorMessage'] = "Invalid Server Request Type found.";
 	$session->errorMessage = "Invalid Server Request Type found.";
-	//echo json_encode($result);
+	echo json_encode($result);
 }
-header("Location: http://apps.janeullah.com/coursepicker/new.php");	
 ?>

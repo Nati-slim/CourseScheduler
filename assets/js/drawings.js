@@ -3,35 +3,69 @@
 				clearLocalStorage();
             	$('#semesterSelectionForm').submit();
 			});	
-
+			
 			try{
-				var schedule = $.parseJSON(sched);
+				//console.log(sched);
+				//Gets converted to JSON object
+				schedule = $.parseJSON(sched);
 				var size = Object.size(schedule);
 				if (size > 0){
 					$('#userSchedule').empty();
+					$('#userSchedule').append("<span class=\"intro\">Class Schedule</span>");
 					Object.keys(schedule).forEach(function(key){
 						var section = schedule[key];
-						var classDiv = "<div class=\"individualSection\">";
-						classDiv += "<span onclick=\"removeSection(" + section.courseNumber + ")\""  + " class=\"glyphicon glyphicon-remove pull-right\" style=\"margin-right:6px;margin-top:2px;font-size:140%;\"></span>";
+						var classDiv = "<div id=\"schedule_" + section.callNumber + "\" class=\"individualSection\">";
+						classDiv += "<span onclick=\"removeSection(" + section.callNumber + ")\""  + " class=\"glyphicon glyphicon-remove pull-right\" style=\"margin-right:6px;margin-top:2px;font-size:140%;\"></span>";
+						classDiv += "<form method=\"post\" action=\"classes/controllers/schedulecontroller.php\" id=\"removeSectionForm_" + section.callNumber + "\" name=\"removeSectionForm_" + section.callNumber + "\">";
+						classDiv += "<input type=\"hidden\" name=\"action\" id=\"action\" value=\"removeSection\" />";
+						classDiv += "<input type=\"hidden\" id=\"sectionToBeRemoved_" + section.callNumber + "\" name=\"sectionToBeRemoved\" value=\"" + section.callNumber + "\" />";
+						classDiv += "</form>";
 						classDiv += "<span class=\"heading\">";
-						classDiv += section.courseName + "</span>";
-						classDiv += "<span class=\"row1 right\">" + section.lecturer + "</span><span class=\"row1 left\">" + section.coursePrefix + "-" + section.courseNumber + "</span><br/>";
-						classDiv += "<span class=\"row2 right\">" +getBuildingName(section.buildingNumber) + " Room #" +  section.roomNumber+"</span><br/>";
+						classDiv += section.courseName + "</a></span>";
+						classDiv += "<span class=\"row1 right\">" + section.lecturer + "</span><span class=\"row1 left\">";
+						
+						var campus = $('#infoMessage').text();
+						if (campus.indexOf("Athens") > 0){
+							classDiv += "<a href=\"http://bulletin.uga.edu/Link.aspx?cid=" + section.coursePrefix + "" + section.courseNumber;
+							classDiv += "\" title=\"UGA Bulletin Listing for " + section.courseName + "\">";
+							classDiv += section.coursePrefix + "-" + section.courseNumber + "</a></span><br/>";
+						}else{
+							classDiv += section.coursePrefix + "-" + section.courseNumber + "</span><br/>";
+						}
+						classDiv += "<span class=\"row2\">" +getBuildingName(section.buildingNumber) + " - Room #" +  section.roomNumber+"</span>";
+						classDiv += "<span class=\"meetingTimes\">";
 						var mtgs = section.meetings;
 						Object.keys(mtgs).forEach(function(key){
-							classDiv += key + " : " + mtgs[key] + "<br/>";
+							classDiv += "<span title=\"" +mtgs[key] + "\" ";
+							classDiv += "class=\"day\">" 
+							classDiv += key + "</span>";
+							//+ " : " + mtgs[key] + "<br/>";
 						});
-						classDiv += "</div>";
+						classDiv += "</span></div>";
 						$('#userSchedule').append(classDiv);
 						//console.log(section);
 					});
 					$('#userSchedule').show();
+					addMouseOverEffects();
 				}
 			}catch(e){
 				console.log(e);
 			}
 		});
 
+		/* 
+		 * Mouseover effect for user hovering over the days
+		 * 
+		 * */
+		function addMouseOverEffects(){
+			$('.day').bind('mouseover',function(e){
+				$(this).addClass('hover');
+			});	
+					
+			$('.day').bind('mouseout',function(e){
+				$(this).removeClass('hover');
+			});	
+		}
 		
 		function generateMeetingBlocks($mtg){
 
@@ -46,14 +80,21 @@
 			return size;
 		};
 
-
+		/* 
+		 * force localStorage removal of cached JSON object
+		 * when user changes campuses
+		 * */
 		function clearLocalStorage() {
         	localStorage.clear();
         	return false;
     	}
 
+		/*
+		 * Called after submission of user's course-number selection
+		 * 
+		 **/
 		function populateSections(data){
-			console.log(data);
+			//console.log(data);
 			$('#sectionsFound').empty();
 			$('#sectionFoundHeader').remove();
 			var size = Object.keys(data).length;
@@ -79,11 +120,11 @@
 				if (title == "Collapse this column"){
 					$('#collapseColumn').removeClass("glyphicon glyphicon-arrow-up pull-left").addClass("glyphicon glyphicon-arrow-down pull-left");
 					$('#collapseColumn').attr("title","Expand this column");
-					$('#sectionsFound').hide();
+					$('#sectionsFound').hide("slow",function(){});
 				}else{
 					$('#collapseColumn').removeClass("glyphicon glyphicon-arrow-down pull-left").addClass("glyphicon glyphicon-arrow-up pull-left");
 					$('#collapseColumn').attr("title","Collapse this column");
-					$('#sectionsFound').show();
+					$('#sectionsFound').show("slow",function(){});
 				}
 			});
 		}
@@ -116,15 +157,50 @@
 			});
 		}
 
-		function addSection(){
-			$('#addSectionForm').submit();
+		function addSection(callNumber){
+			var formName = "#addSectionForm_" + callNumber;
+			console.log(formName);
+			$(formName).submit();
 		}
 
 
 		function removeSection(callNumber){
-			console.log(callNumber);
-			//$('#removeSectionForm').submit();
+			var formName = "#removeSectionForm_" + callNumber;
+			console.log(formName);
+			$('body').css('cursor', 'wait');
+			$.ajax({
+				type: "POST",
+  				url: 'classes/controllers/schedulecontroller.php',
+  				data: { action : "removeSection", sectionToBeRemoved : callNumber},
+				dataType: "json"
+	        })
+			.done(function(msg){
+				$('body').css('cursor', 'auto');
+				var schedSectionID = "#schedule_" + callNumber;
+				$(schedSectionID).hide('slow', function(){ 
+					$(schedSectionID).remove(); 
+				});
+				setTimeout(function () { location.reload(true); }, 2000);
+				/*if (delete schedule[callNumber]){
+					console.log("Deleted from JS object and redrawing canvas.");
+					canvasContext.clearRect(0,0,canvasItem.width,canvasItem.height);
+					initializeCanvas();
+					console.log(
+				}
+  				console.log("Result: " + msg);*/
+  			})
+  			.fail(function(msg){
+				console.log("Error: " + msg.responseTextvalue);
+			});
+			//$(formName).submit();
 		}
+		
+		function removeSectionIffy(callNumber){
+			var formName = "#removeSectionForm_" + callNumber;
+			console.log(formName);
+			$(formName).submit();
+		}
+		
 		/*
 		Retrieve the human-friendly version of UGA buildings.
 		*/
@@ -153,9 +229,9 @@
 			var msg = "";
 			msg += "<div class=\"panel panel-default\">";
 			if (section.status === 'Available'){
-				msg += "<div class=\"panel-heading\" style=\"background-color: #1C91FF\">";
+				msg += "<div class=\"panel-heading available\">";
 			}else{
-				msg += "<div class=\"panel-heading\" style=\"color:#ffffff;background-color: #DE0707\">";
+				msg += "<div class=\"panel-heading notavailable\">";
 			}
 			msg += "<h4 class=\"panel-title\">";
 			msg += "<a data-toggle=\"collapse\" data-parent=\"#accordion\" href=\"#collapse" + index+ "\">";
@@ -176,10 +252,10 @@
 				msg += key + " : " + mtgs[key] + "<br/>";
 			});
 			if (section.status === 'Available'){
-				msg += "<form name=\"addSectionForm\" id=\"addSectionForm\" method=\"post\" action=\"classes/controllers/schedulecontroller.php\">";
+				msg += "<form name=\"addSectionForm_" + section.callNumber + "\" id=\"addSectionForm_" + section.callNumber + "\" method=\"post\" action=\"classes/controllers/schedulecontroller.php\">";
 				msg += "<input type=\"hidden\" id=\"action\" name=\"action\" value=\"addSection\"/>";
-				msg += "<input type=\"hidden\" id=\"addSectionCallNumber\" name=\"addSectionCallNumber\" value=\"" + section.callNumber + "\"/>";
-				msg += "<span title=\"Add this section to your schedule!\" onclick=\"addSection()\" class=\"glyphicon glyphicon-plus pull-right\"></span></form>";
+				msg += "<input type=\"hidden\" id=\"addSectionCallNumber_" + section.callNumber  + "\" name=\"addSectionCallNumber\" value=\"" + section.callNumber + "\"/>";
+				msg += "<span title=\"Add this section to your schedule!\" onclick=\"addSection(" + section.callNumber + ")\" class=\"glyphicon glyphicon-plus pull-right plus-sign\"></span></form>";
 			}
       		msg += "</div><!--panelBody--></div><!--panelCollapse--></div><!--panelDefault-->";
 			return msg;

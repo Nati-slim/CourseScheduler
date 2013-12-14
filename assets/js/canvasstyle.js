@@ -410,6 +410,8 @@ function initializeCanvas() {
 		ctx.fillText(daysOfWeek[counter], x, 25);
 		x += CELL_WIDTH+5;
 	}
+	courseRectangles = new Array();
+	sectionsGrabbed = new Array();
 	drawClassMeeting(ctx);
 	canvasContext = ctx;
 	canvasItem = c;
@@ -461,5 +463,11 @@ function initializeCanvas() {
 	canvasItem = c;
 	createImage(canvasItem);
 	//updateListeners(ctx,courseRectangles);
+}
+
+function clearAndRedraw(){
+	canvasContext.save();
+	canvasContext.clearRect(0, 0, canvasItem.width, canvasItem.height);
+	canvasContext.restore();
 }
 

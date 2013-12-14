@@ -41,7 +41,7 @@ building,room,sch,currentProgram) values(DEFAULT,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?
 	/**
 	 * Truncate the tables
 	 */
-	function clearTable(){
+	private function clearTable(){
 		try{
 			if (!($this->truncateTable)){
 				echo "Prepare failed: (" . $this->dbconn->errno . ") " . $this->dbconn->error;
@@ -60,7 +60,7 @@ building,room,sch,currentProgram) values(DEFAULT,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?
 	* @return array of the days
 	* @param String $days e.g. AR, VR, X Y, X   Y, XY XY, XY X
 	*/
-	function parseDays($days){
+	private function parseDays($days){
 		if (strcmp($days,"DAILY") == 0){
 			return array('M','T','W','R','F');
 		}else{
@@ -83,7 +83,7 @@ building,room,sch,currentProgram) values(DEFAULT,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?
 	* @param String $courseNumber e.g. 1302
 	* @param String $campus e.g. UNIV
 	*/
-	function getSections($term,$coursePrefix,$courseNumber,$campus){
+	public function getSections($term,$coursePrefix,$courseNumber,$campus){
 		$sections = array();
 		try{
 			if (!($this->getcoursesections)){

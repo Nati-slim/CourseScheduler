@@ -62,6 +62,11 @@ if ($requestType === 'POST') {
 }
 
 $sched = $session->schedule;
+try{
+	$scheduleDecoded = json_decode($sched);
+}catch(Exception $e){
+	echo $e->message;
+}
 if (!isset($sched)){
 	$sched = "{}";
 }
@@ -91,11 +96,12 @@ $emailurl = "classes/controllers/auth.php";
 	<script type="text/javascript">
 		<?php
 			try{
-				echo "var sched = '".$sched."';";
+				echo "var sched = '". $sched . "';";
 			}catch(Exception $e){
 				echo "console.log(\"Problem getting schedule.\");";
 			}
 		?>
+		var schedule = null;
 	</script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Bootstrap -->
@@ -183,7 +189,7 @@ $emailurl = "classes/controllers/auth.php";
 				<span class="intro">Search:</span><br/>		
 				<input id="jsonURL" name="jsonURL" type="hidden" value="<?php echo $jsonURL;?>" />
 				<input type="hidden" name="selectedSemester" id="selectedSemester" value="<?php echo $semesterSelected; ?>" />
-				<input class="typeahead" type="text" id="courseEntry" name="courseEntry" placeholder="e.g. CSCI 1302" />
+				<input class="form-control" type="text" id="courseEntry" name="courseEntry" placeholder="e.g. CSCI 1302" />
 				<br/><br/>
 
 
@@ -192,16 +198,7 @@ $emailurl = "classes/controllers/auth.php";
 				</div>
 
 				<div id="userSchedule" style="display:none;">
-					Hey Hey hey Hey hey hey hey Hey Hey hey Hey hey hey hey Hey Hey hey Hey hey hey hey
-					<div class="individualSection">
-						<span class="glyphicon glyphicon-trash pull-right"></span>
-						<span class="heading">Heading</span>
-						Bye Bye Bye Bye Bye Bye Bye Bye Bye Bye Bye Bye Bye Bye Bye Bye Bye Bye Bye Bye Bye Bye Bye Bye
-					</div>
-					<div class="individualSection">
-						<span class="heading">Heading</span>
-						You You You You You You You You You You You You You You You You You You You You You You You You You You
-					</div>
+
 				</div>
 				<script src="assets/js/typeahead.min.js" type="text/javascript"></script>
 				<script type="text/javascript">
@@ -222,6 +219,7 @@ $emailurl = "classes/controllers/auth.php";
 							//console.log(datum.value);
 							var semSelected = $('#selectedSemester').val();
 							var courseValue  = datum.value;
+							$('body').css('cursor', 'wait');
 							console.log("semSelected: " + semSelected + "\n" + "courseValue: " + courseValue + "\n");
 							$.ajax({
 								type: "POST",
@@ -230,7 +228,7 @@ $emailurl = "classes/controllers/auth.php";
 								dataType: "json"
 							})
 							.done(function(msg){
-								//console.log("POST done.");
+								$('body').css('cursor', 'auto');
   								populateSections(msg);
 							})
 							.fail(function(msg){

@@ -8,10 +8,16 @@ span.underline{
 	text-decoration: underline;
 }
 
+.plus-sign{
+	font-size: 140%;
+	color: green;
+}
+
+
 div.individualSection{
 	margin-top: 3px;
 	padding: 4px;
-	border: 2px solid #999;
+	border: 2px solid #DCDCDC;
     -moz-border-radius: 20px;
     -webkit-border-radius: 20px;
     -khtml-border-radius: 20px;
@@ -20,12 +26,12 @@ div.individualSection{
 
 div.individualSection span.heading{
 	display: block;
-	border: 2px solid #999;
+	border: 2px solid #4AA7FF;
     -moz-border-radius: 15px;
     -webkit-border-radius: 15px;
     -khtml-border-radius: 15px;
     border-radius: 15px;
-	background-color: #FFE4B5; /*6495ED;*/
+	background-color: #4AA7FF; /*#FFE4B5; #6495ED;*/
 	color: #000000;
 }
 
@@ -41,6 +47,7 @@ div.individualSection span.heading{
 
 span.row1{
 	font-weight:bold;
+	text-transform:uppercase;
 }
 
 span.row1.right{
@@ -51,10 +58,48 @@ span.row1.left{
 	float:right;
 }
 
-span.row2.right{
-	display:block;
+span.row2{
+	text-transform:capitalize;
 	font-style:italic;
 	font-weight:bold;
-	text-align:center;
+	height: 100%;
+	margin: 0 auto;
 }
 
+
+span.meetingTimes{
+	display:block;
+	width:100px;
+	height: 100%;
+	margin: 0 auto;
+
+}
+
+span.day{
+	text-align:center;
+	padding:2px;	
+	margin:2px;
+	border: 2px solid #4AA7FF;
+    -moz-border-radius: 20px;
+    -webkit-border-radius: 20px;
+    -khtml-border-radius: 20px;
+    border-radius: 20px;
+	letter-spacing:2px;
+	/*text-shadow: 1px 0 0 #000, -1px 0 0 #000, 0 1px 0 #000, 0 -1px 0 #000, 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;*/
+}
+
+.hover{
+	background-color:#4AA7FF;
+	color:#ffffff;
+	font-weight:bold;
+}
+
+.panel-heading.available{
+	color:#DCDCDC;
+	background-color:#105604;
+}
+
+.panel-heading.notavailable{
+	color:#DCDCDC;
+	background-color:#C0261C;
+}
