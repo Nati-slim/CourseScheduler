@@ -5,13 +5,12 @@
 			});	
 			
 			try{
-				//console.log(sched);
+				console.log(sched);
 				//Gets converted to JSON object
 				schedule = $.parseJSON(sched);
 				var size = Object.size(schedule);
 				if (size > 0){
-					$('#userSchedule').empty();
-					$('#userSchedule').append("<span class=\"intro\">Class Schedule</span>");
+					$('#userSchedule').empty().append("<span class=\"intro\">Class Schedule</span>");
 					Object.keys(schedule).forEach(function(key){
 						var section = schedule[key];
 						var classDiv = "<div id=\"schedule_" + section.callNumber + "\" class=\"individualSection\">";
@@ -41,17 +40,55 @@
 							classDiv += key + "</span>";
 							//+ " : " + mtgs[key] + "<br/>";
 						});
-						classDiv += "</span></div>";
+						classDiv += "</span></div>";						
 						$('#userSchedule').append(classDiv);
 						//console.log(section);
-					});
+					}); //object keys
+					var removeAll = "<form id=\"removeAllSectionsForm\" name=\"removeAllSectionsForm\" action=\"classes/controllers/schedulecontroller.php\" method=\"post\">";
+					removeAll += "<input type=\"hidden\" id=\"action\" name=\"action\" value=\"removeAllSections\" />";
+					removeAll += "<input class=\"form-control rounded-corners\" id=\"removeAllButton\" type=\"submit\" value=\"Remove All\" />";
+					removeAll += "</form>";
+					$('#userSchedule').append(removeAll);
 					$('#userSchedule').show();
 					addMouseOverEffects();
+					addRemoveAllListener();
 				}
 			}catch(e){
 				console.log(e);
 			}
 		});
+		
+		function addRemoveAllListener(){
+
+			$('#removeAllButton').on('click',function(){
+				$.ajax({
+					type: "POST",
+					url: 'classes/controllers/schedulecontroller.php',
+					data: { action : "removeAllSections"}
+				})
+				.done(function(msg){
+					/*debugger;
+					console.log(msg);
+					var msgObj = JSON.parse(msg);
+					console.log(msgObj);
+					if (msgObj.errorMessage.length == 0){
+						$('#errorMessage').empty().hide();
+						setTimeout(function(){
+							location.reload();
+						},5000);
+					}else{
+						$('#errorMessage').show().append(msgObj.errorMessage);
+					}*/
+				})
+				.fail(function(msg){
+					console.log("Error: " + msg.responseTextvalue);				
+					/*Object.keys(msg).forEach(function(key){
+						console.log("key: " + key + "value: " + msg[key]);
+					});*/
+				});
+				
+			});
+		}
 
 		/* 
 		 * Mouseover effect for user hovering over the days
@@ -96,7 +133,12 @@
 		function populateSections(data){
 			//console.log(data);
 			$('#sectionsFound').empty();
+			$('#sectionsFound').show();
 			$('#sectionFoundHeader').remove();
+			var title = $('#collapseColumn').attr("title");
+			if (title == "Collapse this column"){
+				expandDiv();
+			}
 			var size = Object.keys(data).length;
 			var counter = 0;
 			var sectionDiv;
@@ -116,19 +158,28 @@
 
 			/* Add listener to the up/down sign for collapsing the column*/
 			$('#collapseColumn').on('click',function(){
-				var title = $('#collapseColumn').attr("title");
+				title = $('#collapseColumn').attr("title");
 				if (title == "Collapse this column"){
-					$('#collapseColumn').removeClass("glyphicon glyphicon-arrow-up pull-left").addClass("glyphicon glyphicon-arrow-down pull-left");
-					$('#collapseColumn').attr("title","Expand this column");
-					$('#sectionsFound').hide("slow",function(){});
+					expandDiv();
 				}else{
-					$('#collapseColumn').removeClass("glyphicon glyphicon-arrow-down pull-left").addClass("glyphicon glyphicon-arrow-up pull-left");
-					$('#collapseColumn').attr("title","Collapse this column");
-					$('#sectionsFound').show("slow",function(){});
+					collapseDiv();
 				}
 			});
 		}
-
+		
+		function collapseDiv(){
+			$('#collapseColumn').removeClass("glyphicon glyphicon-arrow-down pull-left").addClass("glyphicon glyphicon-arrow-up pull-left");
+			$('#collapseColumn').attr("title","Collapse this column");
+			$('#sectionsFound').show("slow",function(){});
+		}
+		
+		function expandDiv(){
+			$('#collapseColumn').removeClass("glyphicon glyphicon-arrow-up pull-left").addClass("glyphicon glyphicon-arrow-down pull-left");
+			$('#collapseColumn').attr("title","Expand this column");
+			$('#sectionsFound').hide("slow",function(){});
+		}
+		
+		
 		function addSectionIffy(callNumber){
 			console.log(callNumber);
 			$.ajax({
@@ -181,13 +232,6 @@
 					$(schedSectionID).remove(); 
 				});
 				setTimeout(function () { location.reload(true); }, 2000);
-				/*if (delete schedule[callNumber]){
-					console.log("Deleted from JS object and redrawing canvas.");
-					canvasContext.clearRect(0,0,canvasItem.width,canvasItem.height);
-					initializeCanvas();
-					console.log(
-				}
-  				console.log("Result: " + msg);*/
   			})
   			.fail(function(msg){
 				console.log("Error: " + msg.responseTextvalue);

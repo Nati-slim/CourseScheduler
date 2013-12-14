@@ -103,3 +103,27 @@ span.day{
 	color:#DCDCDC;
 	background-color:#C0261C;
 }
+
+.rounded-corners {
+     -moz-border-radius: 20px;
+    -webkit-border-radius: 20px;
+    -khtml-border-radius: 20px;
+    behavior: url(http://apps.janeullah.com/assets/css/border-radius.htc);
+    border-radius: 20px;
+}
+
+#removeAllButton{
+	text-align:center;
+	width:50%;
+	font-weight:bold;
+	margin: 0 auto;
+	margin-top: 4px;
+}
+
+#removeAllButton:hover{
+	
+    border: none;
+    background:#4AA7FF;
+    color: #ffffff;
+    box-shadow: 0px 3px 1px #777;
+}

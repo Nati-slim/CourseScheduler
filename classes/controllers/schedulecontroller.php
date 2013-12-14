@@ -22,6 +22,7 @@ function get_post_var($var){
 	return $val;
 }
 
+//http://stackoverflow.com/questions/1846202/php-how-to-generate-a-random-unique-alphanumeric-string
 function generateToken($length = 40){
     if (function_exists('openssl_random_pseudo_bytes')){
         $token = base64_encode(openssl_random_pseudo_bytes($length,$strong));
@@ -44,6 +45,7 @@ function initialize($userid,$schedule){
 	$session->scheduleObj = serialize($schedule->to_array());
 	$session->errorMessage = "";
 }
+
 
 function reconstructSchedule($arr){
 	$userschedule = new UserSchedule($arr['userid']);
@@ -147,10 +149,68 @@ if ($requestType === 'POST') {
 			$result['errorMessage'] = "Invalid section number.";
 			$session->errorMessage = "Invalid section number.";
 			echo json_encode($result);
-		}				
+		}
+		//sending json data back		
+	}else if (strcmp($action,"removeAllSections") == 0){
+		$userid = $session->userid;
+		if (isset($userid)){
+			$userschedule = unserialize($session->scheduleObj);	
+			if ($userid == $userschedule->getUserId()){
+				$userschedule->emptySchedule();
+				$session->schedule = $userschedule->to_json();	
+				$session->scheduleObj = serialize($userschedule);	
+				$result['errorMessage'] = "";
+				$session->errorMessage = "";
+			}else{
+				$result['errorMessage'] = "Unauthorized to perform this action.";
+				$session->errorMessage = "Unauthorized to perform this action.";
+			}
+		}else{
+			$result['errorMessage'] = "Unauthorized to perform this action.";
+			$session->errorMessage = "Unauthorized to perform this action.";
+		}
+		header("Location: http://apps.janeullah.com/coursepicker/new.php");	
+	}else if (strcmp($action,"downloadSchedule") == 0){
+		//send json data
+		$imgDataUrl = get_post_var('dataUrl');
+		if ($imgDataUrl){
+			$userid = $session->userid;
+			if (isset($userid)){
+				$userschedule = unserialize($session->scheduleObj);	
+				if ($userid == $userschedule->getUserId()){
+					$imgData = base64_decode($imgDataUrl);
+					$token = bin2hex(openssl_random_pseudo_bytes(25));
+					$imgFile = $_SERVER["DOCUMENT_ROOT"]."/coursepicker/assets/schedules/schedule_" . $token . ".png";
+					
+					if (file_put_contents($imgFile,$imgData)){
+						//$imgFile = substr($imgFile,16);
+						$result['imgToken'] = $token;
+						$result['errorMessage'] = "";
+						$session->errorMessage = "";
+					}else{
+						$result['imgToken'] = "";
+						$result['errorMessage'] = "Unable to save image to file";
+						$session->errorMessage = "Unable to save image to file.";
+					}
+				}else{
+					$result['imgToken'] = "";
+					$result['errorMessage'] = "Not authorized to store this file.";
+					$session->errorMessage = "Not authorized to store this file.";
+				}
+			}else{				
+				$result['imgToken'] = "";
+				$result['errorMessage'] = "User id not found";
+				$session->errorMessage = "User id not found.";
+			}
+		}else{
+			$result['imgToken'] = "";
+			$result['errorMessage'] = "Invalid action.";
+			$session->errorMessage = "Invalid action.";
+		}		
+		echo json_encode($result);
 	}else{
-		$result['errorMessage'] = "Invalid action.";
-		$session->errorMessage = "Invalid action.";
+		$result['errorMessage'] = "Invalid action to schedule controller.";
+		$session->errorMessage = "Invalid action to schedule controller.";
 		echo json_encode($result);
 	}
 }else{

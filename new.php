@@ -125,10 +125,15 @@ $emailurl = "classes/controllers/auth.php";
     <script src="assets/js/canvasstyle.js" type="text/javascript"></script>
     <script src="assets/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>	
 	<script src="http://twitter.github.com/hogan.js/builds/2.0.0/hogan-2.0.0.js" type="text/javascript"></script>
+	<!-- JS for fancy alert boxes-->
     <script src="assets/js/alertify.min.js" type="text/javascript"></script>
-	<?php echo "<script type=\"text/javascript\"> var uga_buildings = $.parseJSON(" . json_encode($uga_file) . "); </script>"; ?>
+	<!--JS handling saving, sharing, downloading schedules -->
+	<script src="assets/js/schedule.js" type="text/javascript"></script>
 	<!--JS related to the dynamic addition of the course navigation elements -->
 	<script src="assets/js/drawings.js" type="text/javascript"></script>
+  <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css">
+  <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+	<?php echo "<script type=\"text/javascript\"> var uga_buildings = $.parseJSON(" . json_encode($uga_file) . "); </script>"; ?>
 
   </head>
   <body>
@@ -141,13 +146,14 @@ $emailurl = "classes/controllers/auth.php";
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="#">Project name</a>
+          <a class="navbar-brand" href="new.php">CoursePicker</a>
         </div>
         <div class="collapse navbar-collapse">
           <ul class="nav navbar-nav">
-            <li class="active"><a href="#">Home</a></li>
-            <li><a href="#about">About</a></li>
-            <li><a href="#contact">Contact</a></li>
+            <li class="active"><a href="new.php">Home</a></li>
+            <li><a href="#about" id="about">About</a></li>
+            <li><a href="#contact" id="contact">Contact</a></li>
+            <li><a href="#downloadSchedule" id="downloadSchedule">Download Schedule</a></li>
           </ul>
         </div><!-- /.nav-collapse -->
       </div><!-- /.container -->
@@ -255,5 +261,6 @@ $emailurl = "classes/controllers/auth.php";
       	</footer>
 
     </div><!--/.container-->
+    <?php require_once("includes/dialogs.inc") ?>	
   </body>
 </html>

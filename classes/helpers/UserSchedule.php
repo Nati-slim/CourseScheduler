@@ -1,6 +1,7 @@
 <?php
 class UserSchedule{
 	private $schedule;
+	private $scheduleIDs;
 	private $userid;
 	private $errorMessage;
 
@@ -13,6 +14,7 @@ class UserSchedule{
 	function __construct($randomId){
 		$this->userid = $randomId;
 		$this->schedule = array();
+		$this->scheduleIDs = array();
 	}
 
 	/**
@@ -130,12 +132,24 @@ class UserSchedule{
 		return true;
 	}
 
+	public function getScheduleIDs(){
+		return $this->scheduleIDs;
+	}
+	
+	public function addScheduleID($token){
+		$this->scheduleIDs[] = $token;
+	}
+	
 	/**
 	 * Returns the list of sections the user is enrolled in
 	 * @return array() $schedule
 	 */
-	function getSchedule(){
+	public function getSchedule(){
 		return $this->schedule;
+	}
+	
+	public function emptySchedule(){
+		$this->schedule = array();
 	}
 
 	/**
@@ -167,7 +181,7 @@ class UserSchedule{
 		$result = array();
 		foreach($this->schedule as $section){
 			$result[$section->getCallNumber()] = $section->to_array();
-		}
+		}	
 		return json_encode($result);
 	}
 
@@ -175,9 +189,12 @@ class UserSchedule{
 		$result = array();
 		$result['userid'] = $this->getUserId();
 		$result['errorMessage'] = $this->getErrorMessage();
+		$classSchedule = array();
 		foreach($this->schedule as $section){
-			$result[$section->getCallNumber()] = $section->to_array();
+			$classSchedule[$section->getCallNumber()] = $section->to_array();
 		}
+		$result['classSchedule'] = $classSchedule;
+		$result['savedSchedules'] = $this->scheduleIDs;
 		return $result;
 	}
 

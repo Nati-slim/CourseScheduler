@@ -49,6 +49,7 @@ function createImage(canvas){
 		//Create a URL containing a representation of the image in the format specified
 		//default is .png
 		url = canvas.toDataURL();
+		//console.log(url);
         //Grab the img div
         var imgDiv = document.getElementById("canvasImage");
 		//Create the image object
@@ -465,9 +466,6 @@ function initializeCanvas() {
 	//updateListeners(ctx,courseRectangles);
 }
 
-function clearAndRedraw(){
-	canvasContext.save();
-	canvasContext.clearRect(0, 0, canvasItem.width, canvasItem.height);
-	canvasContext.restore();
+function getImageUrl(){
+	
 }
-
