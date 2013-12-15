@@ -11,7 +11,7 @@ try{
 		//Gets the name e.g. GWIN_201305
 		$semester = substr($file,-15,-4);
 		//echo $fullname . "\n";	
-		//load data local infile '/home/h1548w56/csv/coursepicker/csvfiles/sorted_course_offering_GWIN_201405.csv' into table courses fields terminated by ',' enclosed by '"' escaped by '\\' lines terminated by '\n' 
+		//load data local infile '/home/user/csv/coursepicker/csvfiles/sorted_course_offering_GWIN_201405.csv' into table courses fields terminated by ',' enclosed by '"' escaped by '\\' lines terminated by '\n' 
 		//`(term` ,  `callNumber` ,  `coursePrefix` ,  `courseNumber` ,  `courseName` ,  `lecturer` ,  `available` ,  `creditHours` ,  `session` ,  `days` ,  `startTime` ,  `endTime` ,  `casTaken` ,  `casRequired` ,  `dasTaken` ,  `dasRequired` ,  `totalTaken` ,  `totalRequired` , `totalAllowed` ,  `building` ,  `room` ,  `sch` ,  `currentProgram`);
 
 		$stmt = "load data local infile '" . $fullname . "' into table courses fields terminated by ',' enclosed by '\"' (term,callNumber,coursePrefix,courseNumber,courseName,lecturer,available,creditHours,session,days,startTime,endTime,casTaken,casRequired,dasTaken,dasRequired,totalTaken,totalRequired,totalAllowed,building,room,sch,currentProgram)";
