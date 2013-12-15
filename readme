@@ -1,0 +1,15 @@
+CoursePicker
+============
+
+a. A labor of love by Jane Ullah (janeullah.com|janetalkscode.com), borne out of the ashes of the awesome course that was CSCI 4300 (Web Programming) at UGA
+b. Source code is available for your non-commercial use. Bug fixes and gentle code critiques are highly sought. :)
+
+Before 'Installing' This Application On Your Server
+===================================================
+1. replace all hardcoded paths in cronscript.sh with the relevant paths on your system
+2. run the script using cron to automagically grab the needed csv files, perform some surgery, generate some JSON files and populate your database
+
+Questions
+=========
+a. @janetalkstech on Twitter 
+b. janeullah@gmail.com
