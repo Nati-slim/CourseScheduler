@@ -10,7 +10,7 @@ span.underline{
 
 .plus-sign{
 	font-size: 140%;
-	color: green;
+	color: #004A61;
 }
 
 
@@ -137,6 +137,8 @@ span.day{
 .checkboxes{
 	margin-bottom:10px;
 	font-size:100%;
+	font-weight:bold;
+	border: 2px dotted #f0f0f0;
 }
 
 .delete{
@@ -144,4 +146,19 @@ span.day{
 	margin-right:6px;
 	margin-top:2px;
 	font-size:140%;
+}
+
+#AvailableSpan{
+	letter-spacing:2px;
+	color:#004A61;
+}
+
+#FullSpan{
+	letter-spacing:2px;
+	color:#444444;
+}
+
+#CancelledSpan{
+	letter-spacing:2px;
+	color:#444444;
 }

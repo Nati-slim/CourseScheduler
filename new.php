@@ -160,7 +160,8 @@ $emailurl = "classes/controllers/auth.php";
     <div class="container">
     	<div class="row">
 		    <div class="col-xs-6 col-md-3" id="leftdiv">
-				<p id="infoMessage" class="alert alert-info" style="font-weight:bold;color:white;background-color:#004A61">Selected: <?php echo $semesters[$semesterSelected]; ?></p>
+				<p id="infoMessage" class="alert alert-info" style="font-size:140%;font-weight:bold;color:white;background-color:#004A61">
+					<?php echo $semesters[$semesterSelected]; ?></p>
 				<?php if (strlen($errorMessage) > 0) { 
 					echo "<script type=\"text/javascript\"> $('#errorMessage').show(); </script>";	
 				?>
@@ -197,12 +198,9 @@ $emailurl = "classes/controllers/auth.php";
 				<br/><br/>
 
 				<div id="controlCheckboxes" style="display:none;" class="checkboxes">
-					<form method="post" action="classes/controllers/coursecontroller.php" id="checkboxForm" name="checkboxForm"></form>
-						<input type="hidden" name="action" id="action" value="filterSections" />
-						<input checked type="checkbox" class="checkedElement" id="Available" name="Available" value="Available"/>Available
-						<input checked type="checkbox" class="checkedElement" id="Full" name="Full" value="Full"/>Full
-						<input checked type="checkbox" class="checkedElement" id="Cancelled" name="Cancelled" value="Cancelled"/>Cancelled
-					</form>
+					<input checked type="checkbox" class="checkedElement" id="Available" name="Available" value="Available"/><span id="AvailableSpan">Available</span>
+					<input checked type="checkbox" class="checkedElement" id="Full" name="Full" value="Full"/><span id="FullSpan">Full</span>
+					<input checked type="checkbox" class="checkedElement" id="Cancelled" name="Cancelled" value="Cancelled"/><span id="CancelledSpan">Cancelled</span>
 				</div>
 
 				<div class="panel-group" id="sectionsFound">
