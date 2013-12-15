@@ -160,7 +160,7 @@ $emailurl = "classes/controllers/auth.php";
     <div class="container">
     	<div class="row">
 		    <div class="col-xs-6 col-md-3" id="leftdiv">
-				<p id="infoMessage" class="alert alert-info" style="font-weight:bold;color:white;background-color:#4AA7FF">Selected: <?php echo $semesters[$semesterSelected]; ?></p>
+				<p id="infoMessage" class="alert alert-info" style="font-weight:bold;color:white;background-color:#004A61">Selected: <?php echo $semesters[$semesterSelected]; ?></p>
 				<?php if (strlen($errorMessage) > 0) { 
 					echo "<script type=\"text/javascript\"> $('#errorMessage').show(); </script>";	
 				?>
@@ -219,7 +219,7 @@ $emailurl = "classes/controllers/auth.php";
 					$(function(){
 						$('#courseEntry').typeahead({
 							name: 'courses',
-							limit: 7,
+							limit: 10,
 							prefetch: $('#jsonURL').val(),                                     
 							template: [                                                                 
 								'<p class="tt-courseShortname">{{coursePrefix}}-{{courseNumber}}</p>',                         

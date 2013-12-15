@@ -16,7 +16,7 @@ var selectOptions;
 					Object.keys(schedule).forEach(function(key){
 						var section = schedule[key];
 						var classDiv = "<div id=\"schedule_" + section.callNumber + "\" class=\"individualSection\">";
-						classDiv += "<span onclick=\"removeSection(" + section.callNumber + ")\""  + " class=\"glyphicon glyphicon-remove pull-right\" style=\"margin-right:6px;margin-top:2px;font-size:140%;\"></span>";
+						classDiv += "<span onclick=\"removeSection(" + section.callNumber + ")\""  + " class=\"glyphicon glyphicon-remove pull-right delete\"></span>";
 						classDiv += "<form method=\"post\" action=\"classes/controllers/schedulecontroller.php\" id=\"removeSectionForm_" + section.callNumber + "\" name=\"removeSectionForm_" + section.callNumber + "\">";
 						classDiv += "<input type=\"hidden\" name=\"action\" id=\"action\" value=\"removeSection\" />";
 						classDiv += "<input type=\"hidden\" id=\"sectionToBeRemoved_" + section.callNumber + "\" name=\"sectionToBeRemoved\" value=\"" + section.callNumber + "\" />";
@@ -57,29 +57,42 @@ var selectOptions;
 			
 		});
 		
+		/* Function called when user clicks the Remove All Button*/
 		function removeAll(){
-			$('body').css('cursor', 'wait');
-			$.ajax({
-				type: "POST",
-				url: 'classes/controllers/schedulecontroller.php',
-				data: { action : "removeAllSections"},
-				dataType: "json"
-			})
-			.done(function(msg){
-				$('body').css('cursor', 'auto');
-				console.log(msg);
-				if (msg.errorMessage.length == 0){
-					$('#errorMessage').empty().hide();
-					setTimeout(function(){
-						location.reload();
-					},1000);
-				}else{
-					$('#errorMessage').show().append(msgObj.errorMessage);
+			$('#removeAllSectionInfo').show();
+			$('#dialog-removeAllSections').dialog({
+				resizable: false,
+				modal: true,
+				buttons: {
+					Okay: function (){
+						$('body').css('cursor', 'wait');
+						$.ajax({
+							type: "POST",
+							url: 'classes/controllers/schedulecontroller.php',
+							data: { action : "removeAllSections"},
+							dataType: "json"
+						})
+						.done(function(msg){
+							$('body').css('cursor', 'auto');
+							console.log(msg);
+							if (msg.errorMessage.length == 0){
+								$('#errorMessage').empty().hide();
+								setTimeout(function(){
+									location.reload();
+								},1000);
+							}else{
+								$('#errorMessage').show().append(msgObj.errorMessage);
+							}
+						})
+						.fail(function(msg){
+							$('body').css('cursor', 'auto');
+							console.log("Error: " + msg.responseTextvalue);				
+						});
+					},
+					Cancel: function(){
+						$(this).dialog("close");
+					}
 				}
-			})
-			.fail(function(msg){
-				$('body').css('cursor', 'auto');
-				console.log("Error: " + msg.responseTextvalue);				
 			});
 		}
 
@@ -95,10 +108,6 @@ var selectOptions;
 			$('.day').bind('mouseout',function(e){
 				$(this).removeClass('hover');
 			});	
-		}
-		
-		function generateMeetingBlocks($mtg){
-
 		}
 
 		//http://stackoverflow.com/questions/5223/length-of-javascript-object-ie-associative-array
@@ -122,17 +131,6 @@ var selectOptions;
     	/* Add listener to checkboxes and return an array of currently selected items*/
     	function addCheckboxListener(){
 			$('.checkedElement').change(function(){
-				var ischecked = $(this).context.checked;
-				var selection = $(this).val();
-				//console.log("isChecked: " + ischecked + " selection: " + selection);
-				/*var options = [];
-				//Available, Full, Cancelled
-				$('.checkedElement').each(function( index ) {
-					if ($(this).context.checked){
-						options.push($(this).val());
-					}					
-				});*/
-				//console.log("Options: " + options);
 				$('body').css('cursor', 'wait');
 				$.ajax({
 					type: "POST",
@@ -142,9 +140,9 @@ var selectOptions;
 				})
 				.done(function(msg){
 					$('body').css('cursor', 'auto');
-					console.log(msg);
-					//sListings = msg;
-  					//populateSections(msg);
+					//console.log(msg);
+					sListings = msg;
+  					populateSections(msg);
 				})
 				.fail(function(msg){
 					$('body').css('cursor', 'auto');
@@ -210,35 +208,7 @@ var selectOptions;
 			$('#sectionsFound').hide("slow",function(){});
 		}
 		
-		
-		function addSectionIffy(callNumber){
-			console.log(callNumber);
-			$.ajax({
-				type: "POST",
-  				url: 'classes/controllers/schedulecontroller.php',
-  				data: { action : "addSection", addSectionCallNumber : callNumber},
-				dataType: "json"
-	        })
-			.done(function(msg){
-  				console.log(msg);
-				$('#errorMessage').show();
-				$('#errorMessage').append(msg.errorMessage);
-
-				if (msg.errorMessage = ""){
-					alert("Empty");
-				}
-				setTimeout(function() {
-					$('#errorMessage').fadeOut('fast');
-				}, 5000);
-			})
-			.fail(function(msg){
-				console.log("Error: " + msg.responseTextvalue);				
-				Object.keys(msg).forEach(function(key){
-					console.log("key: " + key + "value: " + msg[key]);
-				});
-			});
-		}
-
+		/* Add a single section*/
 		function addSection(callNumber){
 			var formName = "#addSectionForm_" + callNumber;
 			console.log(formName);

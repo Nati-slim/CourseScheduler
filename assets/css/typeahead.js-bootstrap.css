@@ -14,7 +14,7 @@
 }
 
 .typeahead {
-  background-color: #fff;
+  background-color: #F0F0F0;
 }
 
 .typeahead:focus {
@@ -32,7 +32,7 @@
 }
 
 .tt-dropdown-menu {
-  width: 422px;
+  width: 100%;
   margin-top: 12px;
   padding: 8px 0;
   background-color: #fff;
@@ -53,8 +53,8 @@
 }
 
 .tt-suggestion.tt-is-under-cursor {
-  color: #fff;
-  background-color: #0097cf;
+  color: #F0F0F0;
+  background-color: #004A61;
 
 }
 

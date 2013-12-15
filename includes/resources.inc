@@ -1,7 +1,7 @@
-    <script src="<?php echo $asseturl ."/js/jquery-1.9.1.min.js"; ?>"></script>
-    <script src="<?php echo $asseturl ."/js/bootstrap.min.js"; ?>"></script>
-    <script src="<?php echo $asseturl ."/js/coursepicker.js"; ?>"></script>
-    <script src="<?php echo $asseturl ."/js/alertify.min.js"; ?>"></script>
+    <script type="text/javascript" src="<?php echo $asseturl ."/js/jquery-1.9.1.min.js"; ?>"></script>
+    <script type="text/javascript" src="<?php echo $asseturl ."/js/bootstrap.min.js"; ?>"></script>
+    <script type="text/javascript" src="<?php echo $asseturl ."/js/coursepicker.js"; ?>"></script>
+    <script type="text/javascript" src="<?php echo $asseturl ."/js/alertify.min.js"; ?>"></script>
     <link href="<?php echo $asseturl ."/css/bootstrap.min.css"; ?>" rel="stylesheet">
     <link href="<?php echo $asseturl ."/css/coursepicker.css"; ?>" rel="stylesheet">
     <link href="<?php echo $asseturl ."/css/alertify.core.css"; ?>"  rel="stylesheet" media="screen">

@@ -1,7 +1,8 @@
 var daysOfWeek = [ "Monday", "Tuesday", "Wednesday", "Thursday", "Friday" ];
 var timesOfDay = [ "8:00am", "9:00am", "10:00am", "11:00am", "12:00pm",
 			"1:00pm", "2:00pm", "3:00pm", "4:00pm","5:00pm","6:00pm","7:00pm","8:00pm","9:00pm" ];
-var colors = [ "#D9EDF7", "#0D63B6","#CC333F","#317A22","#E5924C","#C34B5F","#4682B4","#228B22","#EE3B3B","#6E7B8B","#7584B5" ];
+var allcolors = [ "#D9EDF7", "#0D63B6","#CC333F","#317A22","#E5924C","#C34B5F","#4682B4","#228B22","#EE3B3B","#6E7B8B","#7584B5" ];
+var colors = ["#004A61","#008789","#FC4349","#F0F0F0","#444444"]
 var TOP_MARGIN = "0px";
 var LEFT_MARGIN = "0px";
 var RIGHT_MARGIN = "0px";

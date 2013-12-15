@@ -26,13 +26,15 @@ div.individualSection{
 
 div.individualSection span.heading{
 	display: block;
-	border: 2px solid #4AA7FF;
+	border: 2px solid #004A61;
     -moz-border-radius: 15px;
     -webkit-border-radius: 15px;
     -khtml-border-radius: 15px;
     border-radius: 15px;
-	background-color: #4AA7FF; /*#FFE4B5; #6495ED;*/
-	color: #000000;
+	background-color: #004A61;
+	color: #F0F0F0;
+	text-transform: uppercase;
+	font-weight:bold;
 }
 
 #dummyHeader{
@@ -58,6 +60,11 @@ span.row1.left{
 	float:right;
 }
 
+span.row1.left a{
+	color: #004A61;
+}
+
+
 span.row2{
 	text-transform:capitalize;
 	font-style:italic;
@@ -79,7 +86,7 @@ span.day{
 	text-align:center;
 	padding:2px;	
 	margin:2px;
-	border: 2px solid #4AA7FF;
+	border: 2px solid #004A61;
     -moz-border-radius: 20px;
     -webkit-border-radius: 20px;
     -khtml-border-radius: 20px;
@@ -89,19 +96,19 @@ span.day{
 }
 
 .hover{
-	background-color:#4AA7FF;
-	color:#ffffff;
+	background-color:#004A61;
+	color:#F0F0F0;
 	font-weight:bold;
 }
 
 .panel-heading.available{
-	color:#DCDCDC;
-	background-color:#105604;
+	color:#F0F0F0;
+	background-color:#004A61;
 }
 
 .panel-heading.notavailable{
-	color:#DCDCDC;
-	background-color:#C0261C;
+	color:#F0F0F0;
+	background-color:#444444;
 }
 
 .rounded-corners {
@@ -120,15 +127,21 @@ span.day{
 	margin-top: 4px;
 }
 
-#removeAllButton:hover{
-	
+#removeAllButton:hover{	
     border: none;
-    background:#4AA7FF;
-    color: #ffffff;
+    background:#004A61;
+    color: #F0F0F0;
     box-shadow: 0px 3px 1px #777;
 }
 
 .checkboxes{
 	margin-bottom:10px;
 	font-size:100%;
+}
+
+.delete{
+	color:#F0F0F0;
+	margin-right:6px;
+	margin-top:2px;
+	font-size:140%;
 }
