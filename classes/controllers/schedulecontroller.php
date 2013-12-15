@@ -119,7 +119,7 @@ if ($requestType === 'POST') {
 			$session->errorMessage = $e->getMessage();
 			//echo json_encode($result);
 		}
-		header("Location: http://apps.janeullah.com/coursepicker/new.php");	
+		header("Location: http://apps.janeullah.com/coursepicker/");	
 	}else if (strcmp($action,"removeSection") == 0){
 		$callNum = get_post_var("sectionToBeRemoved");
 		$userid = $session->userid;

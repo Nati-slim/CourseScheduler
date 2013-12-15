@@ -1,9 +1,0 @@
-#!/bin/bash
-for i in $(ls offerings/athens)
-do
-	echo $i;
-	sort -t\, -k 3,3d -k 4,4d -k 2,2n "offerings/athens/$i" > "offerings/athens/sorted_$i";
-done
-
-
-

@@ -1,244 +1,282 @@
 <?php
+require_once("classes/helpers/session.php");
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+$session = new Session();
 $controller = "classes/controllers/controller.php";
+$errorMessage = $session->errorMessage;
+$uga_file = file_get_contents("assets/json/uga_building_names.json");
+
+
+/**
+ * Function to undo effects of magic quotes
+ * Returns the $_POST value matching the provided key
+ * @param String $var key in $_POST variable
+ * @return String $val value matching $_POST['key']
+ */
+function get_post_var($var){
+	$val = filter_var($_POST[$var],FILTER_SANITIZE_MAGIC_QUOTES);
+	return $val;
+}
+
+//Spring 2014
+if (isset($session->semesterSelected)){
+	$semesterSelected = $session->semesterSelected;
+}else{
+	$semesterSelected = "201402-UNIV";
+	$session->semesterSelected = $semesterSelected;
+}
+
+if (isset($session->jsonURL)){
+	$jsonURL = $session->jsonURL;
+}else{
+	$jsonURL = "assets/json/tp/tp-201402-UNIV.json";
+	$session->jsonURL = $jsonURL;
+}
+
+
+$semesters = array();
+$semesters['201405-UNIV'] = '(Athens) Summer 2014';
+$semesters['201402-UNIV'] = '(Athens) Spring 2014';
+$semesters['201308-UNIV'] = '(Athens) Fall 2013';
+$semesters['201305-UNIV'] = '(Athens) Summer 2013';
+$semesters['201405-GWIN'] = '(Gwinnett) Summer 2014';
+$semesters['201402-GWIN'] = '(Gwinnett) Spring 2014';
+$semesters['201308-GWIN'] = '(Gwinnett) Fall 2013';
+$semesters['201305-GWIN'] = '(Gwinnett) Summer 2013';
+
+
+$requestType = $_SERVER['REQUEST_METHOD'];
+if ($requestType === 'POST') {
+	$semesterSelected = get_post_var('semesterSelection');
+	if (array_key_exists($semesterSelected, $semesters)) {		
+		$jsonURL =  "assets/json/tp/tp-" . $semesterSelected . ".json";
+		$errorMessage = "";
+	}else{
+		$errorMessage = "Invalid selection";
+		$semesterSelected = "201402-UNIV";
+		$jsonURL = "assets/json/tp/tp-201402-UNIV.json";
+	}
+	$session->jsonURL = $jsonURL;
+	$session->semesterSelected = $semesterSelected;
+}
+
+$sched = $session->schedule;
+$sectionListingsJSON = $session->courseSectionsJSON;
+
+if (!isset($sched)){
+	$sched = "{}";
+}
+
+if (!isset($sectionListingsJSON)){
+	$sectionListingsJSON = "{}";
+}
+
+
+$title = "Course Picker";
+$longdesc = "";
+$shortdesc = "A course scheuling app for the University of Georgia Computer Science students";
+$asseturl = "http://apps.janeullah.com/coursepicker/assets";
+$captchaurl = "../../creds/captcha.inc";
+$recaptchaurl = "../../auth/recaptcha/recaptchalib.php";
+$emailurl = "classes/controllers/auth.php";
+$oglocal = "en_US";
+$ogtitle = "Course Picker by Jane Ullah";
+$ogdesc = "Plan your college schedule with ease using this course schedule application. Geared towards UGA students, this application includes course info from both Athens and Gwinnett campuses.";
 ?>
 <!DOCTYPE html>
 <html lang="en">
-<head>
-	<meta charset="utf-8">
-    <title>Course Scheduler</title>
+  <head>
+    <meta charset="utf-8">
+    <title><?php echo $title;?></title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="A course scheduling app for the University of Georgia Computer Science students">
+    <meta name="description" content="<?php echo $shortdesc; ?>">
     <meta name="author" content="Jane Ullah">
+	<meta property="og:locale" content="en_US" />
+	<meta property="og:title" content="<?php echo $ogtitle; ?>" />
+	<meta property="og:description" content="<?php echo $ogdesc; ?>"/>
+	<meta property="og:url" content="http://apps.janeullah.com/coursepicker/" />
+	<meta property="og:site_name" content="<?php echo $ogtitle; ?>" />
+	<meta property="og:image" content="http://apps.janeullah.com/coursepicker/assets/img/coursepicker.png" />    
 
-    <!-- Le styles -->
-    <script src="assets/js/jquery-1.9.1.min.js"></script>
-    <script src="assets/js/bootstrap.min.js"></script>
-    <script src="assets/js/alertify.min.js"></script>
+	<script type="text/javascript">
+		<?php
+			try{
+				echo "var sched = '". $sched . "';";
+				echo "var sListings = '". $sectionListingsJSON . "';";
+			}catch(Exception $e){
+				echo "console.log(\"Problem getting schedule.\");";
+			}
+		?>
+		var schedule = null;
+	</script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap -->
     <link href="assets/css/bootstrap.min.css" rel="stylesheet">
-    <link href="assets/css/coursepicker.css" rel="stylesheet">
-    <link href="assets/css/alertify.core.css" rel="stylesheet" media="screen" />
-    <link href="assets/css/alertify.default.css" rel="stylesheet" media="screen" />
-    <style type="text/css">
-		body {
-			padding-top: 20px;
-			padding-bottom: 60px;
-			background-image:url('assets/images/escheresque.png');
-			background-repeat:repeat;
+    <link href="assets/css/offcanvas.css" rel="stylesheet">
+    <link href="assets/css/picker.css" rel="stylesheet">
+    <link href="assets/css/sections.css" rel="stylesheet">
+    <link href="assets/css/typeahead.js-bootstrap.css" rel="stylesheet">
+    <link href="assets/css/tt-suggestions.css" rel="stylesheet">
 
-		}
-
-
-		/* Custom container */
-		.container {
-			margin: 0 auto;
-			max-width: 1000px;
-		}
-		.container > hr {
-			margin: 60px 0;
-		}
-
-		/* Main marketing message and sign up button */
-		.jumbotron {
-			margin: 80px 0;
-			text-align: center;
-		}
-		.jumbotron h1 {
-			font-size: 100px;
-			line-height: 1;
-		}
-		.jumbotron .lead {
-			font-size: 24px;
-			line-height: 1.25;
-		}
-		.jumbotron .btn {
-			font-size: 21px;
-			padding: 14px 24px;
-		}
-
-		.jumbotron .hidden{
-			display:none;
-		}
-
-		/* Supporting marketing content */
-		.marketing {
-			margin: 60px 0;
-		}
-		.marketing p + h4 {
-			margin-top: 28px;
-		}
-
-
-		/* Customize the navbar links to be fill the entire space of the .navbar */
-		.navbar .navbar-inner {
-			padding: 0;
-		}
-		.navbar .nav {
-			margin: 0;
-			display: table;
-			width: 100%;
-		}
-		.navbar .nav li {
-			display: table-cell;
-			width: 1%;
-			float: none;
-		}
-		.navbar .nav li a {
-			font-weight: bold;
-			text-align: center;
-			border-left: 1px solid rgba(255,255,255,.75);
-			border-right: 1px solid rgba(0,0,0,.1);
-		}
-		.navbar .nav li:first-child a {
-			border-left: 0;
-			border-radius: 3px 0 0 3px;
-		}
-		.navbar .nav li:last-child a {
-			border-right: 0;
-			border-radius: 0 3px 3px 0;
-		}
-
-		#captcha{
-			margin-left: 364px;
-			margin-bottom: 20px;
-		}
-    </style>
-    <link href="assets/css/bootstrap-responsive.css" rel="stylesheet">
-
-    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
-      <script src="assets/js/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
     <![endif]-->
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://code.jquery.com/jquery-1.10.2.min.js" type="text/javascript"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="assets/js/canvasstyle.js" type="text/javascript"></script>
+    <script src="assets/js/bootstrap.min.js" type="text/javascript"></script>	
+	<script src="http://twitter.github.com/hogan.js/builds/2.0.0/hogan-2.0.0.js" type="text/javascript"></script>
 
-    <!-- Fav and touch icons -->
-    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="assets/ico/apple-touch-icon-144-precomposed.png">
-    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="assets/ico/apple-touch-icon-114-precomposed.png">
-    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="assets/ico/apple-touch-icon-72-precomposed.png">
-    <link rel="apple-touch-icon-precomposed" href="assets/ico/apple-touch-icon-57-precomposed.png">
-    <link rel="shortcut icon" href="assets/ico/favicon.png">
-	<script type="text/javascript">
-	$(document).ready(function(){
-		$('#navigator li:eq(0)').bind('click',function(){
-			$('#jumbo0').removeClass("hidden");
-			$('#jumbo1, #jumbo2').addClass("hidden");
-			$('#navigator li:eq(0)').addClass("active");
-			$('#navigator li:eq(1), #navigator li:eq(2)').removeClass("active");
-		});
-		$('#navigator li:eq(1)').bind('click',function(){
-			$('#jumbo1').removeClass("hidden");
-			$('#jumbo0, #jumbo2').addClass("hidden");
-			$('#navigator li:eq(1)').addClass("active");
-			$('#navigator li:eq(0), #navigator li:eq(2)').removeClass("active");
-		});
-		$('#navigator li:eq(2)').bind('click',function(){
-			$('#jumbo2').removeClass("hidden");
-			$('#jumbo0, #jumbo1').addClass("hidden");
-			$('#navigator li:eq(2)').addClass("active");
-			$('#navigator li:eq(0), #navigator li:eq(1)').removeClass("active");
-		});
-	});
-	</script>
-	<script type="text/javascript">
-		$(document).ready(function(){
-			$('#sendMessage').submit(function(e){
-				e.preventDefault();
-                $.ajax({
-                    type:'POST',
-                    url: 'classes/controllers/auth.php',
-                    data:$(this).serialize(),
-                    success: function(response) {
-                        alertify.alert(response);
-                        Recaptcha.reload();
-                    }
-                });
-                return false;
-			});
-		});
-	</script>
-</head>
+	<!--JS handling saving, sharing, downloading schedules -->
+	<script src="assets/js/schedule.js" type="text/javascript"></script>
+	<!--JS related to the dynamic addition of the course navigation elements -->
+	<script src="assets/js/drawings.js" type="text/javascript"></script>
+	<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css">
+	<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+	<?php echo "<script type=\"text/javascript\"> var uga_buildings = $.parseJSON(" . json_encode($uga_file) . "); </script>"; ?>
 
-<body>
+  </head>
+  <body>
+    <div class="navbar navbar-fixed-top navbar-inverse" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="index.php">CoursePicker</a>
+        </div>
+        <div class="collapse navbar-collapse">
+          <ul class="nav navbar-nav">
+            <li class="active"><a href="index.php">Home</a></li>
+            <li><a href="#about" id="about">About</a></li>
+            <li><a href="#contact" id="contact">Contact</a></li>
+            <li><a href="#downloadSchedule" id="downloadSchedule">Download Schedule</a></li>
+          </ul>
+        </div><!-- /.nav-collapse -->
+      </div><!-- /.container -->
+    </div><!-- /.navbar -->
 
     <div class="container">
-
-      <div class="masthead">
-        <h3 class="muted">Course Picker</h3>
-        <div class="navbar">
-          <div class="navbar-inner">
-            <div class="container">
-              <ul id="navigator" class="nav">
-                <li class="active"><a href="http://apps.janeullah.com/coursepicker">Home</a></li>
-                <li><a href="#">About</a></li>
-                <li><a href="#">Contact</a></li>
-              </ul>
-            </div>
-          </div>
-        </div><!-- /.navbar -->
-      </div>
-
-      <!-- Jumbotron -->
-      <div id="jumbo0" class="jumbotron">
-        <h1>Course Picker</h1>
-        <p class="lead">Yet Another Course Scheduling application. This time, geared towards students at the <strong>University of Georgia</strong>, in <strong>the Franklin College
-		 of Arts &amp; Sciences</strong> and <strong>Computer Science</strong> majors.</p>
-        <a class="btn btn-large btn-primary" href="<?php echo $controller."?page=schedule"; ?>">Enter</a>
-      </div>
-
-
-	<div id="jumbo1" class="jumbotron hidden">
-		<p class="lead">Course Picker is developed by <a href="http://janeullah.com" title="Jane Ullah">Jane Ullah</a>. This is a course scheduler for the Fall 2013 semester at UGA. <a href="https://github.com/janoulle/CourseScheduler">View the source code</a> on Github.
-		</p>
-		<p>If you clear your browser's cookies, your schedule will be lost, take a picture! (it'll last longer. :)). You need to enable JavaScript to use this site.
-		</p>
-	</div>
-
-	<div id="jumbo2" class="jumbotron hidden">
-		<p class="lead">Tweet <a href="https://twitter.com/janetalkstech" title="@janetalkstech on Twitter">@janetalkstech</a> or firstnamelastname@gmail.com (substitute appropriately).</p>
-		<form id="sendMessage" name="sendMessage" action="#" method="post">
-			<div class="control-group">
-				<label class="control-label" for="name">Name</label>
-				<div class="controls">
-					<input type="text" id="name" name="name" class="span3" placeholder="Name" required>
-				</div>
-		    </div>
-		    <div class="control-group">
-				<label class="control-label" for="email">Email</label>
-				<div class="controls">
-					<input type="email" id="email" name="email" class="span3" placeholder="Email" required>
-				</div>
-			</div>
-		    <div class="control-group">
-				<label class="control-label" for="message">Message</label>
-				<div class="controls">
-					<textarea name="message" style="height:15em; width:18em;" id="message" placeholder="Please enter your message here." required></textarea>
-				</div>
-			</div>
-			<div id="captcha">
-				<?php
-					require_once('../../auth/recaptcha/recaptchalib.php');
-                    require_once('../../creds/captcha.inc');
-                    $publickey = RECAPTCHA_JANEULLAH_PUBLIC;
-                    echo recaptcha_get_html($publickey);
+    	<div class="row">
+		    <div class="col-xs-6 col-md-3" id="leftdiv">
+				<p id="infoMessage" class="alert alert-info" style="font-size:140%;font-weight:bold;color:white;background-color:#004A61">
+					<?php echo $semesters[$semesterSelected]; ?></p>
+				<?php if (strlen($errorMessage) > 0) { 
+					echo "<script type=\"text/javascript\"> $('#errorMessage').show(); </script>";	
 				?>
+					<p id="errorMessage" class="alert alert-warning"><?php echo $errorMessage;?></p>
+				<?php  }else if (strlen($errorMessage) == 0){	
+					echo "<script type=\"text/javascript\"> $('#errorMessage').hide(); </script>";
+				?>
+					
+				<?php } ?>				
+			
+				<span class="intro">Change Semester/Campus:</span><br/>
+				<form id="semesterSelectionForm" name="semesterSelectionForm" method="post" action="index.php">
+					<select class="form-control" id="semesterSelection" name="semesterSelection">
+						<option value="0">Select Campus</option>
+						<optgroup label="Athens Campus">
+							<option value="201405-UNIV">Summer 2014</option>
+							<option value="201402-UNIV">Spring 2014</option>
+							<option value="201308-UNIV">Fall 2013</option>
+							<option value="201305-UNIV">Summer 2013</option>		
+						</optgroup>
+						<optgroup label="Gwinnett Campus">
+							<option value="201405-GWIN">Summer 2014</option>
+							<option value="201402-GWIN">Spring 2014</option>
+							<option value="201308-GWIN">Fall 2013</option>
+							<option value="201305-GWIN">Summer 2013</option>		
+						</optgroup>
+					</select>
+				</form>
+				<br/>
+				<span class="intro">Search:</span><br/>		
+				<input id="jsonURL" name="jsonURL" type="hidden" value="<?php echo $jsonURL;?>" />
+				<input type="hidden" name="selectedSemester" id="selectedSemester" value="<?php echo $semesterSelected; ?>" />
+				<input class="form-control" type="text" id="courseEntry" name="courseEntry" placeholder="e.g. CSCI 1302" />
+				<br/><br/>
+
+				<div id="controlCheckboxes" style="display:none;" class="checkboxes">
+					<input checked type="checkbox" class="checkedElement" id="Available" name="Available" value="Available"/><span id="AvailableSpan">Available</span>
+					<input checked type="checkbox" class="checkedElement" id="Full" name="Full" value="Full"/><span id="FullSpan">Full</span>
+					<input checked type="checkbox" class="checkedElement" id="Cancelled" name="Cancelled" value="Cancelled"/><span id="CancelledSpan">Cancelled</span>
+				</div>
+
+				<div class="panel-group" id="sectionsFound">
+
+				</div>
+
+				<div id="userSchedule" style="display:none;">
+
+				</div>
+				<script src="assets/js/typeahead.min.js" type="text/javascript"></script>
+				<script type="text/javascript">
+					/*http://stackoverflow.com/questions/18019653/typeahead-js-get-selected-datum
+					https://github.com/twitter/typeahead.js#readme*/
+					$(function(){
+						$('#courseEntry').typeahead({
+							name: 'courses',
+							limit: 10,
+							prefetch: $('#jsonURL').val(),                                     
+							template: [                                                                 
+								'<p class="tt-courseShortname">{{coursePrefix}}-{{courseNumber}}</p>',                         
+								'<p class="tt-courseName">{{courseName}}</p>'                    
+						  	].join(''),                                                                 
+						  	engine: Hogan                
+						}).on('typeahead:selected',function(obj,datum){
+							//console.log(obj);
+							//console.log(datum.value);
+							var semSelected = $('#selectedSemester').val();
+							var courseValue  = datum.value;
+							$('body').css('cursor', 'wait');
+							console.log("semSelected: " + semSelected + "\n" + "courseValue: " + courseValue + "\n");
+							$.ajax({
+								type: "POST",
+  								url: 'classes/controllers/coursecontroller.php',
+  								data: { action : "getSections", semesterSelected : semSelected, courseEntry : courseValue},
+								dataType: "json"
+							})
+							.done(function(msg){
+								$('body').css('cursor', 'auto');
+								//console.log(msg);
+								sListings = msg;
+  								populateSections(msg);
+							})
+							.fail(function(msg){
+								$('body').css('cursor', 'auto');
+								console.log(msg + "Error getting sections.");
+								alertify.alert("Error getting sections.");
+							});
+						});
+					});
+				</script>
+		    </div><!--/sidebar-->
+
+
+			<div class="col-xs-12 col-md-9" id="canvasDiv">
+    	  		<canvas id="scheduleCanvas" width="780" height="750">
+				</canvas>
 			</div>
-			<div class="control-group">
-				<input type="submit" class="btn btn-large btn-primary" value="Send Message">
-			</div>
-		</form>
-	</div>
 
-    <?php /*<div class="jumbotron hidden">
-    </div>
-
-    <div class="jumbotron hidden">
-    </div>*/?>
+		</div><!--/row-->
 
 
-      <div class="footer">
-        <p>&copy; <a href="http://janeullah.com" title="Jane Ullah">Jane Ullah</a></p>
-      </div>
+      	<hr>
 
-    </div> <!-- /container -->
+     	<footer>
+        	<p>&copy; Jane Ullah 2014</p>
+      	</footer>
 
-	<?php include_once("includes/analyticstracking.php") ?>
-	</body>
+    </div><!--/.container-->
+    <?php require_once("includes/dialogs.inc") ?>	
+    <?php require_once("includes/analyticstracking.inc") ?>
+  </body>
 </html>
