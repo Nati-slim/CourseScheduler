@@ -75,27 +75,29 @@ if ($requestType === 'POST') {
 			echo json_encode($result);
 		}
 	}else if (strcmp($action,"filterSections") == 0){
-		$options = array();
-		$options['Available'] = get_post_var('Available');
-		$options['Full']= get_post_var('Full');
-		$options['Cancelled'] = get_post_var('Cancelled');
-		$options = array_filter($options,'strlen');
-		if (!isset($session->courseSections)){
-			$result['errorMessage'] = "Please select a course first.";
-			$session->errorMessage = "Please select a course first.";
-			echo json_encode($result);
-		}else if (count($options) == 3){
-			echo $session->courseSectionsJSON;
-		}else{			
+		$available = get_post_var('available');
+		$full = get_post_var('full');
+		$cancelled = get_post_var('Cancelled');
+		if (isset($session->courseSections)){
+			//Course sections will contain ALL the filters don't modify
+			//use the JSONified version for results to the page
 			$courseSections = $session->courseSections;
-			$result = array();
+			$filteredSections = array();
 			foreach($courseSections as $section){
-				if ($section->getStatus() == $options[$section->getStatus()]){
-					$result[$section->getCallNumber()] = $section;
+				$status = $section->getStatus();
+				if (($status == "Available" && $available == "true")
+					|| ($status == "Full" && $full == "true") 
+					|| ($status == "Cancelled" && $cancelled == "true")){
+					$filteredSections[$section->getCallNumber()] = $section;
 				}
 			}
+			$session->courseSectionJSON = getSectionJSON($filteredSections);
 			$result['errorMessage'] = "";
 			$session->errorMessage = "";
+			echo $session->courseSectionJSON;
+		}else{
+			$result['errorMessage'] = "Please select a course first.";
+			$session->errorMessage = "Please select a course first.";
 			echo json_encode($result);
 		}
 	}else{

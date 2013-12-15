@@ -124,16 +124,32 @@ var selectOptions;
 			$('.checkedElement').change(function(){
 				var ischecked = $(this).context.checked;
 				var selection = $(this).val();
-				console.log("isChecked: " + ischecked + " selection: " + selection);
-				var options = [];
+				//console.log("isChecked: " + ischecked + " selection: " + selection);
+				/*var options = [];
 				//Available, Full, Cancelled
 				$('.checkedElement').each(function( index ) {
 					if ($(this).context.checked){
 						options.push($(this).val());
 					}					
+				});*/
+				//console.log("Options: " + options);
+				$('body').css('cursor', 'wait');
+				$.ajax({
+					type: "POST",
+  					url: 'classes/controllers/coursecontroller.php',
+  					data: { action : "filterSections", available: $('#Available').is(":checked"), full : $('#Full').is(":checked"), cancelled : $('#Cancelled').is(":checked")},
+					dataType: "json"
+				})
+				.done(function(msg){
+					$('body').css('cursor', 'auto');
+					console.log(msg);
+					//sListings = msg;
+  					//populateSections(msg);
+				})
+				.fail(function(msg){
+					$('body').css('cursor', 'auto');
+					console.log(msg + "Error getting sections.");
 				});
-				$('#checkboxForm').submit();			
-				//updateSectionList(options);
 			});			
 		}
 		
