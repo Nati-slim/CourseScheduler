@@ -1,6 +1,7 @@
 <?php
 class UserSchedule{
 	private $schedule;
+	private $scheduleID;
 	private $imageIDs;
 	private $userid;
 	//UNIV
@@ -152,12 +153,25 @@ class UserSchedule{
 		return true;
 	}
 
+	public function getScheduleID(){
+		return $this->scheduleID;
+	}
+	
 	public function getCampus(){
 		return $this->campus;
 	}
 	
 	public function getSemester(){
 		return $this->semester;
+	}
+	
+	public function setScheduleID($id){
+		try{
+			$this->scheduleID = (string)$id;	
+			$this->errorMessage = "";
+		}catch(Exception $e){
+			$this->errorMessage = "Unable to cast building number to integer.";
+		}
 	}
 	
 	public function setCampus($location){

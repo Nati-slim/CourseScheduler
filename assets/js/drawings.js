@@ -185,7 +185,7 @@ var selectOptions;
 				});			
 				addCheckboxListener();
 			}else{				
-				$('#controlCheckboxes').hide();
+				//$('#controlCheckboxes').hide();
 				$('#sectionsFound').empty().show();
 				$('#sectionFoundHeader').remove();
 				$('#sectionsFound').append("<p class=\"alert-info\">No sections found.</p>");

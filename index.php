@@ -157,43 +157,40 @@ $ogdesc = "Plan your college schedule with ease using this course schedule appli
 		<script src="assets/js/drawings.js" type="text/javascript"></script>
 		<!--JS related to the signup/login functions -->
 		<script src="assets/js/register.js" type="text/javascript"></script>
-		<?php echo "<script type=\"text/javascript\"> var uga_buildings = $.parseJSON(" . json_encode($uga_file) . "); " . "Parse.initialize(\"" . APP_ID . "\",\"" . JS_KEY . "\")" . "</script>"; ?>
-		<script type="text/javascript">
-			var currentUser = Parse.User.current();
-			if (currentUser) {
-				
-				
-			} else {
-			}	
-		</script>
+		<?php echo "<script type=\"text/javascript\"> var uga_buildings = $.parseJSON(" . json_encode($uga_file) . "); </script>"; ?>
+
 	</head>
 	<body>
 		<div class="navbar navbar-fixed-top navbar-inverse" role="navigation">
 			<div class="container">
 				<div class="navbar-header">
-				  <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-					<span class="sr-only">Toggle navigation</span>
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-				  </button>
-				  <a class="navbar-brand" href="./">CoursePicker</a>
+					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					<a class="navbar-brand" href="./">CoursePicker</a>
 				</div>
 				<div class="collapse navbar-collapse">
-				  <ul class="nav navbar-nav">
-					<li class="active"><a href="./">Home</a></li>
-					<li><a href="#aboutModal" data-toggle="modal" id="about">About</a></li>
-					<li><a href="#contact" id="contact">Contact</a></li>
-					<li><a id="downloadSchedule" href="#pngModal" data-toggle="modal">Download Schedule</a></li>
-				  </ul>
-				  <ul id="social" class="nav navbar-nav navbar-right">
-					<li id="signupLi"><a id="signup" data-toggle="modal" href="#signupModal">Sign Up</a></li>
-					<li id="loginLi"><a id="login" data-toggle="modal" href="#loginModal">Log In</a></li>
-					<!--<li><a id="facebook" href="https://facebook.com/janetalkstech" title="Connect with Jane Ullah on Facebook!">F</a></li>
-					<li><a id="twitter" href="https://twitter.com/janetalkstech" title="Connect with Jane Ullah on Twitter!">T</a></li>
-					<li><a id="google" href="https://plus.google.com/+JaneUllah" title="Connect with Jane Ullah on Googl+">G</a></li>-->
-				  </ul>
-				  
+					<ul class="nav navbar-nav">
+						<li class="active"><a href="./">Home</a></li>
+						<li><a href="#aboutModal" data-toggle="modal" id="about">About</a></li>
+						<li><a href="#contact" id="contact">Contact</a></li>
+						<li><a id="downloadSchedule" href="#pngModal" data-toggle="modal">Download Schedule</a></li>
+					</ul>
+					<ul id="social" class="nav navbar-nav navbar-right">
+						<?php if (isset($session->loggedIn)){ 
+							echo "<li id=\"logoutLi\"><a href=\"#logout\" onclick=\"logout()\">Logout</a></li>"; 
+						} else {
+							echo "<li id=\"signupLi\"><a id=\"signup\" data-toggle=\"modal\" href=\"#signupModal\">Sign Up</a></li>";						
+							echo "<li id=\"loginLi\"><a id=\"login\" data-toggle=\"modal\" href=\"#loginModal\">Log In</a></li>";
+						} ?>
+						
+						<!--<li><a id="facebook" href="https://facebook.com/janetalkstech" title="Connect with Jane Ullah on Facebook!">F</a></li>
+						<li><a id="twitter" href="https://twitter.com/janetalkstech" title="Connect with Jane Ullah on Twitter!">T</a></li>
+						<li><a id="google" href="https://plus.google.com/+JaneUllah" title="Connect with Jane Ullah on Googl+">G</a></li>-->
+					</ul>				  
 				</div><!-- /.nav-collapse -->
 			</div><!-- /.container -->
 		</div><!-- /.navbar -->

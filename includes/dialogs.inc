@@ -1,3 +1,4 @@
+
 	<!-- Download Schedule Modal -->
 	<div class="modal fade" id="pngModal" tabindex="-1" role="dialog" aria-labelledby="pngModalLabel" aria-hidden="true">
 		  <div class="modal-dialog">
@@ -41,16 +42,17 @@
 					<div class="modal-body">
 						<div class="alert alert-danger" id="loginError" style="display:none"></div>
 						<div class="alert alert-success" id="loginSuccess" style="display:none"></div>
-						<form id="loginForm" name="loginForm" class="form-signin" role="form" method="post" >
+						<form id="loginForm" name="loginForm" class="form-signin" role="form" method="post" action="classes/controllers/usercontroller.php"  >
 							<div class="form-group">
 								<label for="loginUsername">Username</label>
-								<input type="text" class="form-control" id="loginUsername" name="loginUsername" placeholder="Enter username">
+								<input type="text" class="form-control" id="loginUsername" name="loginUsername" placeholder="Enter username" required>
 							</div>
 							<div class="form-group">
 								<label for="loginPassword">Password</label>
-								<input type="password" class="form-control" id="loginPassword" name="loginPassword" placeholder="Password">
+								<input type="password" class="form-control" id="loginPassword" name="loginPassword" placeholder="Password" required>
 							</div>
-							<button type="button" onclick="loginUser()" class="btn btn-primary">Submit</button>
+							<input type="hidden" id="action" name="action" value="login" />
+							<button type="submit" class="btn btn-primary">Submit</button>
 							<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 						</form>
 					</div>
@@ -69,24 +71,34 @@
 					<div class="modal-body">
 						<div class="alert alert-danger" id="signupError" style="display:none"></div>
 						<div class="alert alert-success" id="signupSuccess" style="display:none"></div>
-						<form id="signupForm" name="signupForm" class="form-signin" method="post" role="form">
+						<form id="signupForm" name="signupForm" class="form-signin" method="post" action="classes/controllers/usercontroller.php" role="form">
 							  <div class="form-group">
 									<label for="username">Username</label>
-									<input type="text" class="form-control" id="username" name="username" placeholder="Enter email">
+									<input type="text" class="form-control" id="username" name="username" placeholder="Enter email" required>
 							  </div>
 							  <div class="form-group">
 									<label for="email">Email address</label>
-									<input type="email" class="form-control" id="email" name="email" placeholder="Enter email">
+									<input type="email" class="form-control" id="email" name="email" placeholder="Enter email" required>
 							  </div>
 							  <div class="form-group">
 									<label for="password1">Password</label>
-									<input type="password" class="form-control" id="password1" name="password1" placeholder="Password">
+									<input type="password" class="form-control" id="password1" name="password1" placeholder="Password" required>
 							  </div>
 							  <div class="form-group">
 									<label for="password2">Password</label>
-									<input type="password" class="form-control" id="password2" name="password2" placeholder="Password">
+									<input type="password" class="form-control" id="password2" name="password2" placeholder="Password" required>
 							  </div>
-							  <button type="button" onclick="registerUser()" class="btn btn-primary">Submit</button>
+							  <div class="form-group">
+								<?php 								
+									require_once("includes/recaptcha/recaptchalib.php");
+									require_once("../../creds/captcha.inc");
+									$publickey = CP_PUBLIC_KEY;
+									echo recaptcha_get_html($publickey);
+								?>
+							  </div>
+							  <input type="hidden" id="action" name="action" value="newuser" />
+							  <!-- onclick="registerUser()" -->
+							  <button type="submit" class="btn btn-primary">Submit</button>
 							  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 						</form>
 					</div>

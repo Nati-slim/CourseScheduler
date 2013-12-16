@@ -7,104 +7,101 @@
         });
 });*/
 
-$(function(){
-	//$('#signupForm').submit(
-	
-	
-});
-function registerUser(){
-	$('body').css('cursor', 'wait');
-	var user = new Parse.User();
-	var username = $('#username').val();
-	var email = $('#email').val();
-	var pwd1 = $('#password1').val();
-	var pwd2 = $('#password2').val();
-	if (pwd1 == pwd2){
-		console.log("Testing registration.");
-		/*user.set("username", username);
-		user.set("password", pwd1);
-		user.set("email", email);
-		user.signUp(null, {
-			success: function(user) {
-				$('body').css('cursor', 'auto');
-				$('#signupError').empty().hide();
-				$('#signupForm').hide('slow', function(){ 
-					$('#signupForm').hide(); 
-				});
-				$('#signupSuccess').empty().append("Successfully signed up. You are now logged in!").show();
-			},
-			error: function(user, error) {
-				$('body').css('cursor', 'auto');
-				$('#signupError').empty().append("Error: " + error.code + " " + error.message)
-				.show();
-				$('#signupSuccess').empty().hide();
-			}
-		});*/		
-	}else{
-		$('#signupSuccess').empty().hide();
-		$('#signupError').empty().append("Error: mismatched passwords.").show();
-	}
-	return false;
+function logout(){
+	$.ajax({
+		type: "POST",
+		url: 'classes/controllers/usercontroller.php',
+		data: {action:"logout"},
+		dataType: "json"
+	})
+	.done(function(msg){
+		$('#infoMessage').empty().append("Successfully logged out!").hide("slow",function(){});
+	})
+	.fail(function(msg){
+		console.log(msg.responseText);
+	});
 }
 
-
-function loginUser(){
-	var username = $('#loginUsername').val();
-	var pwd = $('#loginPassword').val();
-	if (username.length != 0 && pwd.length != 0){
-		$('body').css('cursor', 'wait');
-		Parse.User.logIn(username, pwd, {
-			success: function(user) {
-				$('body').css('cursor', 'auto');
+$(function(){
+	//handle signups 
+	$('#signupForm').submit(function(e){
+		e.preventDefault();
+		$.ajax({
+			type: "POST",
+			url: 'classes/controllers/usercontroller.php',
+			data: $(this).serialize(),
+			dataType: "json"
+		})
+		.done(function(msg){
+			$('body').css('cursor', 'auto');
+			if (msg.errorMessage.length > 0){
+				$('#signupError').empty();
+				$('#signupError').append("Error: " + msg.errorMessage);
+				$('#signupError').show();
+				$('#signupSuccess').hide();
+				setTimeout(function(){
+					$('#signupError').empty().hide("slow",function(){});
+				}, 10000);
+			}else{
+				$('#signupError').empty().hide();
+				$('#signupSuccess').empty().append("Successfully signed up for CoursePicker! You can now login.").show();
+				$('#signupForm').hide("slow",function(){});
+			}
+			console.log("Successfully signed up");
+			//console.log(msg);
+			setTimeout(function(){
+					location.reload();
+            }, 6000);
+		})
+		.fail(function(msg){
+			$('body').css('cursor', 'auto');
+			$('#signupError').empty().append("Error signing up.").show();
+			$('#signupSuccess').empty().hide();
+			console.log(msg.responseText);
+		})
+		.always(function(msg){
+			Recaptcha.reload();
+		});
+		return false;
+	});
+	
+	//Handle logins
+	$('#loginForm').submit(function(e){
+		e.preventDefault();
+		$.ajax({
+			type: "POST",
+			url: 'classes/controllers/usercontroller.php',
+			data: $(this).serialize(),
+			dataType: "json"
+		})
+		.done(function(msg){
+			$('body').css('cursor', 'auto');
+			if (msg.errorMessage.length > 0){
+				$('#loginError').empty();
+				$('#loginError').append("Error: " + msg.errorMessage).show();
+				$('#loginSuccess').hide();
+				setTimeout(function(){
+					$('#loginError').empty().hide("slow",function(){});
+				}, 10000);
+			}else{
 				$('#loginError').empty().hide();
 				$('#loginForm').hide('slow', function(){ 
 					$('#loginForm').hide(); 
 				});
-				$('#loginSuccess').empty().append("Successfully logged in!").show();
-				$('#social').empty();
-				var username = user.getUsername();
-				console.log("User logged in: " + username);
-				var logout = "<li style=\"font-weight:bold;\">Welcome " + username + "</li>"; 
-				logout += "<li id=\"#logoutLi\"><a id=\"logout\" href=\"#logout\" onclick=\"logoutUser()\">Logout</a></li>";
-				$('#social').append(logout);
-				$('#social').show();
-				
-				/*setTimeout(function () { location.reload(true); }, 1000);
-				var myModal = $('#loginModal').on('shown', function () {
-					clearTimeout(myModal.data('hideInteval'))
-					var id = setTimeout(function(){
-						myModal.modal('hide');
-					},1000);
-					myModal.data('hideInteval', id);
-				});	*/
-				
-			},
-			error: function(user, error) {
-				$('body').css('cursor', 'auto');
-				$('#loginError').empty().append("Error: " + error.code + " " + error.message)
-				.show();
-				$('#loginSuccess').empty().hide();
-				var signupLink = "<li id=\"signupLi\"><a id=\"signup\" data-toggle=\"modal\" href=\"#signupModal\">Sign Up</a></li>";
-				var loginLink = "<li id=\"loginLi\"><a id=\"login\" data-toggle=\"modal\" href=\"#loginModal\">Log In</a></li>";
-				$('#social').empty().append(signupLink);
-				$('#social').append(loginLink);
-				$('#social').show();
+				$('#loginSuccess').empty().append("Successfully logged in!").show();				
+				setTimeout(function(){
+					location.reload();
+                }, 6000);
 			}
+			console.log("Successfully logged in.");
+			//console.log(msg);
+		})
+		.fail(function(msg){
+			$('body').css('cursor', 'auto');
+			$('#loginError').empty().append("Error: " + msg).show();
+			$('#loginSuccess').empty().hide();
+			console.log(msg.responseText);
 		});
-	}else{
-		$('#loginSuccess').empty().hide();
-		$('#loginError').empty()
-		.append("Error: " + error.code + " " + error.message)
-		.show();
-		var signupLink = "<li id=\"signupLi\"><a id=\"signup\" data-toggle=\"modal\" href=\"#signupModal\">Sign Up</a></li>";
-		var loginLink = "<li id=\"loginLi\"><a id=\"login\" data-toggle=\"modal\" href=\"#loginModal\">Log In</a></li>";
-		$('#social').empty().append(signupLink);
-		$('#social').append(loginLink);
-		$('#social').show();
-	}
-	return false;
-}
-
-function logoutUser(){
-	Parse.User.logOut();
-}
+		return false;
+	});	
+});

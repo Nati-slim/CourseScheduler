@@ -4,10 +4,31 @@ require_once("../models/Section.php");
 require_once("../models/Meeting.php");
 require_once("../helpers/CourseHelper.php");
 require_once("../helpers/session.php");
+require_once("../../../../creds/coursepicker_debug.inc");
+require_once("../../../../creds/dhpath.inc");
 $session = new Session();
 $result = array();
 
+//Specify Debug information
+$debug = DEBUGSTATUS;
+if ($debug){
+    ini_set("display_errors", 0);
+    ini_set("log_errors", 1);
+    //Define where do you want the log to go, syslog or a file of your liking with
+    ini_set("error_log", "syslog");
+}
 
+/* The $pvt debugging messages may contain characters that would need to be
+ * quoted if we were producing HTML output, like we would be in a real app,
+ * but we're using text/plain here.  Also, $debug is meant to be disabled on
+ * a "production install" to avoid leaking server setup details. */
+function fail($pub, $pvt = ''){
+	global $debug;
+	$msg = $pub;
+	if ($debug && $pvt !== '')
+		$msg .= ": $pvt";
+	exit("An error occurred ($msg).\n");
+}
 
 /**
  * Function to undo effects of magic quotes
