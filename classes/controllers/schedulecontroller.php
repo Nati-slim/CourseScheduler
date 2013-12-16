@@ -172,8 +172,8 @@ if ($requestType === 'POST') {
 				//$session->unsetAll();
 				if (count($arrayVal) == 2){
 					$userschedule = UserSchedule::makeSchedule($userid,$arrayVal[1],$arrayVal[0]);
-					$session->schedule = json_encode(array());
-					$session->scheduleObj = serialize($userschedule->to_array());
+					$session->schedule = $userschedule->to_json();	
+					$session->scheduleObj = serialize($userschedule);
 					$result['errorMessage'] = "";
 					$session->errorMessage = "";
 				}else{
