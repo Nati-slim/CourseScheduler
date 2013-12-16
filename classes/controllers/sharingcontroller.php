@@ -1,13 +1,10 @@
 <?php
-session_save_path(dirname($_SERVER['DOCUMENT_ROOT']) . '/sessions');
-session_set_cookie_params(86400,"/","apps.janeullah.com",false,true);
-session_name('CoursePicker');
-require_once("../helpers/Course.php");
-require_once("../helpers/Section.php");
-require_once("../helpers/Meeting.php");
-require_once("../helpers/DBHelper.php");
-require_once("../helpers/UserSchedule.php");
-session_start();
+$session = new Session();
+require_once("../models/Course.php");
+require_once("../models/Section.php");
+require_once("../models/Meeting.php");
+require_once("../model/UserSchedule.php");
+require_once("../helpers/CourseHelper.php");
 //error_reporting(0);
 /**
  * Returns the $_POST value matching the provided key

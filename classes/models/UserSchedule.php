@@ -3,6 +3,10 @@ class UserSchedule{
 	private $schedule;
 	private $imageIDs;
 	private $userid;
+	//UNIV
+	private $campus;
+	//201402
+	private $semester;
 	private $errorMessage;
 
 	/**
@@ -15,6 +19,22 @@ class UserSchedule{
 		$this->userid = $randomId;
 		$this->schedule = array();
 		$this->imageIDs = array();
+		$this->campus = "";
+		$this->semester = "";
+	}
+	
+	public static function makeSchedule($userid,$campus,$semester){
+		try{
+			$obj = new UserSchedule($userid);
+			$obj->setCampus($campus);
+			$obj->setSemester($semester);
+			$obj->setErrorMessage("");
+			return $obj;
+		}catch(Exception $e){
+			printf("Error instantiating user schedule object: " . $e->getMessage() . "\n");
+			exit();
+		}
+		return null;	
 	}
 
 	/**
@@ -132,6 +152,33 @@ class UserSchedule{
 		return true;
 	}
 
+	public function getCampus(){
+		return $this->campus;
+	}
+	
+	public function getSemester(){
+		return $this->semester;
+	}
+	
+	public function setCampus($location){
+		try{
+			$this->campus = (string)$location;	
+			$this->errorMessage = "";
+		}catch(Exception $e){
+			$this->errorMessage = "Unable to cast building number to integer.";
+		}
+	}
+	
+	public function setSemester($sem){
+		try{
+			$this->semester = (string)$sem;
+			$this->errorMessage = "";
+		}catch(Exception $e){
+			$this->errorMessage = "Unable to cast building number to integer.";
+		}
+	}
+	
+	
 	public function getSavedImages(){
 		return $this->imageIDs;
 	}

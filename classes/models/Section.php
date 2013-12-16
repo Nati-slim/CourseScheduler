@@ -23,6 +23,8 @@ class Section{
 	private $buildingNumber;
 	private $roomNumber;
 	private $meetings;
+	private $campus;
+	private $semester;
 	public $errorMessage;
 
 	/**
@@ -49,21 +51,28 @@ class Section{
 				$this->lecturer = (string) $teacher;
 			}
 			$this->meetings = array();
+			//Setting defaults for items not assigned yet.
 			$this->buildingNumber = -1;
 			$this->roomNumber = "";
+			$this->casTaken = -1;
+			$this->casRequired = -1;
+			$this->campus = "";
+			$this->semester = "";
 			$this->errorMessage = "";
 		}catch(Exception $e){
 			$this->errorMessage =  "Error instantiating section object: " . $e->getMessage() . "\n";
 		}
 	}
 
-	public static function makeSection($name, $prefix, $number, $callNo, $availability, $credit, $teacher,$building,$room,$casT,$casR){
+	public static function makeSection($name, $prefix, $number, $callNo, $availability, $credit, $teacher,$building,$room,$casT,$casR,$currentProgram,$term){
 		try{
 			$obj = new Section($name, $prefix, $number, $callNo, $availability, $credit, $teacher);
 			$obj->setBuildingNumber($building);
 			$obj->setRoomNumber($room);
 			$obj->setCasTaken((int)$casT);
 			$obj->setCasRequired((int)$casR);
+			$obj->setCampus($currentProgram);
+			$obj->setSemester($term);
 			$obj->errorMessage = "";
 			return $obj;
 		}catch(Exception $e){
@@ -168,7 +177,34 @@ class Section{
 			$this->errorMessage = "Unable to cast cas required to integer.";
 		}
 	}
+	
+	public function getCampus(){
+		return $this->campus;
+	}
+	
+	public function getSemester(){
+		return $this->semester;
+	}
 
+	public function setCampus($location){
+		try{
+			$this->campus = (string)$location;	
+			$this->errorMessage = "";
+		}catch(Exception $e){
+			$this->errorMessage = "Unable to cast building number to integer.";
+		}
+	}
+	
+	public function setSemester($sem){
+		try{
+			$this->semester = (string)$sem;
+			$this->errorMessage = "";
+		}catch(Exception $e){
+			$this->errorMessage = "Unable to cast building number to integer.";
+		}
+	}
+
+	
 	/**
 	 * Setter for the building number
 	 * @param int $buildingNumber e.g. 1040
@@ -260,19 +296,7 @@ class Section{
 	* Returns an array of the section values as a JSON-encoded object
 	*/
     public function to_json() {
-        $arrayValues = array();
-		$arrayValues['courseName'] = $this->courseName;
-		$arrayValues['coursePrefix'] = $this->coursePrefix;
-		$arrayValues['courseNumber'] = $this->courseNumber;
-		$arrayValues['callNumber'] = $this->callNumber;
-		$arrayValues['lecturer'] = $this->lecturer;
-		$arrayValues['status'] = $this->status;
-		$arrayValues['buildingNumber'] = $this->buildingNumber;
-		$arrayValues['roomNumber'] = $this->roomNumber;
-		$arrayValues['buildingNumber'] = $this->buildingNumber;
-		$arrayValues['casTaken'] = $this->casTaken;
-		$arrayValues['casRequired'] = $this->casRequired;
-		$arrayValues['errorMessage'] = $this->errorMessage;
+        $arrayValues = $this->to_array();
 		return json_encode($arrayValues);
     }
 
@@ -288,6 +312,8 @@ class Section{
 		$arrayValues['roomNumber'] = $this->roomNumber;
 		$arrayValues['casTaken'] = $this->casTaken;
 		$arrayValues['casRequired'] = $this->casRequired;
+		$arrayValues['campus'] = $this->campus;
+		$arrayValues['semester'] = $this->semester;
 		$arrayValues['meetings'] = $this->getMeetingsArray();
 		$arrayValues['errorMessage'] = $this->errorMessage;
 		return $arrayValues;
@@ -311,6 +337,8 @@ class Section{
 		$output .= "\"room\":\"" . $this->roomNumber . "\",";
 		$output .= "\"casTaken\":" . $this->casTaken . ",";
 		$output .= "\"casRequired\":\"" . $this->casRequired . "\",";
+		$output .= "\"campus\":" . $this->campus . ",";
+		$output .= "\"semester\":\"" . $this->semester . "\",";
 		$output .= "\"meetings\": {";
 		$len = strlen($output);
 		foreach($this->meetings as $mtg){

@@ -60,39 +60,28 @@ var selectOptions;
 		/* Function called when user clicks the Remove All Button*/
 		function removeAll(){
 			$('#removeAllSectionInfo').show();
-			$('#dialog-removeAllSections').dialog({
-				resizable: false,
-				modal: true,
-				buttons: {
-					Okay: function (){
-						$('body').css('cursor', 'wait');
-						$.ajax({
-							type: "POST",
-							url: 'classes/controllers/schedulecontroller.php',
-							data: { action : "removeAllSections"},
-							dataType: "json"
-						})
-						.done(function(msg){
-							$('body').css('cursor', 'auto');
-							console.log(msg);
-							if (msg.errorMessage.length == 0){
-								$('#errorMessage').empty().hide();
-								setTimeout(function(){
-									location.reload();
-								},1000);
-							}else{
-								$('#errorMessage').show().append(msgObj.errorMessage);
-							}
-						})
-						.fail(function(msg){
-							$('body').css('cursor', 'auto');
-							console.log("Error: " + msg.responseTextvalue);				
-						});
-					},
-					Cancel: function(){
-						$(this).dialog("close");
-					}
+			$('body').css('cursor', 'wait');
+			$.ajax({
+				type: "POST",
+				url: 'classes/controllers/schedulecontroller.php',
+				data: { action : "removeAllSections"},
+				dataType: "json"
+			})
+			.done(function(msg){
+				$('body').css('cursor', 'auto');
+				console.log(msg);
+				if (msg.errorMessage.length == 0){
+					$('#errorMessage').empty().hide();
+					setTimeout(function(){
+						location.reload();
+					},1000);
+				}else{
+					$('#errorMessage').show().append(msgObj.errorMessage);
 				}
+			})
+			.fail(function(msg){
+				$('body').css('cursor', 'auto');
+				console.log("Error: " + msg.responseTextvalue);				
 			});
 		}
 

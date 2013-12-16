@@ -94,12 +94,3 @@
 		  </div><!-- /.modal-dialog -->
 	</div><!-- /.modal -->	
 
-	<div id="dialog-modal" title="Save Schedule!">
-		<p id="imgUrlInfo"></p>
-	</div>
-	
-	<div id="dialog-removeAllSections" title="Remove All Sections">
-		<p id="removeAllSectionInfo" style="display:none;"><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>
-		All your sections will be removed if you proceed with this action.
-		Save your schedule by clicking the "Download Schedule" link.</p>
-	</div>

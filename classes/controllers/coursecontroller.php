@@ -1,7 +1,7 @@
 <?php
-require_once("../helpers/Course.php");
-require_once("../helpers/Section.php");
-require_once("../helpers/Meeting.php");
+require_once("../models/Course.php");
+require_once("../models/Section.php");
+require_once("../models/Meeting.php");
 require_once("../helpers/CourseHelper.php");
 require_once("../helpers/session.php");
 $session = new Session();

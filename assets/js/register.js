@@ -20,7 +20,8 @@ function registerUser(){
 	var pwd1 = $('#password1').val();
 	var pwd2 = $('#password2').val();
 	if (pwd1 == pwd2){
-		user.set("username", username);
+		console.log("Testing registration.");
+		/*user.set("username", username);
 		user.set("password", pwd1);
 		user.set("email", email);
 		user.signUp(null, {
@@ -38,7 +39,7 @@ function registerUser(){
 				.show();
 				$('#signupSuccess').empty().hide();
 			}
-		});		
+		});*/		
 	}else{
 		$('#signupSuccess').empty().hide();
 		$('#signupError').empty().append("Error: mismatched passwords.").show();

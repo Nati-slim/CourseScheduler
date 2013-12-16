@@ -1,7 +1,5 @@
 <?php
-session_save_path(dirname($_SERVER['DOCUMENT_ROOT']) . '/sessions');
-session_set_cookie_params(86400,"/","apps.janeullah.com",false,true);
-session_name('CoursePicker');
+$session = new Session();
 
 /**
  * Function to undo effects of magic quotes

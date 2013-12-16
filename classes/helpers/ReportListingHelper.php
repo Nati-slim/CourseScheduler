@@ -1,7 +1,7 @@
 <?php
 //place this file in a directory not accessible over the internet
 require_once("../../../../creds/credentials.inc");
-require_once("../helpers/Offering.php");
+require_once("../models/Offering.php");
 
 class ReportListingHelper{
 	private $getlistofferings;

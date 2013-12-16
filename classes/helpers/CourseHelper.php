@@ -1,9 +1,9 @@
 <?php
 //place this file in a directory not accessible over the internet
 require_once("../../../../creds/coursepicker.inc");
-require_once("../helpers/Course.php");
-require_once("../helpers/Section.php");
-require_once("../helpers/Meeting.php");
+require_once("../models/Course.php");
+require_once("../models/Section.php");
+require_once("../models/Meeting.php");
 
 class CourseHelper{
 	private $gettermcourses;
@@ -104,7 +104,7 @@ building,room,sch,currentProgram) values(DEFAULT,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?
 					$prevCallNumber = 0;
 					while($this->getcoursesections->fetch()){
 						if ($callNumber != $prevCallNumber){
-							$section = Section::makeSection($courseName, $coursePrefix, $courseNumber, $callNumber, $available, $creditHours, $lecturer,$building,$room,$casTaken,$casRequired);
+							$section = Section::makeSection($courseName, $coursePrefix, $courseNumber, $callNumber, $available, $creditHours, $lecturer,$building,$room,$casTaken,$casRequired,$currentProgram,$term);
 							if ($section){
 								$sections[$callNumber] = $section;
 								$prevCallNumber = $callNumber;
@@ -167,7 +167,7 @@ building,room,sch,currentProgram) values(DEFAULT,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?
 					$prevCallNumber = 0;
 					while($this->getsinglesection->fetch()){
 						if ($callNumber != $prevCallNumber){
-							$section = Section::makeSection($courseName, $coursePrefix, $courseNumber, $callNumber, $available, $creditHours, $lecturer,$building,$room,$casTaken,$casRequired);
+							$section = Section::makeSection($courseName, $coursePrefix, $courseNumber, $callNumber, $available, $creditHours, $lecturer,$building,$room,$casTaken,$casRequired,$currentProgram,$term);
 							if ($section){
 								$prevCallNumber = $callNumber;
 							}else{

@@ -20,7 +20,7 @@ function get_post_var($var){
 	return $val;
 }
 
-//Spring 2014
+//Spring 2014 is default
 if (isset($session->semesterSelected)){
 	$semesterSelected = $session->semesterSelected;
 }else{

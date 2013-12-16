@@ -1,9 +1,9 @@
 <?php
-require_once("../helpers/Course.php");
-require_once("../helpers/Section.php");
-require_once("../helpers/Meeting.php");
+require_once("../models/Course.php");
+require_once("../models/Section.php");
+require_once("../models/Meeting.php");
+require_once("../models/UserSchedule.php");
 require_once("../helpers/CourseHelper.php");
-require_once("../helpers/UserSchedule.php");
 require_once("../helpers/session.php");
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
@@ -46,7 +46,6 @@ function initialize($userid,$schedule){
 	$session->errorMessage = "";
 }
 
-
 function reconstructSchedule($arr){
 	$userschedule = new UserSchedule($arr['userid']);
 	$userschedule->setErrorMessage($arr['errorMessage']);
@@ -62,62 +61,74 @@ $requestType = $_SERVER['REQUEST_METHOD'];
 if ($requestType === 'POST') {
 	$action = get_post_var("action");
 	if (strcmp($action,"addSection") == 0){
-		$callNum = get_post_var("addSectionCallNumber");
-		if (!isset($session->scheduleObj)){
-			//Initialize user schedule object & set relevant $_SESSION variables
-			$userschedule = new UserSchedule(generateToken());
-			initialize($userschedule->getUserId(),$userschedule);
-			$userid = $userschedule->getUserId();
-		}else{
-			$userid = $session->userid;
-			$userschedule = unserialize($session->scheduleObj);	
-		}	
-		
-		$semesterSelected = isset($session->semesterSelected) ? $session->semesterSelected:"201402-UNIV";
-		$arrayVal = explode("-",$semesterSelected);
-		
-		$db = new CourseHelper();
-		$section = $db->getSingleSection($arrayVal[0],$callNum,$arrayVal[1]);
-		try{
-			if ($section){
-				if (strcmp($section->getStatus(),"Available") == 0){
-					//print_r($userschedule);
-					$status = $userschedule->addSection($section);
-					if (!$status){
-						$result['errorMessage'] = $userschedule->getErrorMessage();
-						$session->errorMessage = $userschedule->getErrorMessage();
-						//echo json_encode($result);
-					}else{
-						$session->errorMessage = "";
-						$session->userid = $userschedule->getUserId();
-						$session->infoMessage = "Section " . $callNum. " (". $section->getCoursePrefix()."-".$section->getCourseNumber().") added!";
-						$session->schedule = $userschedule->to_json();	
-						$session->scheduleObj = serialize($userschedule);	
-						//echo $userschedule->to_json();
-					}
+		//Get semester selected
+		$semesterSelected = $session->semesterSelected;
+		if ($semesterSelected){
+			$arrayVal = explode("-",$semesterSelected);
+			if (count($arrayVal) == 2){
+				$callNum = get_post_var("addSectionCallNumber");
+				if (!isset($session->scheduleObj)){
+					//Initialize user schedule object & set relevant $_SESSION variables
+					//$userschedule = new UserSchedule(generateToken());
+					$userschedule = UserSchedule::makeSchedule(generateToken(),$arrayVal[1],$arrayVal[0]);
+					initialize($userschedule->getUserId(),$userschedule);
+					$userid = $userschedule->getUserId();
 				}else{
+					$userid = $session->userid;
+					$userschedule = unserialize($session->scheduleObj);	
+				}	
+				
+				//Get section from database
+				$db = new CourseHelper();
+				$section = $db->getSingleSection($arrayVal[0],$callNum,$arrayVal[1]);
+				try{
+					if ($section){
+						if (strcmp($section->getStatus(),"Available") == 0){
+							//print_r($userschedule);
+							$status = $userschedule->addSection($section);
+							if (!$status){
+								$result['errorMessage'] = $userschedule->getErrorMessage();
+								$session->errorMessage = $userschedule->getErrorMessage();
+								//echo json_encode($result);
+							}else{
+								$session->errorMessage = "";
+								$session->userid = $userschedule->getUserId();
+								$session->infoMessage = "Section " . $callNum. " (". $section->getCoursePrefix()."-".$section->getCourseNumber().") added!";
+								$session->schedule = $userschedule->to_json();	
+								$session->scheduleObj = serialize($userschedule);	
+								//echo $userschedule->to_json();
+							}
+						}else{
+							$result['callNumber'] = $callNum;
+							$result['term'] = $arrayVal[0];
+							$result['currentProgram']=  $arrayVal[1];
+							$result['errorMessage'] = "Invalid section chosen.";
+							$session->errorMessage = "Section is not Available";
+							//echo json_encode($result);
+						}
+					}else{
+						$result['callNumber'] = $callNum;
+						$result['term'] = $arrayVal[0];
+						$result['currentProgram']=  $arrayVal[1];
+						$result['errorMessage'] = "Invalid section chosen.";
+						$session->errorMessage = $result['errorMessage'];
+						//echo json_encode($result);
+					}
+				}catch(Exception $e){
 					$result['callNumber'] = $callNum;
 					$result['term'] = $arrayVal[0];
 					$result['currentProgram']=  $arrayVal[1];
-					$result['errorMessage'] = "Invalid section chosen.";
-					$session->errorMessage = "Section is not Available";
+					$result['errorMessage'] = $e->getMessage();
+					$session->errorMessage = $e->getMessage();
 					//echo json_encode($result);
 				}
-			}else{
-				$result['callNumber'] = $callNum;
-				$result['term'] = $arrayVal[0];
-				$result['currentProgram']=  $arrayVal[1];
-				$result['errorMessage'] = "Invalid section chosen.";
-				$session->errorMessage = "Invalid section chosen.";
-				//echo json_encode($result);
-			}
-		}catch(Exception $e){
-			$result['callNumber'] = $callNum;
-			$result['term'] = $arrayVal[0];
-			$result['currentProgram']=  $arrayVal[1];
-			$result['errorMessage'] = $e->getMessage();
-			$session->errorMessage = $e->getMessage();
-			//echo json_encode($result);
+			}else{			
+				$result['errorMessage'] = "Invalid number of parameters found in selected semester.";
+				$session->errorMessage = $result['errorMessage'];
+			}	
+		}else{
+			$result['errorMessage'] = "Please choose a semester before adding a section.";
+			$session->errorMessage = $result['errorMessage'];
 		}
 		header("Location: http://apps.janeullah.com/coursepicker/");	
 	}else if (strcmp($action,"removeSection") == 0){
@@ -156,24 +167,26 @@ if ($requestType === 'POST') {
 		if (isset($userid)){
 			$userschedule = unserialize($session->scheduleObj);	
 			if ($userid == $userschedule->getUserId()){
-				/*$sched = $userschedule->getSchedule();
-				foreach($sched as $section){
-					$userschedule->deleteSection($section->getCallNumber());
+				$semesterSelected = $session->semesterSelected;
+				$arrayVal = explode("-",$semesterSelected);
+				//$session->unsetAll();
+				if (count($arrayVal) == 2){
+					$userschedule = UserSchedule::makeSchedule($userid,$arrayVal[1],$arrayVal[0]);
+					$session->schedule = json_encode(array());
+					$session->scheduleObj = serialize($userschedule->to_array());
+					$result['errorMessage'] = "";
+					$session->errorMessage = "";
+				}else{
+					$result['errorMessage'] = "Invalid parameters found for the semester selected.";
+					$session->errorMessage = $result['errorMessage'];
 				}
-				$session->schedule = $userschedule->to_json();	
-				$session->scheduleObj = serialize($userschedule->to_array());	*/
-				$session->unsetAll();
-				$userschedule = new UserSchedule($userid);
-				initialize($userid,$userschedule);
-				$result['errorMessage'] = "";
-				$session->errorMessage = "";
 			}else{
 				$result['errorMessage'] = "Unauthorized to perform this action.";
-				$session->errorMessage = "Unauthorized to perform this action.";
+				$session->errorMessage = $result['errorMessage'];
 			}
 		}else{
 			$result['errorMessage'] = "Unauthorized to perform this action.";
-			$session->errorMessage = "Unauthorized to perform this action.";
+			$session->errorMessage = $result['errorMessage'];
 		}
 		echo json_encode($result);
 	}else if (strcmp($action,"downloadSchedule") == 0){
@@ -206,8 +219,8 @@ if ($requestType === 'POST') {
 				}
 			}else{				
 				$result['imgToken'] = "";
-				$result['errorMessage'] = "User id not found";
-				$session->errorMessage = "User id not found.";
+				$result['errorMessage'] = "User id not found when attempting to save schedule";
+				$session->errorMessage = "User id not found when attempting to save schedule";
 			}
 		}else{
 			$result['imgToken'] = "";
