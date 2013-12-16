@@ -417,56 +417,7 @@ function initializeCanvas() {
 	drawClassMeeting(ctx);
 	canvasContext = ctx;
 	canvasItem = c;
-	createImage(canvasItem);
+	//createImage(canvasItem);
 	//updateListeners(ctx,courseRectangles);
 }
 
-
-/*
- Initialize the canvas with gridlines and labels
- */
-function initializeCanvas() {
-	var c = document.getElementById("scheduleCanvas");
-	var ctx = c.getContext("2d");
-	//Draw vertical lines
-	for ( var x = CELL_WIDTH; x <= 650; x += CELL_WIDTH) {
-		ctx.lineWidth = 2;
-		ctx.strokeStyle = "#000000";
-		ctx.moveTo(x, 0);
-		ctx.lineTo(x, 750);
-		ctx.stroke();
-	}
-	//Draw horizontal lines
-	for ( var y = CELL_HEIGHT; y <= 730; y += CELL_HEIGHT) {
-		ctx.lineWidth = 2;
-		ctx.strokeStyle = "#000000";
-		ctx.moveTo(0, y);
-		ctx.lineTo(780, y);
-		ctx.stroke();
-	}
-	ctx.font = "16px Georgia";
-	var y = CELL_HEIGHT+30;
-
-	//Draw hour text messengers
-	for ( var counter = 0; counter < 14; counter++) {
-		ctx.fillText(timesOfDay[counter], 25, y);
-		y += CELL_HEIGHT;
-	}
-
-	//Draw Day text
-	var x = CELL_WIDTH+10;
-	for ( var counter = 0; counter < 5; counter++) {
-		ctx.fillText(daysOfWeek[counter], x, 25);
-		x += CELL_WIDTH+5;
-	}
-
-	drawClassMeeting(ctx);
-	canvasContext = ctx;
-	canvasItem = c;
-	createImage(canvasItem);
-	//updateListeners(ctx,courseRectangles);
-}
-
-function getImageUrl(){
-	
-}

@@ -190,6 +190,7 @@ if ($requestType === 'POST') {
 					
 					if (file_put_contents($imgFile,$imgData)){
 						//$imgFile = substr($imgFile,16);
+						$userschedule->addImageID($token);
 						$result['imgToken'] = $token;
 						$result['errorMessage'] = "";
 						$session->errorMessage = "";

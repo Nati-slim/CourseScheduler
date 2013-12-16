@@ -1,7 +1,7 @@
 <?php
 class UserSchedule{
 	private $schedule;
-	private $scheduleIDs;
+	private $imageIDs;
 	private $userid;
 	private $errorMessage;
 
@@ -14,7 +14,7 @@ class UserSchedule{
 	function __construct($randomId){
 		$this->userid = $randomId;
 		$this->schedule = array();
-		$this->scheduleIDs = array();
+		$this->imageIDs = array();
 	}
 
 	/**
@@ -132,12 +132,15 @@ class UserSchedule{
 		return true;
 	}
 
-	public function getScheduleIDs(){
-		return $this->scheduleIDs;
+	public function getSavedImages(){
+		return $this->imageIDs;
 	}
 	
-	public function addScheduleID($token){
-		$this->scheduleIDs[] = $token;
+	/* 
+	 * Adds the image token to the user schedule object for retrieval later
+	 * */
+	public function addImageID($token){
+		$this->imageIDs[] = $token;
 	}
 	
 	/**
@@ -190,48 +193,8 @@ class UserSchedule{
 			$classSchedule[$section->getCallNumber()] = $section->to_array();
 		}
 		$result['classSchedule'] = $classSchedule;
-		$result['savedSchedules'] = $this->scheduleIDs;
+		$result['savedImageIDs'] = $this->imageIDs;
 		return $result;
 	}
-
-	/**
-	 * Return a string version of the UserSchedule object
-	 * which should be valid JSON output for use in drawing the schedule
-	 * @return String $output valid JSON representation of the object
-	 */
-	public function toJSON(){
-		$output = "{";
-		$len = 1;
-		foreach($this->schedule as $item){
-			$output .= "\"" . $item->getCallNumber() . "\":" . $item->toJSON() . ",";
-		}
-		if (strlen($output) > 1){
-			$output = substr($output,0,strlen($output)-1);
-		}
-		$output .= "}";
-		return $output;
-	}
-
-	/**
-	 * Return a string version of the UserSchedule object
-	 * which should be valid JSON output for use in drawing the schedule
-	 * @return String $output valid JSON representation of the object
-	 */
-	public function __toString(){
-		$output = "{";
-		$len = 1;
-		foreach($this->schedule as $item){
-			$output .= "\"" . $item->getCallNumber() . "\":" . $item->toJSON() . ",";
-		}
-		if (strlen($output) > 1){
-			$output = substr($output,0,strlen($output)-1);
-		}
-		$output .= "}";
-		return $output;
-	}
-
-    /*public function __sleep(){
-		return array('schedule','userid','errorMessage');
-    }*/
 }
 ?>

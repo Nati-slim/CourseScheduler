@@ -47,7 +47,7 @@ div.individualSection span.heading{
 	padding: 2px;
 }
 
-span.row1{
+span.row1, span.row2{
 	font-weight:bold;
 	text-transform:uppercase;
 }
@@ -64,15 +64,28 @@ span.row1.left a{
 	color: #004A61;
 }
 
-
-span.row2{
-	text-transform:capitalize;
-	font-style:italic;
+span.available{
+	color:#008789;
 	font-weight:bold;
-	height: 100%;
-	margin: 0 auto;
 }
 
+span.full{
+	color:#FC4349;
+	font-weight:bold;
+}
+
+span.cancelled{
+	color:#444444;
+	font-weight:bold;
+}
+
+span.row2.right{
+	float:left;
+}
+
+span.row2.left{
+	float:right;
+}
 
 span.meetingTimes{
 	display:block;

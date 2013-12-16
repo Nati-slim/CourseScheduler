@@ -157,43 +157,50 @@ var selectOptions;
 		 * 
 		 **/
 		function populateSections(data){
-			$('#controlCheckboxes').show();
 			//console.log(data);
-			$('#sectionsFound').empty();
-			$('#sectionsFound').show();
-			$('#sectionFoundHeader').remove();
-			var title = $('#collapseColumn').attr("title");
-			if (title == "Collapse this column"){
-				expandDiv();
-			}
 			var size = Object.keys(data).length;
-			var counter = 0;
-			var sectionDiv;
-			var allSections = "";
-			sListings = data;
-			var heading = "<span id=\"sectionFoundHeader\" class=\"intro\"><span id=\"collapseColumn\" title=\"Collapse this column\" class=\"glyphicon glyphicon-arrow-up pull-left\"></span>Sections Found:<span class=\"badge pull-right\">" + size + "</span><br/></span>";
-			/*Insert the head before the according div*/ 
-			$('#sectionsFound').before(heading);
-			//console.log(data);
-			Object.keys(data).forEach(function(key){
-				var section = data[key];
-				sectionDiv = generateDiv(counter,section);
-				allSections += sectionDiv;
-				counter++;
-			});
-			/* Add the created divs to the main body of the accordion*/
-			$('#sectionsFound').append(allSections);
-
-			/* Add listener to the up/down sign for collapsing the column*/
-			$('#collapseColumn').on('click',function(){
-				title = $('#collapseColumn').attr("title");
+			//console.log(size);
+			if (size != 0){
+				$('#controlCheckboxes').show();
+				$('#sectionsFound').empty().show();
+				$('#sectionFoundHeader').remove();
+				var title = $('#collapseColumn').attr("title");
 				if (title == "Collapse this column"){
 					expandDiv();
-				}else{
-					collapseDiv();
 				}
-			});			
-			addCheckboxListener();
+				var counter = 0;
+				var sectionDiv;
+				var allSections = "";
+				sListings = data;
+				var heading = "<span id=\"sectionFoundHeader\" class=\"intro\"><span id=\"collapseColumn\" title=\"Collapse this column\" class=\"glyphicon glyphicon-arrow-up pull-left\"></span>Sections Found:<span class=\"badge pull-right notification\">" + size + "</span><br/></span>";
+				/*Insert the head before the according div*/ 
+				$('#sectionsFound').before(heading);
+				//console.log(data);
+				Object.keys(data).forEach(function(key){
+					var section = data[key];
+					sectionDiv = generateDiv(counter,section);
+					allSections += sectionDiv;
+					counter++;
+				});
+				/* Add the created divs to the main body of the accordion*/
+				$('#sectionsFound').append(allSections);
+
+				/* Add listener to the up/down sign for collapsing the column*/
+				$('#collapseColumn').on('click',function(){
+					title = $('#collapseColumn').attr("title");
+					if (title == "Collapse this column"){
+						expandDiv();
+					}else{
+						collapseDiv();
+					}
+				});			
+				addCheckboxListener();
+			}else{				
+				$('#controlCheckboxes').hide();
+				$('#sectionsFound').empty().show();
+				$('#sectionFoundHeader').remove();
+				$('#sectionsFound').append("<p class=\"alert-info\">No sections found.</p>");
+			}
 		}
 		
 		function collapseDiv(){
@@ -279,14 +286,33 @@ var selectOptions;
 			if (index > 0){
 				msg += "<div id=\"collapse" + index + "\" class=\"panel-collapse collapse\">";
 			}else{
+				//expand just the first section 
 				msg += "<div id=\"collapse" + index + "\" class=\"panel-collapse collapse in\">";
 			}
       		msg += "<div class=\"panel-body\">";
-			msg += "<span class=\"underline\">Lecturer</span>: " + section.lecturer + "<br/>";
-			msg += "<span class=\"underline\">Status</span>: " + section.status + "<br/>";
-			msg += "<span class=\"underline\">Building</span>: " + getBuildingName(section.buildingNumber) + "<br/>";
-			msg += "<span class=\"underline\">Room</span>: " + section.roomNumber + "<br/>";
-			msg += "<span class=\"underline\">Meetings</span><br/>";
+      		msg += "<span class=\"row1 right\">" + section.lecturer + "</span>";
+      		msg += "<span class=\"row1 left\">";
+      		//link the class url
+			var campus = $('#infoMessage').text();
+			if (campus.indexOf("Athens") > 0){
+				msg += "<a href=\"http://bulletin.uga.edu/Link.aspx?cid=" + section.coursePrefix + "" + section.courseNumber;
+				msg += "\" title=\"UGA Bulletin Listing for " + section.courseName + "\">";
+				msg += section.coursePrefix + "-" + section.courseNumber + "</a></span><br/>";
+			}else{
+				msg += section.coursePrefix + "-" + section.courseNumber + "</span><br/>";
+			}
+			//change color depending on availability
+			if (section.status == "Available"){
+				msg += "<span class=\"row1 right available\">" + section.status + "</span>";
+			}else if (section.status == "Full"){
+				msg += "<span class=\"row1 right full\">" + section.status + "</span>";
+			}else{
+				msg += "<span class=\"row1 right cancelled\">" + section.status + "</span>";
+			}
+			//Slots opens
+			msg += "<span class=\"row1 left\">" + section.casTaken + "/" + section.casRequired + "</span><br/>";
+			msg += "<span class=\"row1 right\">" +  getBuildingName(section.buildingNumber) + "</span>";
+			msg += "<span class=\"row1 left\">" + section.roomNumber +  "</span><br/>";
 			var mtgs = section.meetings;
 			Object.keys(mtgs).forEach(function(key){
 				msg += key + " : " + mtgs[key] + "<br/>";

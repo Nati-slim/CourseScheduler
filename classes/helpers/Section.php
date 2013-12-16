@@ -18,6 +18,8 @@ class Section{
 	private $status;
 	private $courseName;
 	private $courseCredit;
+	private $casTaken;
+	private $casRequired;
 	private $buildingNumber;
 	private $roomNumber;
 	private $meetings;
@@ -41,16 +43,36 @@ class Section{
 			$this->callNumber = (int) $callNo;
 			$this->status = (string) $availability;
 			$this->courseCredit = (double) $credit;
-			$this->lecturer = (string) $teacher;
+			if (strcmp($teacher,"null") == 0){
+				$this->lecturer = "No Professor";
+			}else{
+				$this->lecturer = (string) $teacher;
+			}
 			$this->meetings = array();
 			$this->buildingNumber = -1;
 			$this->roomNumber = "";
 			$this->errorMessage = "";
 		}catch(Exception $e){
-			echo "Error instantiating section object: " . $e->getMessage() . "\n";
+			$this->errorMessage =  "Error instantiating section object: " . $e->getMessage() . "\n";
 		}
 	}
 
+	public static function makeSection($name, $prefix, $number, $callNo, $availability, $credit, $teacher,$building,$room,$casT,$casR){
+		try{
+			$obj = new Section($name, $prefix, $number, $callNo, $availability, $credit, $teacher);
+			$obj->setBuildingNumber($building);
+			$obj->setRoomNumber($room);
+			$obj->setCasTaken((int)$casT);
+			$obj->setCasRequired((int)$casR);
+			$obj->errorMessage = "";
+			return $obj;
+		}catch(Exception $e){
+			printf("Error instantiating section object: " . $e->getMessage() . "\n");
+			exit();
+		}
+		return null;
+	}
+	
 	/**
 	 * Getter for the courseNumber data member
 	 * @return String $courseNumber
@@ -119,6 +141,32 @@ class Section{
 
 	public function setMeetings($mtgArray){
 		$this->meetings = $mtgArray;	
+	}
+	
+	public function getCasTaken(){
+		return $this->casTaken;
+	}
+	
+	public function getCasRequired(){
+		return $this->casRequired;
+	}
+	
+	public function setCasTaken($casT){
+		try{
+			$this->casTaken = (int)$casT;
+			$this->errorMessage = "";
+		}catch(Exception $e){
+			$this->errorMessage = "Unable to cast cas taken to integer.";
+		}
+	}
+	
+	public function setCasRequired($casR){
+		try{
+			$this->casRequired = (int)$casR;
+			$this->errorMessage = "";
+		}catch(Exception $e){
+			$this->errorMessage = "Unable to cast cas required to integer.";
+		}
 	}
 
 	/**
@@ -198,6 +246,15 @@ class Section{
 	public function setErrorMessage($err){
 		$this->errorMessage = $err;
 	}
+	
+
+	public function getMeetingsArray(){
+		$res = array();	
+		foreach($this->meetings as $mtg){
+			$res[$mtg->getDay()] = $mtg->getMeetingTime();
+		}
+		return $res;
+	}	
 
 	/**
 	* Returns an array of the section values as a JSON-encoded object
@@ -212,7 +269,9 @@ class Section{
 		$arrayValues['status'] = $this->status;
 		$arrayValues['buildingNumber'] = $this->buildingNumber;
 		$arrayValues['roomNumber'] = $this->roomNumber;
-		$arrayValues['meetings'] = $this->getMeetingsArray();
+		$arrayValues['buildingNumber'] = $this->buildingNumber;
+		$arrayValues['casTaken'] = $this->casTaken;
+		$arrayValues['casRequired'] = $this->casRequired;
 		$arrayValues['errorMessage'] = $this->errorMessage;
 		return json_encode($arrayValues);
     }
@@ -227,48 +286,13 @@ class Section{
 		$arrayValues['status'] = $this->status;
 		$arrayValues['buildingNumber'] = $this->buildingNumber;
 		$arrayValues['roomNumber'] = $this->roomNumber;
+		$arrayValues['casTaken'] = $this->casTaken;
+		$arrayValues['casRequired'] = $this->casRequired;
 		$arrayValues['meetings'] = $this->getMeetingsArray();
 		$arrayValues['errorMessage'] = $this->errorMessage;
 		return $arrayValues;
     }
 
-	public function getMeetingsArray(){
-		$res = array();	
-		foreach($this->meetings as $mtg){
-			$res[$mtg->getDay()] = $mtg->getMeetingTime();
-		}
-		return $res;
-	}
-
-	/**
-	 * Return a string version of the Section object
-	 * which should be valid JSON output for use in drawing the schedule
-	 * @return String $output valid JSON representation of the Section object
-	 */
-	public function toJSON(){
-		$output = "{\"courseName\":\"" . $this->courseName . "\",";
-		$output .= "\"coursePrefix\": \"" . $this->coursePrefix. "\",";
-		$output .= "\"courseNumber\":\"" . $this->courseNumber . "\",";
-		$output .= "\"courseLecturer\":\"" . $this->lecturer . "\",";
-		$output .= "\"courseCredit\":" . $this->courseCredit . ",";
-		$output .= "\"callNumber\":" . $this->callNumber . ",";
-		$output .= "\"status\":\"" . $this->status . "\",";
-		$output .= "\"building\":" . $this->buildingNumber . ",";
-		$output .= "\"room\":\"" . $this->roomNumber . "\",";
-		$output .= "\"meetings\": {";
-		$len = strlen($output);
-		foreach($this->meetings as $mtg){
-			$output .= "\"" . $mtg->getDay() . "\": \"" . $mtg->getMeetingTime() . "\",";
-		}
-		$output = substr($output,0,strlen($output)-1);
-		if ($len < strlen($output)){
-			$output .= "}";
-		}else{
-			$output .= "{}";
-		}
-		$output .= "}";
-		return $output;
-	}
 
 	/**
 	 * Return a string version of the Section object
@@ -285,6 +309,8 @@ class Section{
 		$output .= "\"status\":\"" . $this->status . "\",";
 		$output .= "\"building\":" . $this->buildingNumber . ",";
 		$output .= "\"room\":\"" . $this->roomNumber . "\",";
+		$output .= "\"casTaken\":" . $this->casTaken . ",";
+		$output .= "\"casRequired\":\"" . $this->casRequired . "\",";
 		$output .= "\"meetings\": {";
 		$len = strlen($output);
 		foreach($this->meetings as $mtg){

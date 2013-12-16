@@ -104,11 +104,14 @@ building,room,sch,currentProgram) values(DEFAULT,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?
 					$prevCallNumber = 0;
 					while($this->getcoursesections->fetch()){
 						if ($callNumber != $prevCallNumber){
-							$section = new Section($courseName, $coursePrefix, $courseNumber, $callNumber, $available, $creditHours, $lecturer);
-							$section->setBuildingNumber($building);
-							$section->setRoomNumber($room);
-							$sections[$callNumber] = $section;
-							$prevCallNumber = $callNumber;
+							$section = Section::makeSection($courseName, $coursePrefix, $courseNumber, $callNumber, $available, $creditHours, $lecturer,$building,$room,$casTaken,$casRequired);
+							if ($section){
+								$sections[$callNumber] = $section;
+								$prevCallNumber = $callNumber;
+							}else{
+								printf("Problem using factory pattern for generating sections in getting all sections.\n");
+								exit();
+							}
 						}
 						
 						//array of days e.g. M T W R F
@@ -139,6 +142,10 @@ building,room,sch,currentProgram) values(DEFAULT,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?
 		return $sections;
 	}
 
+	/*
+	 * Assumes call numbers aren't duplicated across the campuses
+	 * 
+	 */ 
 	function getSingleSection($term,$callNumber,$currentProgram){
 		$section = null;
 		try{
@@ -160,10 +167,13 @@ building,room,sch,currentProgram) values(DEFAULT,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?
 					$prevCallNumber = 0;
 					while($this->getsinglesection->fetch()){
 						if ($callNumber != $prevCallNumber){
-							$section = new Section($courseName, $coursePrefix, $courseNumber, $callNumber, $available, $creditHours, $lecturer);
-							$section->setBuildingNumber($building);
-							$section->setRoomNumber($room);
-							$prevCallNumber = $callNumber;
+							$section = Section::makeSection($courseName, $coursePrefix, $courseNumber, $callNumber, $available, $creditHours, $lecturer,$building,$room,$casTaken,$casRequired);
+							if ($section){
+								$prevCallNumber = $callNumber;
+							}else{
+								printf("Problem using factory pattern for generating objects in get single section.\n");
+								exit();
+							}
 						}
 						
 						//array of days e.g. M T W R F
@@ -232,7 +242,9 @@ building,room,sch,currentProgram) values(DEFAULT,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?
 		return $course;
 	}
 
-
+	/*
+	 * Add a single course to the database
+	 */ 
 	function addCourse($items){
 		try{
 			if (!($this->addcourse)){

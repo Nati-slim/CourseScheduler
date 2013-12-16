@@ -32,9 +32,26 @@ span.intro{
 	text-transform:capitalize;
 }
 
+.notification{
+	font-size:18px;
+	color:#F0F0F0;
+	background-color:#008789;
+}
+
 #imgUrlInfo{
 	font-size:140%;
 	font-weight: bold;
 	text-transform: capitalize;
 }
 
+
+.sidebar{
+	display:block;
+	margin-bottom: 15px;
+}
+
+#social a{
+	color:#f0f0f0;
+	font-weight:bold;
+	font-size:140%;
+}
