@@ -5,6 +5,15 @@
             },function() {
                 $(this).animate({ color: "#f0f0f0" }, 'slow');
         });
+});
+$(function() {
+	$('#gravatarImg').hover(function(){
+		$('#submenu').show();
+		console.log("triggered");
+	},function(){
+		$('#submenu').hide();
+		console.log("menu hidden");
+	});
 });*/
 
 function logout(){
@@ -15,10 +24,13 @@ function logout(){
 		dataType: "json"
 	})
 	.done(function(msg){
-		$('#infoMessage').empty().append("Successfully logged out!").hide("slow",function(){});
+		alert("Successfully logged out!");
+		setTimeout(function(){
+				location.reload();
+        }, 1000);		
 	})
 	.fail(function(msg){
-		console.log(msg.responseText);
+		alert(msg.responseText);
 	});
 }
 
@@ -36,7 +48,7 @@ $(function(){
 			$('body').css('cursor', 'auto');
 			if (msg.errorMessage.length > 0){
 				$('#signupError').empty();
-				$('#signupError').append("Error: " + msg.errorMessage);
+				$('#signupError').append(msg.errorMessage);
 				$('#signupError').show();
 				$('#signupSuccess').hide();
 				setTimeout(function(){
@@ -55,7 +67,7 @@ $(function(){
 		})
 		.fail(function(msg){
 			$('body').css('cursor', 'auto');
-			$('#signupError').empty().append("Error signing up.").show();
+			$('#signupError').empty().append(msg.responseText).show();
 			$('#signupSuccess').empty().hide();
 			console.log(msg.responseText);
 		})
@@ -78,7 +90,7 @@ $(function(){
 			$('body').css('cursor', 'auto');
 			if (msg.errorMessage.length > 0){
 				$('#loginError').empty();
-				$('#loginError').append("Error: " + msg.errorMessage).show();
+				$('#loginError').append(msg.errorMessage).show();
 				$('#loginSuccess').hide();
 				setTimeout(function(){
 					$('#loginError').empty().hide("slow",function(){});
@@ -91,7 +103,7 @@ $(function(){
 				$('#loginSuccess').empty().append("Successfully logged in!").show();				
 				setTimeout(function(){
 					location.reload();
-                }, 6000);
+                }, 1000);
 			}
 			console.log("Successfully logged in.");
 			//console.log(msg);

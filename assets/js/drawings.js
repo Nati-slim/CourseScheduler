@@ -66,7 +66,7 @@ var selectOptions;
 				url: 'classes/controllers/schedulecontroller.php',
 				data: { action : "removeAllSections"},
 				dataType: "json"
-			})
+			}) 
 			.done(function(msg){
 				$('body').css('cursor', 'auto');
 				console.log(msg);
@@ -76,7 +76,7 @@ var selectOptions;
 						location.reload();
 					},1000);
 				}else{
-					$('#errorMessage').show().append(msgObj.errorMessage);
+					$('#errorMessage').show().append(msg.errorMessage);
 				}
 			})
 			.fail(function(msg){

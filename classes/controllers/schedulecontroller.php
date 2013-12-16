@@ -87,9 +87,13 @@ if ($requestType === 'POST') {
 				if (!isset($session->scheduleObj)){
 					//Initialize user schedule object & set relevant $_SESSION variables
 					//$userschedule = new UserSchedule(generateToken());
-					$userschedule = UserSchedule::makeSchedule(generateToken(),$arrayVal[1],$arrayVal[0]);
-					initialize($userschedule->getUserId(),$userschedule);
+					if (isset($session->userid)){
+						$userschedule = UserSchedule::makeSchedule($session->userid,$arrayVal[1],$arrayVal[0],generateToken());
+					}else{
+						$userschedule = UserSchedule::makeSchedule(generateToken(),$arrayVal[1],$arrayVal[0],generateToken());
+					}
 					$userid = $userschedule->getUserId();
+					initialize($userid,$userschedule);
 				}else{
 					$userid = $session->userid;
 					$userschedule = unserialize($session->scheduleObj);	
@@ -188,7 +192,7 @@ if ($requestType === 'POST') {
 				$arrayVal = explode("-",$semesterSelected);
 				//$session->unsetAll();
 				if (count($arrayVal) == 2){
-					$userschedule = UserSchedule::makeSchedule($userid,$arrayVal[1],$arrayVal[0]);
+					$userschedule = UserSchedule::makeSchedule($userid,$arrayVal[1],$arrayVal[0],generateToken());
 					$session->schedule = $userschedule->to_json();	
 					$session->scheduleObj = serialize($userschedule);
 					$result['errorMessage'] = "";

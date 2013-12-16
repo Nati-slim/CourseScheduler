@@ -7,7 +7,7 @@ define('KEY','cp_sess_' . HASH);
 class Session {
 
     function __construct(){
-        session_save_path(dirname($_SERVER['DOCUMENT_ROOT']) . '/sessions');
+        session_save_path(dirname($_SERVER['DOCUMENT_ROOT']) . '/sessions/coursepicker');
         session_set_cookie_params(86400,"/","janeullah.com",false,true);
         session_name('CoursePicker');
         session_start();        

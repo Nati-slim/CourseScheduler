@@ -46,6 +46,31 @@ function fail($pub, $pvt = ''){
     return $msg;
 }
 
+/**
+ * Get either a Gravatar URL or complete image tag for a specified email address.
+ *
+ * @param string $email The email address
+ * @param string $s Size in pixels, defaults to 80px [ 1 - 2048 ]
+ * @param string $d Default imageset to use [ 404 | mm | identicon | monsterid | wavatar ]
+ * @param string $r Maximum rating (inclusive) [ g | pg | r | x ]
+ * @param boole $img True to return a complete IMG tag False for just the URL
+ * @param array $atts Optional, additional key/value attributes to include in the IMG tag
+ * @return String containing either just a URL or a complete image tag
+ * @source http://gravatar.com/site/implement/images/php/
+ */
+function get_gravatar( $email, $s = 40, $d = 'mm', $r = 'g', $img = false, $atts = array() ) {
+    $url = 'http://www.gravatar.com/avatar/';
+    $url .= md5( strtolower( trim( $email ) ) );
+    $url .= "?s=$s&d=$d&r=$r";
+    if ( $img ) {
+        $url = '<img src="' . $url . '"';
+        foreach ( $atts as $key => $val )
+            $url .= ' ' . $key . '="' . $val . '"';
+        $url .= ' />';
+    }
+    return $url;
+}
+
 
 /**
  * Function to undo effects of magic quotes
@@ -178,40 +203,66 @@ if ($requestType === 'POST') {
 			}
 		}
 	}else if (strcmp($action,"login") == 0){
-		$username = get_post_var('loginUsername');
-		$password = get_post_var('loginPassword');
-		if ($password && $username){
-			if (($check = pwdcheck($password)) !== 'OK'){
-				$result['errorMessage'] = $check;
-				$session->errorMessage = $result['errorMessage'];
-				echo json_encode($result);
-            }else{
-				$db = new UserHelper();
-				$user = $db->getUser($username);
-				if ($user){					
-					$passmatch = $hasher->CheckPassword($password, $user->getHash());
-					if ($passmatch) {
-						$result['errorMessage'] = "";
-						$session->errorMessage = $result['errorMessage'];
-						$session->loggedIn = true;
-						$session->id = $user->getId();
-						$session->userid = $user->getUserid();
-						$session->loggedInUser = serialize($user);						
-						echo json_encode($result);
+		$loggedInStatus = $session->loggedIn;
+		if ($loggedInStatus){
+			$result['errorMessage'] = "You're already logged in as " . $session->username;
+			$session->errorMessage = $result['errorMessage'];
+			echo json_encode($result);
+		}else{	
+			$username = get_post_var('loginUsername');
+			$password = get_post_var('loginPassword');
+			if ($password && $username){
+				if (($check = pwdcheck($password)) !== 'OK'){
+					$result['errorMessage'] = $check;
+					$session->errorMessage = $result['errorMessage'];
+					echo json_encode($result);
+				}else{
+					$db = new UserHelper();
+					$user = $db->getUser($username);
+					if ($user){					
+						$passmatch = $hasher->CheckPassword($password, $user->getHash());
+						if ($passmatch) {
+							$session->loggedIn = true;
+							$session->id = $user->getId();
+							$session->userid = $user->getUserid();
+							$session->username = $user->getUsername();
+							$session->email = $user->getEmail();
+							//add schedule object to user if already existing
+							if (isset($session->scheduleObj)){
+								if ($user->addSchedule(unserialize($session->scheduleObj))){								
+									$result['errorMessage'] = "";
+									$session->errorMessage = $result['errorMessage'];
+								}else{								
+									$result['errorMessage'] = $user->getErrorMessage();
+									$session->errorMessage = $result['errorMessage'];
+								}
+							}
+							//add gravatar
+							try{
+								$session->gravatar_url = get_gravatar($user->getEmail());
+							}catch(Exception $e){
+								$result['gravatar_error'] = $e->message;
+								$session->errorMessage = $result['errorMessage'];
+							}
+							$session->loggedInUser = serialize($user);												
+							echo json_encode($result);
+						}else{
+							$result['errorMessage'] = "Invalid credentials.";
+							$session->errorMessage = $result['errorMessage'];
+							echo json_encode($result);
+						}
+						unset($hasher);
 					}else{
-						$result['errorMessage'] = "Invalid credentials.";
+						$result['errorMessage'] = $db->errorMessage;
 						$session->errorMessage = $result['errorMessage'];
 						echo json_encode($result);
 					}
-					unset($hasher);
-				}else{
-					$result['errorMessage'] = $db->errorMessage;
-					$session->errorMessage = $result['errorMessage'];
-					echo json_encode($result);
-				}
-			} 
-		}else{
-			
+				} 
+			}else{
+				$result['errorMessage'] = "Username and password fields are mandatory.";
+				$session->errorMessage = $result['errorMessage'];
+				echo json_encode($result);
+			}
 		}
 	}else if (strcmp($action,"logout") == 0){
 		$session->loggedIn = false;

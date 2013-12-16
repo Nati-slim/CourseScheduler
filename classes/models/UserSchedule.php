@@ -24,11 +24,12 @@ class UserSchedule{
 		$this->semester = "";
 	}
 	
-	public static function makeSchedule($userid,$campus,$semester){
+	public static function makeSchedule($userid,$campus,$semester,$scheduleID){
 		try{
 			$obj = new UserSchedule($userid);
 			$obj->setCampus($campus);
 			$obj->setSemester($semester);
+			$obj->setScheduleID($scheduleID);
 			$obj->setErrorMessage("");
 			return $obj;
 		}catch(Exception $e){
@@ -169,9 +170,11 @@ class UserSchedule{
 		try{
 			$this->scheduleID = (string)$id;	
 			$this->errorMessage = "";
+			return true;
 		}catch(Exception $e){
-			$this->errorMessage = "Unable to cast building number to integer.";
+			$this->errorMessage = "Unable to cast building number to integer: " . $e->message;
 		}
+		return false;
 	}
 	
 	public function setCampus($location){
@@ -254,6 +257,7 @@ class UserSchedule{
 			$classSchedule[$section->getCallNumber()] = $section->to_array();
 		}
 		$result['classSchedule'] = $classSchedule;
+		$result['scheduleID'] = $this->scheduleID;
 		$result['savedImageIDs'] = $this->imageIDs;
 		return $result;
 	}

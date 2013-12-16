@@ -1,4 +1,5 @@
 <?php
+require_once("UserSchedule.php");
 /**
  * Class to represent a user of the web application
  */
@@ -57,12 +58,14 @@ class User{
 	public function getSchedules(){
 		return $this->schedules;
 	}
-	
-	public function addSchedule($schedule){
-		if ($schedule){
-			$this->schedules[$schedule->getScheduleID()] = $userschedule;
+
+	public function addSchedule($userschedule){
+		if ($userschedule && $userschedule instanceOf UserSchedule){
+			$this->schedules[$userschedule->getScheduleID()] = $userschedule;
+			$this->errorMessage = "";
 			return true;
 		}
+		$this->errorMessage = "Invalid object found. needs to be a userschedule object.";
 		return false;
 	}
 	
@@ -88,6 +91,14 @@ class User{
 	
 	public function getLastName(){
 		return $this->lastname;
+	}
+	
+	public function getErrorMessage(){
+		return $this->errorMessage;
+	}
+	
+	public function setErrorMessage($msg){
+		$this->errorMessage = $msg;
 	}
 	
 	public function getRegistrationDate(){

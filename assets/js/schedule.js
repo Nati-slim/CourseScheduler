@@ -23,7 +23,7 @@ $(function(){
 					var imgUrl = "http://apps.janeullah.com/coursepicker/assets/schedules/schedule_" + msgObj.imgToken + ".png";
 					//console.log(imgUrl);
 					$('#canvasImage').empty();
-					$('#canvasImage').append("<a href=\"" + imgUrl + "\" title=\"Click to view image.\">Right-Click To Save Image</a>");
+					$('#canvasImage').append("Click <a href=\"" + imgUrl + "\" title=\"Click to view image or right-click to save link as.\">this link</a> to load your schedule as a .png file or right-click <a href=\"" + imgUrl + "\" title=\"Click to view image or right-click to save link as.\">the link</a> and choose \"Save Link As\".");
 					$('#errorMessage').empty().hide();
 				}else{
 					$('#canvasImage').empty().append("<p class=\"alert-danger\">Unable to save .png file: " + msgObj.errorMessage + "</p>").show();

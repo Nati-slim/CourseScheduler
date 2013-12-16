@@ -5,8 +5,9 @@
 }
 
 #canvasImage{
-    width:780px;
-    height:730px;
+    /*width:780px;
+    height:730px;*/
+    font-size:140%;
 }
 
 #courseEntry{
@@ -54,4 +55,32 @@ span.intro{
 	color:#f0f0f0;
 	font-weight:bold;
 	font-size:140%;
+}
+
+#welcome{
+	color:#f0f0f0;
+	font-weight:bold;
+}
+
+img.gravatar{
+	width: 40px;
+	height: 40px;
+	float: right;
+	margin-top: 6px;
+	-moz-border-radius: 8px;
+	-webkit-border-radius: 8px;
+	-khtml-border-radius: 8px;
+	border-radius: 8px;
+}
+
+
+/*
+ * 
+ * Handling style for the user icon on hover
+ * 
+ */
+ul.sub{
+	border: none;
+	margin: 0;
+	padding: 0;
 }
