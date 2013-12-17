@@ -54,6 +54,10 @@ class User{
 		return $this->userid;
 	}
 	
+    /**
+     * Function to return the array of UserSchedule objects
+     * 
+     */ 
 	public function getSchedules(){
 		return $this->schedules;
 	}

@@ -7,11 +7,10 @@
  *
  * PHP version 5
  *
- * LICENSE: This source file is subject to version 3.01 of the PHP license
+ * LICENSE: This source file is subject to version 4.0 of the 
+ * Creative Commons Attribution-ShareAlike 4.0 International License
  * that is available through the world-wide-web at the following URI:
- * http://www.php.net/license/3_01.txt.  If you did not receive a copy of
- * the PHP License and are unable to obtain it through the web, please
- * send a note to license@php.net so we can mail you a copy immediately.
+ * http://creativecommons.org/licenses/by-sa/4.0/.
  *
  * @category   CategoryName
  * @package    PackageName
@@ -19,8 +18,8 @@
  * @license    http://creativecommons.org/licenses/by-sa/4.0/  Creative Commons Attribution-ShareAlike 4.0 International License
  * @version    GIT: $Id$
  * @link       https://github.com/janoulle/CourseScheduler
- * @since      File available since Release 1.2.0
- * @deprecated File deprecated in Release 2.0.0
+ * @since      N/A
+ * @deprecated N/A
  */
 require_once '../models/Course.php';
 require_once '../models/Section.php';
@@ -117,7 +116,7 @@ function getSectionJSON($sections)
  * Sets the required session variables (init, user id,schedule, 
  * scheduleObj and errorMessage
  * 
- * @param string       $userid   must match the stored userid in the UserSchedule object
+ * @param string       $userid   must match the userid in schedule
  * @param UserSchedule $schedule contains the user's schedule
  * 
  * @return void

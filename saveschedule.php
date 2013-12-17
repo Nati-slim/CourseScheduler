@@ -45,20 +45,30 @@ function fail($pub, $pvt = ''){
  * @param String $var key in $_POST variable
  * @return String $val value matching $_POST['key']
  */
-function get_post_var($var){
+function getPost($var){
 	$val = filter_var($_POST[$var],FILTER_SANITIZE_MAGIC_QUOTES);
 	return $val;
 }
 
 
 $user = unserialize($session->loggedInUser);
-$session->defaultSchedule = unserialize($session->scheduleObj);
+if (!isset($session->defaultSchedule)){
+    $session->defaultSchedule = unserialize($session->scheduleObj);
+}
+
+
 if ($user){
+    //has all the schedules that the user was working with.
 	$schedule = $user->getSchedules();
 	//get latest schedule
 	$sched = $session->schedule;
 	$sectionListingsJSON = $session->courseSectionsJSON;	
+    
+    if (strcmp($user->getUserid(), $session->userid) != 0){
+        echo "Mismatched user ids found. Uh oh";
+    }
 }
+
 //print_r($session->defaultSchedule);
 	
 if (!isset($sched)){
@@ -213,16 +223,20 @@ $ogdesc = "Plan your college schedule with ease using this course schedule appli
 		<div class="container">
 			<div class="row" style="margin-top:25px;">
 				<div class="col-xs-8 col-md-4" id="canvasDiv">
-					<?php if ($user && $schedule) { ?>
-								
+					<?php if ($user && $schedule) { ?>                        
 						<form id="saveScheduleForm" name="saveScheduleForm" class="form-signin" role="form" method="post" action="classes/controllers/writecontroller.php">							
 							<div class="form-group">
-								<label for="selectedSchedule">Choose Schedule Version</label>
+                                <?php if (isset($session->optionChosen)) { 
+                                    $msg = "<div id=\"scheduleSelected\" class=\"alert alert-info\">";
+                                    $msg .= $session->optionChosen;
+                                    $msg .= "</div>";
+                                    echo $msg;
+                                }
+                                ?>
+                                <label for="selectedSchedule">Choose Schedule Version</label>
 								<select class="form-control" id="selectedSchedule" name="selectedSchedule">
 									<?php 
 										$counter = 1;
-										/*echo "<option value=\"" . $session->defaultSchedule->getScheduleID() . "\">Version #" . $counter. "</option>";
-										$counter++;*/
 										foreach($schedule as $key=>$value){
 											echo "<option value=\"" . $key . "\"> Version #" . $counter . "</option>";
 											$counter++;								
@@ -241,6 +255,7 @@ $ogdesc = "Plan your college schedule with ease using this course schedule appli
 								<label for="shortName2">Re-enter schedule  name</label>
 								<input type="text" class="form-control" id="shortName2" name="shortName2" placeholder="Enter:" required>
 							</div>
+							<input type="hidden" id="scheduleID" name="scheduleID" value="<?php echo $session->defaultSchedule->getScheduleID(); ?>" />
 							<input type="hidden" id="action" name="action" value="saveSchedule" />
 							<button type="submit" class="btn btn-primary">Save</button>
 							<button type="button" class="btn btn-default">Clear</button>

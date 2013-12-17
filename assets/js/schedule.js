@@ -43,22 +43,68 @@ $(function(){
 	
 	//Handling changing the user schedule in saveschedule.php
 	$('#selectedSchedule').change(function(){
+        var scheduleSelectedID = $('#selectedSchedule').val();
+        var optionText = $('option[value="'+scheduleSelectedID+'"]').text();
 		$('body').css('cursor', 'wait');
 		$.ajax({
 			type: "POST",
 			url: 'classes/controllers/schedulecontroller.php',
-			data: { action : "switchSchedule", scheduleID : $(this).val()},
+			data: { action : "switchSchedule", scheduleID : scheduleSelectedID, optionChosen : optionText},
 			dataType: "json"
 		})
 		.done(function(msg){
 			$('body').css('cursor', 'auto');
-			//console.log(msg);
-			sListings = msg;
-			populateSections(msg);
+			console.log(msg);
+            if (msg.errorMessage.length == 0){
+                $('#saveScheduleError').empty().hide();
+                $('#saveScheduleSuccess').empty().append("Switched schedules!.").show(); 
+                setTimeout(function(){
+                    location.reload();
+                }, 1000);
+            }else{
+                $('#saveScheduleSuccess').empty().hide();
+                $('#saveScheduleError').empty().append(msg.errorMessage).show();
+            }
 		})
 		.fail(function(msg){
 			$('body').css('cursor', 'auto');
-			console.log(msg + "Error getting sections.");
+			console.log(msg.responseText);
 		});	
+	});
+    
+    
+    $('#saveScheduleForm').submit(function(e){
+		e.preventDefault();
+        var shortName1 = $('#shortName1').val();
+        var shortName2 = $('#shortName2').val();
+        if (shortName1 === shortName2){
+            $('body').css('cursor', 'wait');
+            $.ajax({
+                type: "POST",
+                url: 'classes/controllers/schedulecontroller.php',
+                data: $(this).serialize(),
+                dataType: "json"
+            })
+            .done(function(msg){
+                $('body').css('cursor', 'auto');
+                if (msg.errorMessage.length == 0){
+                    $('#saveScheduleError').empty().hide();
+                    $('#saveScheduleSuccess').empty().append("Successfully saved schedule to database.").show();
+                }else{
+                    $('#saveScheduleError').empty().append(msg.errorMessage).show();
+                    $('#saveScheduleSuccess').empty().hide();
+                }
+                console.log(msg);
+            })
+            .fail(function(msg){
+                $('body').css('cursor', 'auto');
+                $('#saveScheduleError').empty().append(msg.responseText).show();
+                $('#saveScheduleSuccess').empty().hide();
+                console.log(msg);
+            });	
+        }else{
+            $('#saveScheduleError').empty().append("Both short name fields must match!").show();
+            $('#saveScheduleSuccess').empty().hide();
+        }
 	});
 });
