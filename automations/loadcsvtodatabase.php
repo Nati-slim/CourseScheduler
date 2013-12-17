@@ -1,6 +1,9 @@
 <?php
-require_once("../../creds/coursepicker.inc");
-require_once('../../creds/dhpath.inc');
+require_once dirname(__FILE__) . '/../../creds/coursepicker.inc';
+require_once dirname(__FILE__) . '/../../creds/dhpath.inc';
+
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
 $path = HOME_DIR . "csv/coursepicker/";
 $fileList = array();
