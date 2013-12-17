@@ -10,8 +10,6 @@ $session = new Session();
 $result = array();
 
 //Set up debug stuff
-$valid = true;
-$what = NULL;
 $debug = DEBUGSTATUS;
 if ($debug){
     ini_set("display_errors", 0);
@@ -221,37 +219,40 @@ if ($requestType === 'POST') {
 					$user = $db->getUser($username);
 					if ($user){					
 						$passmatch = $hasher->CheckPassword($password, $user->getHash());
-						if ($passmatch) {
+						if ($passmatch) {							
+							unset($hasher);
 							$session->loggedIn = true;
 							$session->id = $user->getId();
 							$session->userid = $user->getUserid();
 							$session->username = $user->getUsername();
 							$session->email = $user->getEmail();
+							try{
+								$session->gravatar_url = get_gravatar($user->getEmail());
+							}catch(Exception $e){
+								$result['gravatar_error'] .= $e->getMessage();
+								$session->errorMessage = $result['gravatar_error'];
+							}
 							//add schedule object to user if already existing
 							if (isset($session->scheduleObj)){
 								if ($user->addSchedule(unserialize($session->scheduleObj))){								
 									$result['errorMessage'] = "";
-									$session->errorMessage = $result['errorMessage'];
+									$session->errorMessage = "";
 								}else{								
 									$result['errorMessage'] = $user->getErrorMessage();
 									$session->errorMessage = $result['errorMessage'];
 								}
-							}
-							//add gravatar
-							try{
-								$session->gravatar_url = get_gravatar($user->getEmail());
-							}catch(Exception $e){
-								$result['gravatar_error'] = $e->message;
+							}else{
+								$result['errorMessage'] = "";
 								$session->errorMessage = $result['errorMessage'];
 							}
-							$session->loggedInUser = serialize($user);												
+							//set this last in case the user schedule object was found and added
+							$session->loggedInUser = serialize($user);					
 							echo json_encode($result);
 						}else{
 							$result['errorMessage'] = "Invalid credentials.";
 							$session->errorMessage = $result['errorMessage'];
 							echo json_encode($result);
 						}
-						unset($hasher);
 					}else{
 						$result['errorMessage'] = $db->errorMessage;
 						$session->errorMessage = $result['errorMessage'];
@@ -269,6 +270,10 @@ if ($requestType === 'POST') {
 		unset($session->id);
 		unset($session->loggedInUser);	
 		unset($session->userid);
+		unset($session->username);
+		unset($session->email);
+		unset($session->userid);
+		unset($session->gravatar_url);
 		$result['errorMessage'] = "";
 		$session->errorMessage = $result['errorMessage'];
 		echo json_encode($result);
@@ -287,6 +292,10 @@ function clearVariables(){
 	unset($session->id);
 	unset($session->loggedInUser);	
 	unset($session->userid);
+	unset($session->username);
+	unset($session->email);
+	unset($session->userid);
+	unset($session->gravatar_url);
 }
 
 ?>

@@ -58,9 +58,8 @@ $(function(){
 				$('#signupError').empty().hide();
 				$('#signupSuccess').empty().append("Successfully signed up for CoursePicker! You can now login.").show();
 				$('#signupForm').hide("slow",function(){});
+				console.log("Successfully signed up");
 			}
-			console.log("Successfully signed up");
-			//console.log(msg);
 			setTimeout(function(){
 					location.reload();
             }, 6000);
@@ -88,6 +87,7 @@ $(function(){
 		})
 		.done(function(msg){
 			$('body').css('cursor', 'auto');
+			console.log(msg);
 			if (msg.errorMessage.length > 0){
 				$('#loginError').empty();
 				$('#loginError').append(msg.errorMessage).show();
@@ -104,9 +104,8 @@ $(function(){
 				setTimeout(function(){
 					location.reload();
                 }, 1000);
+				console.log("Successfully logged in.");
 			}
-			console.log("Successfully logged in.");
-			//console.log(msg);
 		})
 		.fail(function(msg){
 			$('body').css('cursor', 'auto');

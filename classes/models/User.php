@@ -1,5 +1,4 @@
 <?php
-require_once("UserSchedule.php");
 /**
  * Class to represent a user of the web application
  */
@@ -46,21 +45,9 @@ class User{
 		}
 		return null;
 	}
-	
-	public function getId(){
-		return $this->id;
-	}
-	
-	public function getUserid(){
-		return $this->userid;
-	}
-	
-	public function getSchedules(){
-		return $this->schedules;
-	}
 
 	public function addSchedule($userschedule){
-		if ($userschedule && $userschedule instanceOf UserSchedule){
+		if ($userschedule){
 			$this->schedules[$userschedule->getScheduleID()] = $userschedule;
 			$this->errorMessage = "";
 			return true;
@@ -72,7 +59,19 @@ class User{
 	public function setSchedule($userschedule){
 		$this->schedules[$userschedule->getScheduleID()] = $userschedule;
 	}
+
+	public function getId(){
+		return $this->id;
+	}
 	
+	public function getUserid(){
+		return $this->userid;
+	}
+	
+	public function getSchedules(){
+		return $this->schedules;
+	}
+		
 	public function getHash(){
 		return $this->hash;
 	}

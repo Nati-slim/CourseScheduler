@@ -1,8 +1,6 @@
 <?php
 require_once("classes/helpers/session.php");
 include_once("../../creds/parse_coursepicker.inc");
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
 $session = new Session();
 $controller = "classes/controllers/controller.php";
 $errorMessage = $session->errorMessage;
@@ -76,7 +74,7 @@ if (!isset($sectionListingsJSON)){
 //Page Data
 $title = "Course Picker";
 $longdesc = "";
-$shortdesc = "A course scheuling app for the University of Georgia Computer Science students";
+$shortdesc = "A course scheuling app for the University of Georgia (UGA) Computer Science students";
 $asseturl = "http://apps.janeullah.com/coursepicker/assets";
 $officialurl = "http://apps.janeullah.com/coursepicker/";
 $captchaurl = "../../creds/captcha.inc";
@@ -87,7 +85,7 @@ $ogtitle = "Course Picker by Jane Ullah";
 $creator = "@janetalkstech";
 $coursepicker = "@coursepicker";
 $ogimg = "http://apps.janeullah.com/coursepicker/assets/img/coursepicker.png";
-$ogdesc = "Plan your college schedule with ease using this course schedule application. Geared towards UGA students, this application includes course info from both Athens and Gwinnett campuses.";
+$ogdesc = "Plan your UGA class schedule with ease using this course scheduling application. Geared towards UGA students, this application includes course info from both Athens and Gwinnett campuses to let you create the perfect class schedule.";
 ?>
 <!DOCTYPE html>
 <html lang="en">

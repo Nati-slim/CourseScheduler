@@ -88,6 +88,7 @@ if ($requestType === 'POST') {
 					//Initialize user schedule object & set relevant $_SESSION variables
 					//$userschedule = new UserSchedule(generateToken());
 					if (isset($session->userid)){
+						//userid,campus,term,scheduleid
 						$userschedule = UserSchedule::makeSchedule($session->userid,$arrayVal[1],$arrayVal[0],generateToken());
 					}else{
 						$userschedule = UserSchedule::makeSchedule(generateToken(),$arrayVal[1],$arrayVal[0],generateToken());
@@ -99,10 +100,10 @@ if ($requestType === 'POST') {
 					$userschedule = unserialize($session->scheduleObj);	
 				}	
 				
-				//Get section from database
-				$db = new CourseHelper();
-				$section = $db->getSingleSection($arrayVal[0],$callNum,$arrayVal[1]);
 				try{
+					//Get section from database
+					$db = new CourseHelper();
+					$section = $db->getSingleSection($arrayVal[0],$callNum,$arrayVal[1]);					
 					if ($section){
 						if (strcmp($section->getStatus(),"Available") == 0){
 							//print_r($userschedule);
