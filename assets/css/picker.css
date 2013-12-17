@@ -89,3 +89,16 @@ ul.dropdown-menu li{
 #menuLi {
 	background-color:inherit;
 }
+
+#infoMessage, #scheduleSelected{
+    font-size: 140%;
+    font-weight: bold;
+    color: white;
+    background-color: #004A61;
+}
+
+#semesterSelection,#selectedSchedule{
+    background-color:#f0f0f0;
+    color:#004A61;
+    font-size:130%;
+}

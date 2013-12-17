@@ -40,7 +40,6 @@ if (isset($session->jsonURL)){
 	$session->jsonURL = $jsonURL;
 }
 
-
 $semesters = array();
 $semesters['201405-UNIV'] = '(Athens) Summer 2014';
 $semesters['201402-UNIV'] = '(Athens) Spring 2014';
@@ -69,7 +68,7 @@ if ($requestType === 'POST') {
 
 $sched = $session->schedule;
 $sectionListingsJSON = $session->courseSectionsJSON;
-
+$session->defaultSchedule = unserialize($session->scheduleObj);
 if (!isset($sched)){
 	$sched = "{}";
 }
@@ -216,7 +215,7 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
     	<div class="row" style="margin-top:25px;">
 		    <div class="col-xs-6 col-md-3" id="leftdiv">
 				<div class="row">
-					<p id="infoMessage" class="alert alert-info" style="font-size:140%;font-weight:bold;color:white;background-color:#004A61">
+					<p id="infoMessage" class="alert alert-info">
 						<?php echo $semesters[$semesterSelected]; ?>
 					</p>
 					<div class="sidebar">

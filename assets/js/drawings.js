@@ -46,7 +46,7 @@ var selectOptions;
 						$('#userSchedule').append(classDiv);
 						//console.log(section);
 					}); //object keys
-					var removeAll = "<input class=\"form-control rounded-corners\" onclick=\"removeAll()\" name=\"removeAllButton\" id=\"removeAllButton\" type=\"submit\" value=\"Remove All\" />";
+					var removeAll = "<input title=\"This creates a new schedule.\" class=\"form-control rounded-corners\" onclick=\"removeAll()\" name=\"removeAllButton\" id=\"removeAllButton\" type=\"submit\" value=\"Remove All\" />";
 					$('#userSchedule').append(removeAll);
 					$('#userSchedule').show();
 					addMouseOverEffects();

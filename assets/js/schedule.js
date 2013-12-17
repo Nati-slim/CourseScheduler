@@ -68,6 +68,8 @@ $(function(){
 		})
 		.fail(function(msg){
 			$('body').css('cursor', 'auto');
+            $('#saveScheduleSuccess').empty().hide();
+            $('#saveScheduleError').empty().append(msg.responseText).show();
 			console.log(msg.responseText);
 		});	
 	});
@@ -75,9 +77,13 @@ $(function(){
     
     $('#saveScheduleForm').submit(function(e){
 		e.preventDefault();
+        var itemSelected = $('#scheduleID').val();
         var shortName1 = $('#shortName1').val();
         var shortName2 = $('#shortName2').val();
-        if (shortName1 === shortName2){
+        if (itemSelected == 0){
+            $('#saveScheduleError').empty().append("Please select a schedule to save!").show();
+            $('#saveScheduleSuccess').empty().hide();
+        }else if (shortName1 === shortName2){
             $('body').css('cursor', 'wait');
             $.ajax({
                 type: "POST",
@@ -98,9 +104,9 @@ $(function(){
             })
             .fail(function(msg){
                 $('body').css('cursor', 'auto');
-                $('#saveScheduleError').empty().append(msg.responseText).show();
+                $('#saveScheduleError').append(msg.responseText).show();
                 $('#saveScheduleSuccess').empty().hide();
-                console.log(msg);
+                console.log(msg.responseText);
             });	
         }else{
             $('#saveScheduleError').empty().append("Both short name fields must match!").show();

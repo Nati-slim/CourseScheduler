@@ -167,6 +167,7 @@ function saveSchedule($userid,$user,$defaultSchedule,$scheduleID,$shortName1,$sh
         if ($scheduleID && strlen($scheduleID) > 0){                
             $scheduleHelper = new ScheduleHelper();
             if ($defaultSchedule->getScheduleID() == $scheduleID){
+                $defaultSchedule->setShortName($shortName1);
                 //save this schedule to the database
                 $savedId = $scheduleHelper->saveSchedule($defaultSchedule);
                 if ($savedId){
@@ -185,6 +186,7 @@ function saveSchedule($userid,$user,$defaultSchedule,$scheduleID,$shortName1,$sh
                 
                 //If schedule object was found, save it.
                 if ($scheduleToSave){
+                    $scheduleToSave->setShortName($shortName1);
                     $savedId = $scheduleHelper->saveSchedule($scheduleToSave);
                     if ($savedId){
                         $msg['errorMessage'] = "";
@@ -442,12 +444,19 @@ if ($requestType === 'POST') {
         $user = unserialize($session->loggedInUser);
         $defaultSchedule = unserialize($session->scheduleObj);
         $scheduleID = getPost('scheduleID');
+        $selectedSchedule = $session->selectedScheduleID;
         $shortName1 = getPost('shortName1');
         $shortName2 = getPost('shortName2');          
         if ($userid){
             if ($user){
-                $res = saveSchedule($userid,$user,$defaultSchedule,$scheduleID,$shortName1,$shortName2);
-                echo json_encode($res);
+                if (strcmp($scheduleID, $selectedSchedule) == 0){
+                    $res = saveSchedule($userid,$user,$defaultSchedule,$scheduleID,$shortName1,$shortName2);
+                    echo json_encode($res);
+                }else{
+                    $result['errorMessage'] = "Mismatch between selected schedule and the found schedule ID";
+                    $session->errorMessage = $result['errorMessage'];
+                    echo json_encode($result);
+                }
             }else{
                 $result['errorMessage'] = "User object deserialized to null";
                 $session->errorMessage = $result['errorMessage'];
@@ -478,7 +487,6 @@ if ($requestType === 'POST') {
                         $session->schedule = $userschedule->to_json();
                         $session->scheduleObj = serialize($userschedule);
                         $session->optionChosen = $optionChosen;
-                        $session->defaultSchedule =  unserialize($session->scheduleObj);
                         $found = true;
                         break;
                     }
@@ -487,6 +495,7 @@ if ($requestType === 'POST') {
                 if ($found){
                     $result['errorMessage'] = "";
                     $result['optionChosen'] = $optionChosen;
+                    $session->selectedScheduleID = $scheduleID;
                     $session->errorMessage = $result['errorMessage'];
                     echo json_encode($result);
                 }else{

@@ -373,7 +373,7 @@ if ($requestType === 'POST') {
             }
         }
     } elseif (strcmp($action, "logout") == 0) {
-        $session->loggedIn = false;
+        /*$session->loggedIn = false;
         unset($session->id);
         unset($session->loggedInUser);
         unset($session->userid);
@@ -383,9 +383,10 @@ if ($requestType === 'POST') {
         unset($session->gravatar_url);
         unset($session->scheduleObj);
         unset($session->schedule);
-        unset($session->init);
+        unset($session->defaultSchedule);
+        unset($session->init);*/
+        $session->unsetAll();
         $result['errorMessage'] = "";
-        $session->errorMessage = $result['errorMessage'];
         echo json_encode($result);
     } else {
         $result['errorMessage'] = "Invalid action.";

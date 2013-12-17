@@ -100,9 +100,15 @@ class ScheduleHelper
         return $schedule;
     }
 
-    /*
-     * Add a single course to the database
-     */
+    /**
+     * Function to save a User's schedule to the database
+     * The schedule is saved as a serialized UserSchedule object.
+     * 
+     * @param UserSchedule $schedule The User schedule object which must have its shortname value set
+     * 
+     * @return int id of the newly inserted schedule or false if it failed to insert
+     * 
+     */ 
     public function saveSchedule($schedule)
     {
         try {

@@ -24,14 +24,28 @@
 					</div>
 					<div class="modal-body">
 						<p>
-							Created by <a href="http://janetalkscode.com" title="Jane Talks Code!">Jane Ullah</a>
+							This is a labor of love by <a href="http://janeullah.com" title="Jane Ullah!">Jane Ullah</a>. :)
+                            I write at <a href="http://janetalkscode.com" title="Jane Talks Code!">Jane Talks Code</a> and tweet <a href="https://twitter.com/janetalkstech" title="@janetalkstech on Twitter">@janetalkstech</a>. The source code for this web application is hosted 
+                            as <a href="https://github.com/janoulle/CourseScheduler" title="CoursePicker Source Code">CourseScheduler on Github</a>
 						</p>
+                        <p>
+                            Usage:
+                            <ul>
+                                <li>Search for a course by either course prefix e.g. CSCI or course number (e.g. 1302) or any common names.</li>
+                                <li>Choose from the autocomplete menu or manually enter the course you desire in this manner as long as you separate the course prefix from the course number by a dash</li>
+                                <li>Select a section from the list</li>
+                                <li>Optional:
+                                    <ul>
+                                        <li>Signup as a user to save your schedule</li>
+                                        <li>Signup to also be able to save different versions of your schedule!</li>
+                                    </ul>
+                                </li>
+                                        
+                            </ul>
+                        </p>
 						<p>
 							<a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a><br /><span xmlns:dct="http://purl.org/dc/terms/" property="dct:title">CoursePicker</span> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>.
-						</p>
-						<p>
-							Source code: <a href="https://github.com/janoulle/CourseScheduler" title="CoursePicker Source Code">CourseScheduler on Github</a>
-						</p>						
+						</p>					
 					</div>
 				</div><!-- /.modal-content -->
 		  </div><!-- /.modal-dialog -->

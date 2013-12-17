@@ -52,10 +52,9 @@ function getPost($var){
 
 
 $user = unserialize($session->loggedInUser);
-if (!isset($session->defaultSchedule)){
-    $session->defaultSchedule = unserialize($session->scheduleObj);
-}
+$session->defaultSchedule = unserialize($session->scheduleObj);
 
+//print_r($session->defaultSchedule); 
 
 if ($user){
     //has all the schedules that the user was working with.
@@ -155,10 +154,10 @@ $ogdesc = "Plan your college schedule with ease using this course schedule appli
 		  <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
 		<![endif]-->
 		<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-		<script src="https://code.jquery.com/jquery-1.10.2.min.js" type="text/javascript"></script>
-		<?php if ($user && $schedule) { ?>
-		<script src="assets/js/canvasstyle.js" type="text/javascript"></script>
-		<?php } ?>
+		<script src="https://code.jquery.com/jquery-1.10.2.min.js" type="text/javascript"></script>	
+        <?php if ($user && $schedule) { ?> 	
+            <script src="assets/js/canvasstyle.js" type="text/javascript"></script>
+        <?php } ?>
 		<!-- Include all compiled plugins (below), or include individual files as needed -->
 		<script src="assets/js/bootstrap.min.js" type="text/javascript"></script>	
 		<script src="http://twitter.github.com/hogan.js/builds/2.0.0/hogan-2.0.0.js" type="text/javascript"></script>
@@ -189,7 +188,7 @@ $ogdesc = "Plan your college schedule with ease using this course schedule appli
 						<li class="active"><a href="./">Home</a></li>
 						<li><a href="#aboutModal" data-toggle="modal" id="about">About</a></li>
 						<li><a href="#contact" id="contact">Contact</a></li>
-						<?php if (isset($session->userid)){ 
+						<?php if ($schedule){ 
 							echo "<li><a id=\"downloadSchedule\" href=\"#pngModal\" data-toggle=\"modal\">Download Schedule</a></li>";
 						}
 						?>
@@ -207,29 +206,22 @@ $ogdesc = "Plan your college schedule with ease using this course schedule appli
 										."</ul>"
 										."</li>";
 							echo $submenu;
-						} else {
-							echo "<li id=\"signupLi\"><a id=\"signup\" data-toggle=\"modal\" href=\"#signupModal\">Sign Up</a></li>";						
-							echo "<li id=\"loginLi\"><a id=\"login\" data-toggle=\"modal\" href=\"#loginModal\">Log In</a></li>";
-						} ?>
-						
-						<!--<li><a id="facebook" href="https://facebook.com/janetalkstech" title="Connect with Jane Ullah on Facebook!">F</a></li>
-						<li><a id="twitter" href="https://twitter.com/janetalkstech" title="Connect with Jane Ullah on Twitter!">T</a></li>
-						<li><a id="google" href="https://plus.google.com/+JaneUllah" title="Connect with Jane Ullah on Googl+">G</a></li>-->
+						}?>
 					</ul>				  
 				</div><!-- /.nav-collapse -->
 			</div><!-- /.container -->
 		</div><!-- /.navbar -->
 
 		<div class="container">
-			<div class="row" style="margin-top:25px;">
-				<div class="col-xs-8 col-md-4" id="canvasDiv">
-					<?php if ($user && $schedule) { ?>                        
+			<div class="row" style="margin-top:25px;">                
+                <?php if ($user && $schedule) { ?>         
+                    <div class="col-xs-8 col-md-4" id="sidebar">               
 						<form id="saveScheduleForm" name="saveScheduleForm" class="form-signin" role="form" method="post" action="classes/controllers/writecontroller.php">							
 							<div class="form-group">
                                 <?php if (isset($session->optionChosen)) { 
                                     $msg = "<div id=\"scheduleSelected\" class=\"alert alert-info\">";
                                     $msg .= $session->optionChosen;
-                                    $msg .= "</div>";
+                                    $msg .= " selected</div>";
                                     echo $msg;
                                 }
                                 ?>
@@ -237,6 +229,7 @@ $ogdesc = "Plan your college schedule with ease using this course schedule appli
 								<select class="form-control" id="selectedSchedule" name="selectedSchedule">
 									<?php 
 										$counter = 1;
+                                        echo "<option value=\"0\">Choose Schedule Version</option>";
 										foreach($schedule as $key=>$value){
 											echo "<option value=\"" . $key . "\"> Version #" . $counter . "</option>";
 											$counter++;								
@@ -249,29 +242,33 @@ $ogdesc = "Plan your college schedule with ease using this course schedule appli
 							<div class="alert alert-success" id="saveScheduleSuccess" style="display:none"></div>
 							<div class="form-group">
 								<label for="shortName1">Name Your Schedule!</label>
-								<input type="text" class="form-control" id="shortName1" name="shortName1" placeholder="Enter:" required>
+								<input type="text" class="form-control" id="shortName1" name="shortName1" placeholder="Enter a short name:" required>
 							</div>
 							<div class="form-group">
 								<label for="shortName2">Re-enter schedule  name</label>
-								<input type="text" class="form-control" id="shortName2" name="shortName2" placeholder="Enter:" required>
+								<input type="text" class="form-control" id="shortName2" name="shortName2" placeholder="Enter a short name:" required>
 							</div>
-							<input type="hidden" id="scheduleID" name="scheduleID" value="<?php echo $session->defaultSchedule->getScheduleID(); ?>" />
+							<?php if (isset($session->selectedScheduleID)){
+                                echo "<input type=\"hidden\" id=\"scheduleID\" name=\"scheduleID\" value=\"" . $session->selectedScheduleID. "\" />"; 
+                            }else{ 
+                                echo "<input type=\"hidden\" id=\"scheduleID\" name=\"scheduleID\" value=\"" . $session->defaultSchedule->getScheduleID(). "\" />"; 
+                            } ?>
 							<input type="hidden" id="action" name="action" value="saveSchedule" />
 							<button type="submit" class="btn btn-primary">Save</button>
 							<button type="button" class="btn btn-default">Clear</button>
-						</form>
-					<?php } else { ?>
-						<p class="alert alert-info">Please sign up first to save your created schedule. If you have already created an account, please login.</p>
-					<?php } ?>
-				</div>
-				
-				<div class="col-xs-12 col-md-8" id="canvasDiv">
-					<?php if ($user && $schedule) { ?>
-						<canvas id="scheduleCanvas" width="780" height="750">
-						</canvas>
-					<?php } ?>
-				</div>
-
+						</form>                    
+                    </div>
+                    
+                    <div class="col-xs-12 col-md-8" id="canvasDiv">
+                        <canvas id="scheduleCanvas" width="780" height="750">
+                        </canvas>
+                    </div>
+                <?php } elseif ($user) { ?>
+                    <p id="infoMessage" class="alert alert-info">Looks like you don't have any schedules created! Please visit <a href="http://apps.janeullah.com/coursepicker" title="Course Picker">Course Picker</a> to get started.</p>
+                <?php } else { ?>
+                    <p id="infoMessage" class="alert alert-info">Please visit <a href="http://apps.janeullah.com/coursepicker" title="Course Picker">Course Picker</a> to create an account in order to save your created schedule. If you have already created an account, please login to <a href="http://apps.janeullah.com/coursepicker" title="UGA Course Picker">Course Picker</a>.</p>
+                <?php } ?>
+                
 			</div><!--/row-->
 
 
