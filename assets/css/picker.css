@@ -66,21 +66,26 @@ img.gravatar{
 	width: 40px;
 	height: 40px;
 	float: right;
-	margin-top: 6px;
+	margin-top: -9px;
 	-moz-border-radius: 8px;
 	-webkit-border-radius: 8px;
 	-khtml-border-radius: 8px;
 	border-radius: 8px;
 }
 
+ul.dropdown-menu{
+	background-color:#004A61;
+}
 
-/*
- * 
- * Handling style for the user icon on hover
- * 
- */
-ul.sub{
-	border: none;
-	margin: 0;
-	padding: 0;
+ul.dropdown-menu li{
+	color:#f0f0f0;
+}
+
+#menuDropdown li a:hover{
+	background-color:#f0f0f0;
+	color:#004A61;
+}
+
+#menuLi {
+	background-color:inherit;
 }

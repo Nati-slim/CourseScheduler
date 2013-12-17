@@ -2,6 +2,7 @@
 class UserSchedule{
 	private $schedule;
 	private $scheduleID;
+	private $shortName;
 	private $imageIDs;
 	private $userid;
 	//UNIV
@@ -154,6 +155,10 @@ class UserSchedule{
 		return true;
 	}
 
+	public function getShortName(){
+		return $this->shortName;
+	}
+	
 	public function getScheduleID(){
 		return $this->scheduleID;
 	}
@@ -166,13 +171,24 @@ class UserSchedule{
 		return $this->semester;
 	}
 	
+	public function setShortName($name){
+		try{
+			$this->shortName = (string)$name;	
+			$this->errorMessage = "";
+			return true;
+		}catch(Exception $e){
+			$this->errorMessage = "Unable to short name to string: " . $e->getMessage();
+		}
+		return false;
+	}
+	
 	public function setScheduleID($id){
 		try{
 			$this->scheduleID = (string)$id;	
 			$this->errorMessage = "";
 			return true;
 		}catch(Exception $e){
-			$this->errorMessage = "Unable to cast building number to integer: " . $e->message;
+			$this->errorMessage = "Unable to cast building number to integer: " . $e->getMessage();
 		}
 		return false;
 	}

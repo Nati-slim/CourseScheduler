@@ -1,18 +1,13 @@
 <?php
 require_once("classes/helpers/session.php");
 include_once("../../creds/parse_coursepicker.inc");
-require_once("../../creds/coursepicker_debug.inc");
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 $session = new Session();
 $controller = "classes/controllers/controller.php";
 $errorMessage = $session->errorMessage;
 $uga_file = file_get_contents("assets/json/uga_building_names.json");
-$debug = DEBUGSTATUS;
-if ($debug){
-    ini_set("display_errors", 0);
-    ini_set("log_errors", 1);
-    //Define where do you want the log to go, syslog or a file of your liking with
-    ini_set("error_log", "syslog");
-}
+
 
 /**
  * Function to undo effects of magic quotes
@@ -78,10 +73,10 @@ if (!isset($sectionListingsJSON)){
 	$sectionListingsJSON = "{}";
 }
 
-//Page Data
+
 $title = "Course Picker";
 $longdesc = "";
-$shortdesc = "A course scheuling app for the University of Georgia (UGA) Computer Science students";
+$shortdesc = "A course scheuling app for the University of Georgia Computer Science students";
 $asseturl = "http://apps.janeullah.com/coursepicker/assets";
 $officialurl = "http://apps.janeullah.com/coursepicker/";
 $captchaurl = "../../creds/captcha.inc";
@@ -92,7 +87,7 @@ $ogtitle = "Course Picker by Jane Ullah";
 $creator = "@janetalkstech";
 $coursepicker = "@coursepicker";
 $ogimg = "http://apps.janeullah.com/coursepicker/assets/img/coursepicker.png";
-$ogdesc = "Plan your UGA class schedule with ease using this course scheduling application. Geared towards UGA students, this application includes course info from both Athens and Gwinnett campuses to let you create the perfect class schedule.";
+$ogdesc = "Plan your college schedule with ease using this course schedule application. Geared towards UGA students, this application includes course info from both Athens and Gwinnett campuses.";
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -154,6 +149,7 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
 		<script src="assets/js/canvasstyle.js" type="text/javascript"></script>
 		<script src="assets/js/bootstrap.min.js" type="text/javascript"></script>	
 		<script src="http://twitter.github.com/hogan.js/builds/2.0.0/hogan-2.0.0.js" type="text/javascript"></script>
+		<script src="http://www.parsecdn.com/js/parse-1.2.13.min.js" type="text/javascript"></script>
 
 		<!--JS handling saving, sharing, downloading schedules -->
 		<script src="assets/js/schedule.js" type="text/javascript"></script>
@@ -187,18 +183,8 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
 						?>
 					</ul>
 					<ul id="social" class="nav navbar-nav navbar-right">
-						<!-- If session exists and user is logged in-->
-						<?php if (isset($session->loggedIn) && $session->loggedIn){ 
-							$submenu = "<li class=\"dropdown gravatar\">";
-							$submenu .= "<a id=\"menuLi\" href=\"#\" class=\"dropdown-toggle\" data-toggle=\"dropdown\">";
-							$submenu .= "<img id=\"gravatarImg\" class=\"gravatar\" src=\"" . $session->gravatar_url . "\" alt=\"Gravatar image for " . $session->username;
-							$submenu .= "\"  title=\"Gravatar image for " . $session->username . "\"/><b class=\"caret\" style=\"float:right;\"></b></a>";
-							$submenu .= "<ul id=\"menuDropdown\" class=\"dropdown-menu\">"
-										. "<li id=\"welcome\">Welcome, " .  $session->username. "</li>"
-										. "<li id=\"logoutLi\"><a href=\"#logout\" onclick=\"logout()\">Logout</a></li>"
-										."</ul>"
-										."</li>";
-							echo $submenu;
+						<?php if (isset($session->loggedIn)){ 
+							echo "<li id=\"logoutLi\"><a href=\"#logout\" onclick=\"logout()\">Logout</a></li>"; 
 						} else {
 							echo "<li id=\"signupLi\"><a id=\"signup\" data-toggle=\"modal\" href=\"#signupModal\">Sign Up</a></li>";						
 							echo "<li id=\"loginLi\"><a id=\"login\" data-toggle=\"modal\" href=\"#loginModal\">Log In</a></li>";

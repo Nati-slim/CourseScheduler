@@ -2,6 +2,10 @@
 require_once("../../../../creds/dhpath.inc");
 require_once("../../../../creds/captcha.inc");
 require_once("../../../../creds/coursepicker_debug.inc");
+require_once("../models/Course.php");
+require_once("../models/Section.php");
+require_once("../models/Meeting.php");
+require_once("../models/UserSchedule.php");
 require_once("../helpers/session.php");
 require_once("../helpers/UserHelper.php");
 require_once('../../includes/phppass/PasswordHash.php');
@@ -9,9 +13,16 @@ require_once("../../includes/recaptcha/recaptchalib.php");
 $session = new Session();
 $result = array();
 
+//Needed for serialization/deserialization
+function __autoload($class_name) {
+    include "../models/". $class_name . '.php';
+}
+
+
 //Set up debug stuff
 $debug = DEBUGSTATUS;
-if ($debug){
+//When  not debugging, log to a file!
+if (!$debug){
     ini_set("display_errors", 0);
     ini_set("log_errors", 1);
     //Define where do you want the log to go, syslog or a file of your liking with
@@ -37,10 +48,6 @@ function fail($pub, $pvt = ''){
 	if ($debug && $pvt !== ''){
 		$msg .= ": " . $pvt;
     }
-    /* The $pvt debugging messages may contain characters that would need to be
-     * quoted if we were producing HTML output, like we would be in a real app,
-     * but we're using text/plain here.  Also, $debug is meant to be disabled on
-     * a "production install" to avoid leaking server setup details. */
     return $msg;
 }
 
@@ -234,11 +241,18 @@ if ($requestType === 'POST') {
 							}
 							//add schedule object to user if already existing
 							if (isset($session->scheduleObj)){
-								if ($user->addSchedule(unserialize($session->scheduleObj))){								
-									$result['errorMessage'] = "";
-									$session->errorMessage = "";
+								$result['foundObj'] = "Found user schedule object";
+								$userschedule = unserialize($session->scheduleObj);
+								if ($userschedule instanceof UserSchedule){	
+									if ($user->addSchedule($userschedule)){				
+										$result['errorMessage'] = "";
+										$session->errorMessage = "";
+									}else{
+										$result['errorMessage'] = $user->getErrorMessage();
+										$session->errorMessage = $result['errorMessage'];
+									}
 								}else{								
-									$result['errorMessage'] = $user->getErrorMessage();
+									$result['errorMessage'] = "Invalid user object found.";
 									$session->errorMessage = $result['errorMessage'];
 								}
 							}else{

@@ -9,9 +9,15 @@ require_once("../../../../creds/dhpath.inc");
 $session = new Session();
 $result = array();
 
-//Specify Debug information
+//Needed for serialization/deserialization
+function __autoload($class_name) {
+    include "../models/". $class_name . '.php';
+}
+
+//Set up debug stuff
 $debug = DEBUGSTATUS;
-if ($debug){
+//When  not debugging, log to a file!
+if (!$debug){
     ini_set("display_errors", 0);
     ini_set("log_errors", 1);
     //Define where do you want the log to go, syslog or a file of your liking with

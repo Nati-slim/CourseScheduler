@@ -8,8 +8,15 @@ require_once("../helpers/session.php");
 require_once("../../../../creds/coursepicker_debug.inc");
 $session = new Session();
 $result = array();
+
+//Needed for serialization/deserialization
+function __autoload($class_name) {
+    include "../models/". $class_name . '.php';
+}
+
+
 $debug = DEBUGSTATUS;
-if ($debug){
+if (!$debug){
     ini_set("display_errors", 0);
     ini_set("log_errors", 1);
     //Define where do you want the log to go, syslog or a file of your liking with
@@ -25,7 +32,7 @@ function fail($pub, $pvt = ''){
  * quoted if we were producing HTML output, like we would be in a real app,
  * but we're using text/plain here.  Also, $debug is meant to be disabled on
  * a "production install" to avoid leaking server setup details. */
-	exit("An error occurred ($msg).\n");
+	return $msg;
 }
 
 /**
@@ -84,20 +91,44 @@ if ($requestType === 'POST') {
 			$arrayVal = explode("-",$semesterSelected);
 			if (count($arrayVal) == 2){
 				$callNum = get_post_var("addSectionCallNumber");
-				if (!isset($session->scheduleObj)){
-					//Initialize user schedule object & set relevant $_SESSION variables
-					//$userschedule = new UserSchedule(generateToken());
-					if (isset($session->userid)){
-						//userid,campus,term,scheduleid
-						$userschedule = UserSchedule::makeSchedule($session->userid,$arrayVal[1],$arrayVal[0],generateToken());
+				
+				//check if user is present
+				if (isset($session->loggedIn) && $session->loggedIn){
+					$user = unserialize($session->loggedInUser);
+					if ($user){
+						//Get user id
+						$userid = $user->getUserid();
+						//Check user schedule object presence
+						if (!isset($session->scheduleObj)){
+							//userid,campus,term,scheduleid
+							$userschedule = UserSchedule::makeSchedule($userid,$arrayVal[1],$arrayVal[0],generateToken());
+						}else{
+							$userschedule = unserialize($session->scheduleObj);	
+						}
+						$result['errorMessage'] = "";
+						$session->errorMessage = $result['errorMessage'];
 					}else{
-						$userschedule = UserSchedule::makeSchedule(generateToken(),$arrayVal[1],$arrayVal[0],generateToken());
+						$result['errorMessage'] = "Unable to unserialize user properly";
+						$session->errorMessage = $result['errorMessage'];
 					}
-					$userid = $userschedule->getUserId();
-					initialize($userid,$userschedule);
-				}else{
-					$userid = $session->userid;
-					$userschedule = unserialize($session->scheduleObj);	
+				}else{				
+					if (!isset($session->scheduleObj)){
+						//Initialize user schedule object & set relevant $_SESSION variables
+						//$userschedule = new UserSchedule(generateToken());
+						if (isset($session->userid)){
+							//userid,campus,term,scheduleid
+							$userschedule = UserSchedule::makeSchedule($session->userid,$arrayVal[1],$arrayVal[0],generateToken());
+						}else{
+							$userschedule = UserSchedule::makeSchedule(generateToken(),$arrayVal[1],$arrayVal[0],generateToken());
+						}
+						$userid = $userschedule->getUserId();
+						initialize($userid,$userschedule);
+					}else{
+						$userid = $session->userid;
+						$userschedule = unserialize($session->scheduleObj);	
+					}
+					$result['errorMessage'] = "";
+					$session->errorMessage = $result['errorMessage'];
 				}	
 				
 				try{
@@ -118,20 +149,41 @@ if ($requestType === 'POST') {
 								$session->infoMessage = "Section " . $callNum. " (". $section->getCoursePrefix()."-".$section->getCourseNumber().") added!";
 								$session->schedule = $userschedule->to_json();	
 								$session->scheduleObj = serialize($userschedule);	
+								//Fix logic of this later
+								try{
+									if ($user){
+										if ($user instanceOf User){
+											if ($user->addSchedule($userschedule)){	
+												$result['errorMessage'] = "";
+												$session->loggedInUser = serialize($user);		
+											}else{
+												$result['errorMessage'] = $user->getErrorMessage();
+											}
+										}else{
+											$result['errorMessage'] = "Object found not instance of User class.";
+										}
+									}else{
+										//Do nothing. Only means user hasn't logged in yet.
+									}
+								}catch(Exception $e){
+									$result['errorMessage'] = $e->getMessage();									
+								}
+														
+								$session->errorMessage = $result['errorMessage'];
 								//echo $userschedule->to_json();
 							}
 						}else{
 							$result['callNumber'] = $callNum;
 							$result['term'] = $arrayVal[0];
 							$result['currentProgram']=  $arrayVal[1];
-							$result['errorMessage'] = "Invalid section chosen.";
-							$session->errorMessage = "Section is not Available";
+							$result['errorMessage'] = "Section is not Available";
+							$session->errorMessage = $result['errorMessage'];
 							//echo json_encode($result);
 						}
 					}else{
 						$result['callNumber'] = $callNum;
 						$result['term'] = $arrayVal[0];
-						$result['currentProgram']=  $arrayVal[1];
+						$result['currentProgram'] =  $arrayVal[1];
 						$result['errorMessage'] = "Invalid section chosen.";
 						$session->errorMessage = $result['errorMessage'];
 						//echo json_encode($result);
@@ -139,9 +191,9 @@ if ($requestType === 'POST') {
 				}catch(Exception $e){
 					$result['callNumber'] = $callNum;
 					$result['term'] = $arrayVal[0];
-					$result['currentProgram']=  $arrayVal[1];
+					$result['currentProgram'] =  $arrayVal[1];
 					$result['errorMessage'] = $e->getMessage();
-					$session->errorMessage = $e->getMessage();
+					$session->errorMessage = $result['errorMessage'];
 					//echo json_encode($result);
 				}
 			}else{			
@@ -203,11 +255,11 @@ if ($requestType === 'POST') {
 					$session->errorMessage = $result['errorMessage'];
 				}
 			}else{
-				$result['errorMessage'] = "Unauthorized to perform this action.";
+				$result['errorMessage'] = "User id mismatch";
 				$session->errorMessage = $result['errorMessage'];
 			}
 		}else{
-			$result['errorMessage'] = "Unauthorized to perform this action.";
+			$result['errorMessage'] = "Missing user id.";
 			$session->errorMessage = $result['errorMessage'];
 		}
 		echo json_encode($result);

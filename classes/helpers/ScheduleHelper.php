@@ -26,7 +26,7 @@ class ScheduleHelper{
 				//echo $this->dbconn->host_info . "\n";
 				$this->getschedule = $this->dbconn->prepare("select * from schedules where scheduleID = ?");
 				$this->getuserschedules = $this->dbconn->prepare("select * from schedules where userID = ?");
-				$this->saveschedule = $this->dbconn->prepare("insert into schedules (id,userID,scheduleID,scheduleObject) values(DEFAULT,?,?,?)");
+				$this->saveschedule = $this->dbconn->prepare("insert into schedules (id,userID,scheduleID,scheduleObject,shortname,dateAdded) values(DEFAULT,?,?,?,?,NOW())");
 				$this->truncatetable = $this->dbconn->prepare("truncate table schedules");
 				$this->errorMessage = "";
 			}			
@@ -103,13 +103,13 @@ class ScheduleHelper{
 		try{
 			if (!($this->saveschedule)){
 				echo "Prepare failed for saveSchedule: (" . $this->dbconn->errno . ") " . $this->dbconn->error;
-			}else if (!($this->saveschedule->bind_param("dss",$schedule->getUserId(),$schedule->getScheduleID(),$schedule))){
+			}else if (!($this->saveschedule->bind_param("dsss",$schedule->getUserId(),$schedule->getScheduleID(),$schedule,$schedule->getShortName()))){
 				echo "Binding parameters failed for saveSchedule: (" . $this->saveschedule->errno . ") " . $this->saveschedule->error;
 			}else if (!($value = $this->saveschedule->execute())){
 				echo "Execute failed for saveSchedule: (" . $this->saveschedule->errno . ") " . $this->saveschedule->error;
 			}else{
 				$this->errorMessage = "";
-				return true;
+				return $this->dbconn->insert_id;
 			}
 		}catch(Exception $e){
 			$this->errorMessage = $e->getMessage();

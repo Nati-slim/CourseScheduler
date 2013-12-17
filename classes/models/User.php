@@ -116,6 +116,7 @@ class User{
 		$result['email'] = $this->email;
 		$result['userid'] = $this->userid;
 		$result['registration_date'] = $this->registration_date;
+		$result['schedules'] = $this->schedules;
 		return $result;
 	}
 }

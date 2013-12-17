@@ -39,7 +39,7 @@ class Section{
 	 */
 	function __construct($name, $prefix, $number, $callNo, $availability, $credit, $teacher){
 		try{
-			$this->courseName = (string) $name;
+			$this->courseName = htmlspecialchars($name,ENT_QUOTES);
 			$this->coursePrefix   = (string) $prefix;
 			$this->courseNumber   = (string) $number;
 			$this->callNumber = (int) $callNo;
@@ -48,7 +48,7 @@ class Section{
 			if (strcmp($teacher,"null") == 0){
 				$this->lecturer = "No Professor";
 			}else{
-				$this->lecturer = (string) $teacher;
+				$this->lecturer = htmlspecialchars($teacher,ENT_QUOTES);
 			}
 			$this->meetings = array();
 			//Setting defaults for items not assigned yet.
