@@ -208,8 +208,7 @@ if ($requestType === 'POST') {
 			}
 		}
 	}else if (strcmp($action,"login") == 0){
-		$loggedInStatus = $session->loggedIn;
-		if ($loggedInStatus){
+		if ($session->loggedIn){
 			$result['errorMessage'] = "You're already logged in as " . $session->username;
 			$session->errorMessage = $result['errorMessage'];
 			echo json_encode($result);
@@ -230,7 +229,6 @@ if ($requestType === 'POST') {
 							unset($hasher);
 							$session->loggedIn = true;
 							$session->id = $user->getId();
-							$session->userid = $user->getUserid();
 							$session->username = $user->getUsername();
 							$session->email = $user->getEmail();
 							try{
@@ -244,7 +242,18 @@ if ($requestType === 'POST') {
 								$result['foundObj'] = "Found user schedule object";
 								$userschedule = unserialize($session->scheduleObj);
 								if ($userschedule instanceof UserSchedule){	
-									if ($user->addSchedule($userschedule)){				
+									if ($userschedule->getUserId() == $user->getUserid()){
+										$result['mismatchedIds'] = "userschedule and user ids are same";
+									}else{
+										$result['mismatchedIds'] = "userschedule and user ids are NOT same";
+										//update user id of the userschedule object
+										$userschedule->setUserId($user->getUserid());
+										//stash the updated userschedule object back to session
+										$session->scheduleObj = serialize($userschedule);
+										//set session userid
+									}							
+									if ($user->addSchedule($userschedule)){		
+										$result['addedSchedule'] = "Added found schedule to user object.";	
 										$result['errorMessage'] = "";
 										$session->errorMessage = "";
 									}else{
@@ -255,12 +264,13 @@ if ($requestType === 'POST') {
 									$result['errorMessage'] = "Invalid user object found.";
 									$session->errorMessage = $result['errorMessage'];
 								}
-							}else{
+							}else{								
 								$result['errorMessage'] = "";
 								$session->errorMessage = $result['errorMessage'];
 							}
 							//set this last in case the user schedule object was found and added
-							$session->loggedInUser = serialize($user);					
+							$session->loggedInUser = serialize($user);
+							$session->userid = $user->getUserid();					
 							echo json_encode($result);
 						}else{
 							$result['errorMessage'] = "Invalid credentials.";
@@ -288,6 +298,9 @@ if ($requestType === 'POST') {
 		unset($session->email);
 		unset($session->userid);
 		unset($session->gravatar_url);
+		unset($session->scheduleObj);
+		unset($session->schedule);
+		unset($session->init);
 		$result['errorMessage'] = "";
 		$session->errorMessage = $result['errorMessage'];
 		echo json_encode($result);
@@ -310,6 +323,9 @@ function clearVariables(){
 	unset($session->email);
 	unset($session->userid);
 	unset($session->gravatar_url);
+	unset($session->scheduleObj);
+	unset($session->schedule);
+	unset($session->init);
 }
 
 ?>

@@ -19,7 +19,8 @@ function __autoload($class_name) {
 //This file should be bound to the User object which contains the
 //schedules created by the user
 $debug = DEBUGSTATUS;
-if ($debug){
+//When not debugging, log to file
+if (!$debug){
     ini_set("display_errors", 0);
     ini_set("log_errors", 1);
     //Define where do you want the log to go, syslog or a file of your liking with
@@ -51,12 +52,27 @@ function get_post_var($var){
 
 
 $user = unserialize($session->loggedInUser);
+$session->defaultSchedule = unserialize($session->scheduleObj);
 if ($user){
 	$schedule = $user->getSchedules();
+	//get latest schedule
+	$sched = $session->schedule;
+	$sectionListingsJSON = $session->courseSectionsJSON;	
 }
-echo count($schedule);
-print_r($schedule);
-die();
+//print_r($session->defaultSchedule);
+	
+if (!isset($sched)){
+	$sched = "{}";
+}
+
+if (!isset($sectionListingsJSON)){
+	$sectionListingsJSON = "{}";
+}
+
+
+$uga_file = file_get_contents("assets/json/uga_building_names.json");
+//echo count($schedule);
+//print_r($schedule);
 
 $title = "Course Picker - Save Your Schedule";
 $longdesc = "";
@@ -102,6 +118,19 @@ $ogdesc = "Plan your college schedule with ease using this course schedule appli
 		<meta itemprop="image" content="<?php echo $ogimg; ?>">
 
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		
+		<script type="text/javascript">
+			<?php
+				try{
+					echo "var sched = '". $sched . "';";
+					echo "var sListings = '". $sectionListingsJSON . "';";
+				}catch(Exception $e){
+					echo "console.log(\"Problem getting schedule.\");";
+				}
+			?>
+			var schedule = null;
+		</script>
+		
 		<!-- Bootstrap -->
 		<link href="assets/css/bootstrap.min.css" rel="stylesheet">
 		<link href="assets/css/picker.css" rel="stylesheet">
@@ -117,14 +146,20 @@ $ogdesc = "Plan your college schedule with ease using this course schedule appli
 		<![endif]-->
 		<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 		<script src="https://code.jquery.com/jquery-1.10.2.min.js" type="text/javascript"></script>
+		<?php if ($user && $schedule) { ?>
+		<script src="assets/js/canvasstyle.js" type="text/javascript"></script>
+		<?php } ?>
 		<!-- Include all compiled plugins (below), or include individual files as needed -->
 		<script src="assets/js/bootstrap.min.js" type="text/javascript"></script>	
 		<script src="http://twitter.github.com/hogan.js/builds/2.0.0/hogan-2.0.0.js" type="text/javascript"></script>
 
 		<!--JS handling saving, sharing, downloading schedules -->
 		<script src="assets/js/schedule.js" type="text/javascript"></script>
+		<!--JS related to the dynamic addition of the course navigation elements -->
+		<script src="assets/js/drawings.js" type="text/javascript"></script>
 		<!--JS related to the signup/login functions -->
 		<script src="assets/js/register.js" type="text/javascript"></script>
+		<?php echo "<script type=\"text/javascript\"> var uga_buildings = $.parseJSON(" . json_encode($uga_file) . "); </script>"; ?>
 
 	</head>
 	<body>
@@ -177,42 +212,48 @@ $ogdesc = "Plan your college schedule with ease using this course schedule appli
 
 		<div class="container">
 			<div class="row" style="margin-top:25px;">
-				<div class="col-xs-6 col-md-3" id="leftdiv">
-					<div class="row">
-						<p id="infoMessage" class="alert alert-info" style="font-size:140%;font-weight:bold;color:white;background-color:#004A61">
-							<?php echo $semesters[$semesterSelected]; ?>
-						</p>
-						<div class="sidebar">
-							<?php if (strlen($errorMessage) > 0) { 
-								echo "<script type=\"text/javascript\"> $('#errorMessage').show(); </script>";	
-							?>
-								<p id="errorMessage" class="alert alert-warning"><?php echo $errorMessage;?></p>
-							<?php  }else if (strlen($errorMessage) == 0){	
-								echo "<script type=\"text/javascript\"> $('#errorMessage').hide(); </script>";
-							?>
+				<div class="col-xs-8 col-md-4" id="canvasDiv">
+					<?php if ($user && $schedule) { ?>
 								
-							<?php } ?>
-						</div>			
-					</div><!--/sidebar-->
-				</div>
-
-				<div class="col-xs-12 col-md-9" id="canvasDiv">
-					<?php if ($user) { ?>
-						<form id="saveScheduleForm" name="saveScheduleForm" class="form-signin" role="form" method="post" action="classes/controllers/schedulecontroller.php"  >
+						<form id="saveScheduleForm" name="saveScheduleForm" class="form-signin" role="form" method="post" action="classes/controllers/writecontroller.php">							
+							<div class="form-group">
+								<label for="selectedSchedule">Choose Schedule Version</label>
+								<select class="form-control" id="selectedSchedule" name="selectedSchedule">
+									<?php 
+										$counter = 1;
+										/*echo "<option value=\"" . $session->defaultSchedule->getScheduleID() . "\">Version #" . $counter. "</option>";
+										$counter++;*/
+										foreach($schedule as $key=>$value){
+											echo "<option value=\"" . $key . "\"> Version #" . $counter . "</option>";
+											$counter++;								
+										}
+									?>
+								</select>
+							</div>
+							
+							<div class="alert alert-danger" id="saveScheduleError" style="display:none"></div>
+							<div class="alert alert-success" id="saveScheduleSuccess" style="display:none"></div>
 							<div class="form-group">
 								<label for="shortName1">Name Your Schedule!</label>
 								<input type="text" class="form-control" id="shortName1" name="shortName1" placeholder="Enter:" required>
 							</div>
 							<div class="form-group">
-								<label for="shortName2">Name Your Schedule!</label>
+								<label for="shortName2">Re-enter schedule  name</label>
 								<input type="text" class="form-control" id="shortName2" name="shortName2" placeholder="Enter:" required>
 							</div>
 							<input type="hidden" id="action" name="action" value="saveSchedule" />
-							<button type="submit" class="btn btn-primary">Submit</button>
-							<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+							<button type="submit" class="btn btn-primary">Save</button>
+							<button type="button" class="btn btn-default">Clear</button>
 						</form>
 					<?php } else { ?>
 						<p class="alert alert-info">Please sign up first to save your created schedule. If you have already created an account, please login.</p>
+					<?php } ?>
+				</div>
+				
+				<div class="col-xs-12 col-md-8" id="canvasDiv">
+					<?php if ($user && $schedule) { ?>
+						<canvas id="scheduleCanvas" width="780" height="750">
+						</canvas>
 					<?php } ?>
 				</div>
 

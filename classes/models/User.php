@@ -46,20 +46,6 @@ class User{
 		return null;
 	}
 
-	public function addSchedule($userschedule){
-		if ($userschedule){
-			$this->schedules[$userschedule->getScheduleID()] = $userschedule;
-			$this->errorMessage = "";
-			return true;
-		}
-		$this->errorMessage = "Invalid object found. needs to be a userschedule object.";
-		return false;
-	}
-	
-	public function setSchedule($userschedule){
-		$this->schedules[$userschedule->getScheduleID()] = $userschedule;
-	}
-
 	public function getId(){
 		return $this->id;
 	}
@@ -96,17 +82,32 @@ class User{
 		return $this->errorMessage;
 	}
 	
+	public function getRegistrationDate(){
+		return $this->registration_date;
+	}
+		
 	public function setErrorMessage($msg){
 		$this->errorMessage = $msg;
 	}
 	
-	public function getRegistrationDate(){
-		return $this->registration_date;
+	public function setSchedule($userschedule){
+		$this->schedules[$userschedule->getScheduleID()] = $userschedule;
+	}
+	
+	public function addSchedule($userschedule){
+		if ($userschedule){
+			$this->schedules[$userschedule->getScheduleID()] = $userschedule;
+			$this->errorMessage = "";
+			return true;
+		}
+		$this->errorMessage = "Invalid object found. needs to be a userschedule object.";
+		return false;
 	}
 	
 	public function to_json(){
 		return json_encode($this->to_array());
 	}
+	
 	public function to_array(){
 		$result = array();
 		$result['id'] = $this->id;

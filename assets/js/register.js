@@ -62,7 +62,7 @@ $(function(){
 			}
 			setTimeout(function(){
 					location.reload();
-            }, 6000);
+            }, 10000);
 		})
 		.fail(function(msg){
 			$('body').css('cursor', 'auto');
@@ -103,7 +103,7 @@ $(function(){
 				$('#loginSuccess').empty().append("Successfully logged in!").show();				
 				setTimeout(function(){
 					location.reload();
-                }, 1000);
+                }, 10000);
 				console.log("Successfully logged in.");
 			}
 		})

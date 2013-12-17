@@ -3,7 +3,7 @@ $(function(){
 		var imgUrl = "" + canvasItem.toDataURL();
 		var index = imgUrl.indexOf(",");
 		if (index > 0){
-			console.log("Index: " + index);
+			//console.log("Index: " + index);
 			//Grabbing the base64 part only
 			imgUrl = imgUrl.substring(index+1);
 			//console.log("New imgurl: " + imgUrl);
@@ -39,5 +39,26 @@ $(function(){
 			$('#errorMessage').empty().append("Invalid image data url.").show();
 			console.log("Invalid image data url.");
 		}	
+	});
+	
+	//Handling changing the user schedule in saveschedule.php
+	$('#selectedSchedule').change(function(){
+		$('body').css('cursor', 'wait');
+		$.ajax({
+			type: "POST",
+			url: 'classes/controllers/schedulecontroller.php',
+			data: { action : "switchSchedule", scheduleID : $(this).val()},
+			dataType: "json"
+		})
+		.done(function(msg){
+			$('body').css('cursor', 'auto');
+			//console.log(msg);
+			sListings = msg;
+			populateSections(msg);
+		})
+		.fail(function(msg){
+			$('body').css('cursor', 'auto');
+			console.log(msg + "Error getting sections.");
+		});	
 	});
 });

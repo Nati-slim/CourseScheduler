@@ -238,6 +238,14 @@ class UserSchedule{
 	function getUserId(){
 		return $this->userid;
 	}
+	
+	/**
+	 * Returns the user id
+	 * @return int $userid
+	 */
+	function setUserId($userid){
+		$this->userid = $userid;
+	}
 
 	/**
 	 * Returns the error Message string.

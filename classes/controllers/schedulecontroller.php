@@ -243,7 +243,7 @@ if ($requestType === 'POST') {
 			if ($userid == $userschedule->getUserId()){
 				$semesterSelected = $session->semesterSelected;
 				$arrayVal = explode("-",$semesterSelected);
-				//$session->unsetAll();
+				//Remove all from the schedule will cause a new schedule id to be generated
 				if (count($arrayVal) == 2){
 					$userschedule = UserSchedule::makeSchedule($userid,$arrayVal[1],$arrayVal[0],generateToken());
 					$session->schedule = $userschedule->to_json();	
@@ -284,32 +284,32 @@ if ($requestType === 'POST') {
 					}else{
 						$result['imgToken'] = "";
 						$result['errorMessage'] = "Unable to save image to file";
-						$session->errorMessage = "Unable to save image to file.";
+						$session->errorMessage = $result['errorMessage'];
 					}
 				}else{
 					$result['imgToken'] = "";
 					$result['errorMessage'] = "Not authorized to store this file.";
-					$session->errorMessage = "Not authorized to store this file.";
+					$session->errorMessage = $result['errorMessage'];
 				}
 			}else{				
 				$result['imgToken'] = "";
 				$result['errorMessage'] = "User id not found when attempting to save schedule";
-				$session->errorMessage = "User id not found when attempting to save schedule";
+				$session->errorMessage = $result['errorMessage'];
 			}
 		}else{
 			$result['imgToken'] = "";
 			$result['errorMessage'] = "Invalid action.";
-			$session->errorMessage = "Invalid action.";
+			$session->errorMessage = $result['errorMessage'];
 		}		
 		echo json_encode($result);
 	}else{
 		$result['errorMessage'] = "Invalid action to schedule controller.";
-		$session->errorMessage = "Invalid action to schedule controller.";
+		$session->errorMessage = $result['errorMessage'];
 		echo json_encode($result);
 	}
 }else{
 	$result['errorMessage'] = "Invalid Server Request Type found.";
-	$session->errorMessage = "Invalid Server Request Type found.";
+	$session->errorMessage = $result['errorMessage'];
 	echo json_encode($result);
 }
 ?>

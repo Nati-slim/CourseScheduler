@@ -33,7 +33,7 @@ function fail($pub, $pvt = ''){
 	$msg = $pub;
 	if ($debug && $pvt !== '')
 		$msg .= ": $pvt";
-	exit("An error occurred ($msg).\n");
+	return $msg;
 }
 
 /**
@@ -56,13 +56,16 @@ function getSectionJSON($sections){
 }
 
 
-function initialize(){
-	//Initialize user schedule object & set relevant $_SESSION variables
-	$session->init = "initialized";	
-	$userschedule = new UserSchedule(generateToken());
-	$session->schedule = $userschedule->to_json();
-	$session->schedObj = serialize($userschedule);
-	$session->userid = $userschedule->getUserId();
+/**
+ * Set the required session variables
+ * @param integer @userid user generated id string
+ * @param UserSchedule object $schedule
+ */
+function initialize($userid,$schedule){
+	$session->init = "initialized";
+	$session->userid = $userid;
+	$session->schedule = $schedule->to_json();
+	$session->scheduleObj = serialize($schedule->to_array());
 	$session->errorMessage = "";
 }
 
