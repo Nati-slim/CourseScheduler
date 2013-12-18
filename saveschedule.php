@@ -53,8 +53,12 @@ function getPost($var){
 
 $user = unserialize($session->loggedInUser);
 $session->defaultSchedule = unserialize($session->scheduleObj);
-
-//print_r($session->defaultSchedule); 
+$currentSchedule = $session->defaultSchedule;
+if ($session->defaultSchedule->isSaved()){
+    echo "Saved!.<br/>";
+}else{
+    echo "NOT Saved!.<br/>";
+}
 
 if ($user){
     //has all the schedules that the user was working with.
@@ -240,22 +244,37 @@ $ogdesc = "Plan your college schedule with ease using this course schedule appli
 							
 							<div class="alert alert-danger" id="saveScheduleError" style="display:none"></div>
 							<div class="alert alert-success" id="saveScheduleSuccess" style="display:none"></div>
-							<div class="form-group">
-								<label for="shortName1">Name Your Schedule!</label>
-								<input type="text" class="form-control" id="shortName1" name="shortName1" placeholder="Enter a short name:" required>
-							</div>
-							<div class="form-group">
-								<label for="shortName2">Re-enter schedule  name</label>
-								<input type="text" class="form-control" id="shortName2" name="shortName2" placeholder="Enter a short name:" required>
-							</div>
-							<?php if (isset($session->selectedScheduleID)){
+                            <!-- Setting the hidden input field used for error checking-->
+                            <?php if (isset($session->selectedScheduleID)){
                                 echo "<input type=\"hidden\" id=\"scheduleID\" name=\"scheduleID\" value=\"" . $session->selectedScheduleID. "\" />"; 
-                            }else{ 
+                            }else if (isset($session->defaultSchedule)) { 
                                 echo "<input type=\"hidden\" id=\"scheduleID\" name=\"scheduleID\" value=\"" . $session->defaultSchedule->getScheduleID(). "\" />"; 
                             } ?>
-							<input type="hidden" id="action" name="action" value="saveSchedule" />
-							<button type="submit" class="btn btn-primary">Save</button>
-							<button type="button" class="btn btn-default">Clear</button>
+                            
+                            <!-- For now, prevent user from changing the short name. instead display what they have already-->
+                            <?php 
+                               
+                                if ($currentSchedule->isSaved()) { ?>
+                                    <div class="form-group">
+                                        <input type="text" class="form-control" id="savedShortName" name="savedShortName" 
+                                        value="<?php echo $currentSchedule->getShortName(); ?>">
+                                    </div>
+                                    <input type="hidden" id="action" name="action" value="updateSchedule" />
+                                    <button type="submit" class="btn btn-primary">Update</button>
+                            <?php } else { ?>
+                                <div class="form-group">
+                                    <label for="shortName1">Name Your Schedule!</label>
+                                    <input type="text" class="form-control" id="shortName1" name="shortName1" placeholder="Enter a short name:" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="shortName2">Re-enter schedule  name</label>
+                                    <input type="text" class="form-control" id="shortName2" name="shortName2" placeholder="Enter a short name:" required>
+                                </div>
+
+                                <input type="hidden" id="action" name="action" value="saveSchedule" />
+                                <button type="submit" class="btn btn-primary">Save</button>
+                                <button type="button" class="btn btn-default">Clear</button>                                
+                            <?php } ?>
 						</form>                    
                     </div>
                     

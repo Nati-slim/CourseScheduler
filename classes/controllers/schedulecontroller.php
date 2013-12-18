@@ -167,11 +167,13 @@ function saveSchedule($userid,$user,$defaultSchedule,$scheduleID,$shortName1,$sh
         if ($scheduleID && strlen($scheduleID) > 0){                
             $scheduleHelper = new ScheduleHelper();
             if ($defaultSchedule->getScheduleID() == $scheduleID){
+                
                 $defaultSchedule->setShortName($shortName1);
                 //save this schedule to the database
                 $savedId = $scheduleHelper->saveSchedule($defaultSchedule);
                 if ($savedId){
                     $msg['errorMessage'] = "";
+                    $msg['shortName'] = $shortName1;
                 }else{
                     $msg['errorMessage'] = fail("Failed to save schedule to database.",$scheduleHelper->errorMessage);
                 }
@@ -190,6 +192,7 @@ function saveSchedule($userid,$user,$defaultSchedule,$scheduleID,$shortName1,$sh
                     $savedId = $scheduleHelper->saveSchedule($scheduleToSave);
                     if ($savedId){
                         $msg['errorMessage'] = "";
+                        $msg['shortName'] = $shortName1;
                     }else{
                         $msg['errorMessage'] = fail("Failed to save schedule to database.",$scheduleHelper->errorMessage);
                     }
@@ -357,6 +360,28 @@ if ($requestType === 'POST') {
                     $session->infoMessage = "Section " . $callNum . " deleted!";
                     $session->schedule = $userschedule->to_json();
                     $session->scheduleObj = serialize($userschedule);
+                    
+                    //update schedule insider user object
+                    if (isset($session->loggedInUser)){
+                        $user = unserialize($session->loggedInUser);
+                        if ($user){
+                            foreach($user->getSchedules() as $currSchedule){
+                                if (strcmp($userschedule->getScheduleID(), $currSchedule->getScheduleID()) == 0){
+                                    $found = true;
+                                    //Should simply replace the same scheduleID with a diff. object
+                                    $user->addSchedule($userschedule);
+                                    //update the user object in session.
+                                    $session->loggedInUser = serialize($user);
+                                    $res['userMsg'] = "User object updated.";
+                                    break;
+                                }
+                            }
+                        }else{
+                            $result['userMessage'] = "Could not update the userschedule object in the user.";
+                            $session->errorMessage = $result['userMessage'];
+                        }
+                    }
+                        
                     echo $userschedule->to_json();
                 }
             } else {
@@ -450,14 +475,58 @@ if ($requestType === 'POST') {
         if ($userid){
             if ($user){
                 if (strcmp($scheduleID, $selectedSchedule) == 0){
+                    $found = false;
                     $res = saveSchedule($userid,$user,$defaultSchedule,$scheduleID,$shortName1,$shortName2);
+                    if ($res['shortName']){
+                        $defaultSchedule->setSaved(true);
+                        $defaultSchedule->setShortName($shortName1);
+                        $session->schedule = $defaultSchedule->to_json();
+                        $session->scheduleObj = serialize($defaultSchedule);
+                        
+                        //update schedule insider user object
+                        foreach($user->getSchedules() as $userschedule){
+                            if (strcmp($scheduleID, $userschedule->getScheduleID()) == 0){
+                                $found = true;
+                                //Should simply replace the same scheduleID with a diff. object
+                                $user->addSchedule($defaultSchedule);
+                                //update the user object in session.
+                                $session->loggedInUser = serialize($user);
+                                $res['userMsg'] = "User object updated.";
+                                break;
+                            }
+                        }
+                    }
                     echo json_encode($res);
                 }else{
-                    $result['errorMessage'] = "Mismatch between selected schedule and the found schedule ID";
+                    $result['errorMessage'] = fail("Oops! You forgot to select a schedule to save.","Mismatch between selected schedule and the found schedule ID");
                     $session->errorMessage = $result['errorMessage'];
                     echo json_encode($result);
                 }
             }else{
+                $result['errorMessage'] = "User object deserialized to null";
+                $session->errorMessage = $result['errorMessage'];
+                echo json_encode($result);
+            }
+        }else{
+            $result['errorMessage'] = "Missing user information. Please register first to use this feature or login if you're already signed up.";
+            $session->errorMessage = $result['errorMessage'];
+            echo json_encode($result);
+        }
+    } elseif (strcmp($action, "updateSchedule") == 0){ 
+        $userid = $session->userid;
+        $user = unserialize($session->loggedInUser);
+        $defaultSchedule = unserialize($session->scheduleObj);
+        $scheduleID = getPost('scheduleID');
+        $selectedSchedule = $session->selectedScheduleID;
+        $savedShortName = getPost('savedShortName');     
+        if ($userid){
+            if ($user){
+                if (strcmp($scheduleID, $selectedSchedule) == 0){
+                    
+                }else{
+                    
+                }
+            }else{                
                 $result['errorMessage'] = "User object deserialized to null";
                 $session->errorMessage = $result['errorMessage'];
                 echo json_encode($result);
@@ -481,9 +550,11 @@ if ($requestType === 'POST') {
             if ($user){
                 //Find the schedule in their collection
                 $found = false;
+                $foundSchedule = null;
                 foreach($user->getSchedules() as $userschedule){
                     if (strcmp($scheduleID, $userschedule->getScheduleID()) == 0){
                         //replace default schedule so user can modify it still
+                        $foundSchedule = $userschedule;
                         $session->schedule = $userschedule->to_json();
                         $session->scheduleObj = serialize($userschedule);
                         $session->optionChosen = $optionChosen;
@@ -495,6 +566,9 @@ if ($requestType === 'POST') {
                 if ($found){
                     $result['errorMessage'] = "";
                     $result['optionChosen'] = $optionChosen;
+                    if ($foundSchedule){
+                        $result['isSaved'] = $foundSchedule->isSaved();
+                    }
                     $session->selectedScheduleID = $scheduleID;
                     $session->errorMessage = $result['errorMessage'];
                     echo json_encode($result);

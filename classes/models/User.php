@@ -94,9 +94,19 @@ class User{
 		$this->errorMessage = $msg;
 	}
 	
-	public function setSchedule($userschedule){
+	/*public function setSchedule($userschedule){
 		$this->schedules[$userschedule->getScheduleID()] = $userschedule;
 	}
+    
+    public function updateSchedule($userschedule){
+        if ($userschedule && $userschedule instanceof UserSchedule){
+            $this->schedules[$userschedule->getScheduleID()] = $userschedule;
+			$this->errorMessage = "";
+			return true;
+        }
+        $this->errorMessage = "Invalid object found. needs to be a userschedule object.";
+		return false;
+    }*/
 	
 	public function addSchedule($userschedule){
 		if ($userschedule){

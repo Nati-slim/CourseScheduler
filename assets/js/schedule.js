@@ -95,7 +95,10 @@ $(function(){
                 $('body').css('cursor', 'auto');
                 if (msg.errorMessage.length == 0){
                     $('#saveScheduleError').empty().hide();
-                    $('#saveScheduleSuccess').empty().append("Successfully saved schedule to database.").show();
+                    $('#saveScheduleSuccess').empty().append("Successfully saved " + msg.shortName + " to database.").
+                    show();setTimeout(function(){
+                        location.reload();
+                    }, 1000);
                 }else{
                     $('#saveScheduleError').empty().append(msg.errorMessage).show();
                     $('#saveScheduleSuccess').empty().hide();

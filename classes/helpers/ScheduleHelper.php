@@ -9,6 +9,7 @@ class ScheduleHelper
 {
     private $getschedule;
     private $saveschedule;
+    private $updateschedule;
     private $getuserschedules;
     private $truncatetable;
     public $errorMessage;
@@ -29,6 +30,7 @@ class ScheduleHelper
                 $this->getschedule = $this->dbconn->prepare("select * from schedules where scheduleID = ?");
                 $this->getuserschedules = $this->dbconn->prepare("select * from schedules where userID = ?");
                 $this->saveschedule = $this->dbconn->prepare("insert into schedules (id,userID,scheduleID,scheduleObject,shortname,dateAdded) values(DEFAULT,?,?,?,?,NOW())");
+                $this->updateschedule = $this->dbconn->prepare("update schedule set shortName = ?, scheduleObject = ? where scheduleID = ?");
                 $this->truncatetable = $this->dbconn->prepare("truncate table schedules");
                 $this->errorMessage = "";
             }
@@ -45,9 +47,9 @@ class ScheduleHelper
     {
         try {
             if (!($this->truncatetable)) {
-                echo "Prepare failed: (" . $this->dbconn->errno . ") " . $this->dbconn->error;
+                $this->errorMessage =  "Prepare failed: (" . $this->dbconn->errno . ") " . $this->dbconn->error;
             } elseif (!($value = $this->truncatetable->execute())) {
-                echo "Execute failed: (" . $this->truncatetable->errno . ") " . $this->truncatetable->error;
+                $this->errorMessage =  "Execute failed: (" . $this->truncatetable->errno . ") " . $this->truncatetable->error;
             } else {
                 $this->errorMessage = "";
             }
@@ -113,11 +115,11 @@ class ScheduleHelper
     {
         try {
             if (!($this->saveschedule)) {
-                echo "Prepare failed for saveSchedule: (" . $this->dbconn->errno . ") " . $this->dbconn->error;
+                $this->errorMessage =  "Prepare failed for saveSchedule: (" . $this->dbconn->errno . ") " . $this->dbconn->error;
             } elseif (!($this->saveschedule->bind_param("ssss",$schedule->getUserId(),$schedule->getScheduleID(),serialize($schedule),$schedule->getShortName()))) {
-                echo "Binding parameters failed for saveSchedule: (" . $this->saveschedule->errno . ") " . $this->saveschedule->error;
+                $this->errorMessage =  "Binding parameters failed for saveSchedule: (" . $this->saveschedule->errno . ") " . $this->saveschedule->error;
             } elseif (!($value = $this->saveschedule->execute())) {
-                echo "Execute failed for saveSchedule: (" . $this->saveschedule->errno . ") " . $this->saveschedule->error;
+                $this->errorMessage =  "Execute failed for saveSchedule: (" . $this->saveschedule->errno . ") " . $this->saveschedule->error;
             } else {
                 $this->errorMessage = "";
 
@@ -130,4 +132,33 @@ class ScheduleHelper
         return false;
     }
 
+    /**
+     * Function to save a User's schedule to the database
+     * The schedule is saved as a serialized UserSchedule object.
+     * 
+     * @param UserSchedule $schedule The User schedule object which must have its shortname value set
+     * 
+     * @return bool true if successful and false otherwise
+     * 
+     */ 
+    public function updateSchedule($schedule)
+    {
+        try {
+            if (!($this->updateschedule)) {
+                $this->errorMessage = "Prepare failed for updateSchedule: (" . $this->dbconn->errno . ") " . $this->dbconn->error;
+            } elseif (!($this->updateschedule->bind_param("sss",$schedule->getShortName(),serialize($schedule),$schedule->getScheduleID()))) {
+                $this->errorMessage = "Binding parameters failed for updateSchedule: (" . $this->updateschedule->errno . ") " . $this->updateschedule->error;
+            } elseif (!($value = $this->updateschedule->execute())) {
+                $this->errorMessage = "Execute failed for updateSchedule: (" . $this->updateschedule->errno . ") " . $this->updateschedule->error;
+            } else {
+                $this->errorMessage = "";
+                return true;
+            }
+        } catch (Exception $e) {
+            $this->errorMessage = $e->getMessage();
+        }
+
+        return false;
+    }
+    
 }

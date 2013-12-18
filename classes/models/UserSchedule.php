@@ -5,6 +5,7 @@ class UserSchedule{
 	private $shortName;
 	private $imageIDs;
 	private $userid;
+    private $saved;
 	//UNIV
 	private $campus;
 	//201402
@@ -23,6 +24,7 @@ class UserSchedule{
 		$this->imageIDs = array();
 		$this->campus = "";
 		$this->semester = "";
+        $this->saved = false;
 	}
 	
 	public static function makeSchedule($userid,$campus,$semester,$scheduleID){
@@ -32,6 +34,7 @@ class UserSchedule{
 			$obj->setSemester($semester);
 			$obj->setScheduleID($scheduleID);
 			$obj->setErrorMessage("");
+            $obj->setSaved(false);
 			return $obj;
 		}catch(Exception $e){
 			printf("Error instantiating user schedule object: " . $e->getMessage() . "\n");
@@ -211,14 +214,21 @@ class UserSchedule{
 		}
 	}
 	
+    public function isSaved(){
+        return $this->saved;
+    }
+    
+    public function setSaved($status){
+        $this->saved = $status;
+    }
 	
 	public function getSavedImages(){
 		return $this->imageIDs;
 	}
 	
-	/* 
+	/**
 	 * Adds the image token to the user schedule object for retrieval later
-	 * */
+	 **/
 	public function addImageID($token){
 		$this->imageIDs[] = $token;
 	}
