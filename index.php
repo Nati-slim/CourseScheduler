@@ -144,7 +144,6 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
 		<link href="assets/css/typeahead.js-bootstrap.css" rel="stylesheet">
 		<link href="assets/css/tt-suggestions.css" rel="stylesheet">
 		<link href="assets/css/signin.css" rel="stylesheet">
-		<link href="assets/css/slider.css" rel="stylesheet">
 
 		<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 		<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -165,10 +164,35 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
 		<script src="assets/js/drawings.js" type="text/javascript"></script>
 		<!--JS related to the signup/login functions -->
 		<script src="assets/js/register.js" type="text/javascript"></script>
+        <!-- Pamela Fox's lscache library https://github.com/pamelafox/lscache-->
+		<script src="assets/js/lscache.js" type="text/javascript"></script>
 		<!--http://stackoverflow.com/questions/2010892/storing-objects-in-html5-localstorage -->
         <script type="text/javascript">
             try{
-                if (localStorage.getItem("uga_buildings") === null) {
+                var d = lscache.get('uga_building');
+                if (d){
+                    var uga_buildings = JSON.parse(d);
+                    console.log("retrieved list of uga buildings from lscache.");
+                }else{
+                    var uga_buildings = null;
+                    $.getJSON("assets/json/uga_building_names.json", function(data){
+                        uga_buildings = data;
+                        lscache.set('uga_buildings', JSON.stringify(data),43200);
+                    });
+                    
+                    /*if (uga_building === null){
+                        <?php 
+                            if (isset($session->uga_file)){
+                                $session->uga_file = file_get_contents("assets/json/uga_building_names.json");
+                            }
+                            echo "uga_buildings = $.parseJSON(" . json_encode($session->uga_file) . ");"; 
+                            echo "console.log(\"used php to grab the json file.\");";
+                        ?>
+                    }else{
+                        console.log("stored list of uga buildings in lscache.");
+                    }*/
+                }
+                /*if (localStorage.getItem("uga_buildings") === null) {
                     $.getJSON("assets/json/uga_building_names.json", function(data){
                         var uga_buildings = data;
                         localStorage.setItem('uga_buildings', JSON.stringify(data));
@@ -177,7 +201,7 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
                 }else{
                     var uga_buildings = JSON.parse(localStorage.getItem("uga_buildings"));
                     console.log("retrieved list of uga buildings from localStorage.");
-                }
+                }*/
             }catch(e){
                 <?php 
                     if (isset($session->uga_file)){
