@@ -11,6 +11,17 @@ span.underline{
 .plus-sign{
 	font-size: 140%;
 	color: #004A61;
+    /* http://stackoverflow.com/questions/6008324/fade-effect-on-link-hover
+     * First we need to help some browsers along for this to work.
+     * Just because a vendor prefix is there, doesn't mean it will
+     * work in a browser made by that vendor either, it's just for
+     * future-proofing purposes I guess. */
+      -o-transition:.5s;
+      -ms-transition:.5s;
+      -moz-transition:.5s;
+      -webkit-transition:.5s;
+      /* ...and now for the proper property */
+      transition:.5s;    
 }
 
 
@@ -159,6 +170,17 @@ span.day{
 	margin-right:6px;
 	margin-top:2px;
 	font-size:140%;
+    /* http://stackoverflow.com/questions/6008324/fade-effect-on-link-hover
+     * First we need to help some browsers along for this to work.
+     * Just because a vendor prefix is there, doesn't mean it will
+     * work in a browser made by that vendor either, it's just for
+     * future-proofing purposes I guess. */
+      -o-transition:.5s;
+      -ms-transition:.5s;
+      -moz-transition:.5s;
+      -webkit-transition:.5s;
+      /* ...and now for the proper property */
+      transition:.5s;      
 }
 
 #AvailableSpan{
@@ -178,4 +200,9 @@ span.day{
 
 .glyphicon-remove:hover{
     color:#FC4349;
+}
+
+.glyphicon-plus:hover{
+    color:#FC4349;
+    font-size:22px;
 }

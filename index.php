@@ -5,7 +5,11 @@ require_once("../../creds/coursepicker_debug.inc");
 $session = new Session();
 $controller = "classes/controllers/controller.php";
 $errorMessage = $session->errorMessage;
-$uga_file = file_get_contents("assets/json/uga_building_names.json");
+/*Grab the json file of building names
+if (!isset($session->uga_file)){
+    $session->uga_file = file_get_contents("assets/json/uga_building_names.json");
+}*/
+
 $debug = DEBUGSTATUS;
 if ($debug){
     ini_set("display_errors", 0);
@@ -140,6 +144,7 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
 		<link href="assets/css/typeahead.js-bootstrap.css" rel="stylesheet">
 		<link href="assets/css/tt-suggestions.css" rel="stylesheet">
 		<link href="assets/css/signin.css" rel="stylesheet">
+		<link href="assets/css/slider.css" rel="stylesheet">
 
 		<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 		<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -160,7 +165,30 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
 		<script src="assets/js/drawings.js" type="text/javascript"></script>
 		<!--JS related to the signup/login functions -->
 		<script src="assets/js/register.js" type="text/javascript"></script>
-		<?php echo "<script type=\"text/javascript\"> var uga_buildings = $.parseJSON(" . json_encode($uga_file) . "); </script>"; ?>
+		<!--http://stackoverflow.com/questions/2010892/storing-objects-in-html5-localstorage -->
+        <script type="text/javascript">
+            try{
+                if (localStorage.getItem("uga_buildings") === null) {
+                    $.getJSON("assets/json/uga_building_names.json", function(data){
+                        var uga_buildings = data;
+                        localStorage.setItem('uga_buildings', JSON.stringify(data));
+                    });
+                    console.log("stored list of uga buildings in local storage.");
+                }else{
+                    var uga_buildings = JSON.parse(localStorage.getItem("uga_buildings"));
+                    console.log("retrieved list of uga buildings from localStorage.");
+                }
+            }catch(e){
+                <?php 
+                    if (isset($session->uga_file)){
+                        $session->uga_file = file_get_contents("assets/json/uga_building_names.json");
+                    }
+                    echo "var uga_buildings = $.parseJSON(" . json_encode($session->uga_file) . ");"; 
+                ?>
+                console.log("Error getting item from local storage.");
+                console.log(e);
+            } 
+        </script>
 
 	</head>
 	<body>
@@ -261,7 +289,7 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
 						<input checked type="checkbox" class="checkedElement" id="Cancelled" name="Cancelled" value="Cancelled"/><span id="CancelledSpan">Cancelled</span>
 					</div>
 
-					<div class="panel-group sidebar" id="sectionsFound">
+                    <div class="panel-group sidebar" id="sectionsFound">
 
 					</div>
 
