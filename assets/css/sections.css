@@ -173,5 +173,9 @@ span.day{
 
 #CancelledSpan{
 	letter-spacing:2px;
-	color:#444444;
+	color:#221414;
+}
+
+.glyphicon-remove:hover{
+    color:#FC4349;
 }

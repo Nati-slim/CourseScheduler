@@ -12,11 +12,13 @@ var selectOptions;
 				schedule = $.parseJSON(sched);
 				var size = Object.size(schedule);
 				if (size > 0){
+                    //var data = "data-content=\"Popup with option trigger\" rel=\"popover\" data-placement=\"right\" data-original-title=\"Title\" data-trigger=\"hover\"";
+                    //var data = "data-content=\"Click to change semesters. If you change your semester, a new schedule will be created\" rel=\"popover\" data-placement=\"bottom\" data-original-title=\"Change Semester\" data-trigger=\"hover\" data-toggle=\"popover\"";
 					$('#userSchedule').empty().append("<span class=\"intro\">Class Schedule</span>");
 					Object.keys(schedule).forEach(function(key){
 						var section = schedule[key];
-						var classDiv = "<div id=\"schedule_" + section.callNumber + "\" class=\"individualSection\">";
-						classDiv += "<span onclick=\"removeSection(" + section.callNumber + ")\""  + " class=\"glyphicon glyphicon-remove pull-right delete\"></span>";
+                        var classDiv = "<div id=\"schedule_" + section.callNumber + "\" class=\"individualSection\">";
+						classDiv += "<span title=\"Click to remove " +  section.coursePrefix + "-" + section.courseNumber + " # " + section.callNumber + " from this schedule.\" onclick=\"removeSection(" + section.callNumber + ")\""  + " class=\"glyphicon glyphicon-remove pull-right delete\"></span>";
 						classDiv += "<form method=\"post\" action=\"classes/controllers/schedulecontroller.php\" id=\"removeSectionForm_" + section.callNumber + "\" name=\"removeSectionForm_" + section.callNumber + "\">";
 						classDiv += "<input type=\"hidden\" name=\"action\" id=\"action\" value=\"removeSection\" />";
 						classDiv += "<input type=\"hidden\" id=\"sectionToBeRemoved_" + section.callNumber + "\" name=\"sectionToBeRemoved\" value=\"" + section.callNumber + "\" />";

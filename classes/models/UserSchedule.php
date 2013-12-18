@@ -73,7 +73,7 @@ class UserSchedule{
 		if ($key == false){
 			foreach($this->schedule as $currentSection){
 				if ($this->isConflict($newSection->getMeetings(),$currentSection->getMeetings())){
-					$this->errorMessage = "Conflict detected with existing section " . $currentSection->getCallNumber() . "\n";
+					$this->errorMessage = "Conflict detected with existing section " . $currentSection->getCoursePrefix() . "-" . $currentSection->getCourseNumber() . " # " . $currentSection->getCallNumber() . "\n";
 					return false;
 				}else if (strcasecmp($currentSection->getCoursePrefix(),$newSection->getCoursePrefix()) == 0
 				&& strcasecmp($currentSection->getCourseNumber(),$newSection->getCourseNumber()) == 0){
@@ -85,7 +85,7 @@ class UserSchedule{
 			$this->schedule[$newSection->getCallNumber()] = $newSection;
 			return true;
 		}else{
-			$this->errorMessage = "Section " . $newSection->getCallNumber() . " already present in user's schedule.";
+			$this->errorMessage = "Section " . $newSection->getCoursePrefix() . "-" . $newSection->getCourseNumber() . " #" . $newSection->getCallNumber() . " already present in user's schedule.";
 		}
 		return false;
 	}
@@ -180,7 +180,7 @@ class UserSchedule{
 			$this->errorMessage = "";
 			return true;
 		}catch(Exception $e){
-			$this->errorMessage = "Unable to short name to string: " . $e->getMessage();
+			$this->errorMessage = "Unable to cast short name to string: " . $e->getMessage();
 		}
 		return false;
 	}

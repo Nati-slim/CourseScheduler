@@ -116,6 +116,8 @@ $(function(){
             $('#saveScheduleSuccess').empty().hide();
         }
 	});
+    
+    $('#popoverOption').popover({ trigger: "hover" });
 });
 
     function updateSchedule(){

@@ -241,7 +241,7 @@ $ogdesc = "Plan your college schedule with ease using this course schedule appli
 									?>
 								</select>
 							</div>
-							
+							<a id="popoverOption" class="btn" href="#" data-content="Popup with option trigger" rel="popover" data-placement="bottom" data-original-title="Title">Popup with option trigger</a>
 							<div class="alert alert-danger" id="saveScheduleError" style="display:none"></div>
 							<div class="alert alert-success" id="saveScheduleSuccess" style="display:none"></div>
                             <!-- Setting the hidden input field used for error checking-->
@@ -259,7 +259,7 @@ $ogdesc = "Plan your college schedule with ease using this course schedule appli
                                         value="<?php echo $currentSchedule->getShortName(); ?>">
                                     </div>
                                     <input type="hidden" id="action" name="action" value="updateSchedule" />
-                                    <button type="button" onclick="updateSchedule()" class="btn btn-primary">Update</button>
+                                    <button id="updateScheduleBtn" type="button" onclick="updateSchedule()" class="btn btn-primary">Update</button>
                             <?php } else { ?>
                                 <div class="form-group">
                                     <label for="shortName1">Name Your Schedule!</label>
@@ -271,7 +271,7 @@ $ogdesc = "Plan your college schedule with ease using this course schedule appli
                                 </div>
 
                                 <input type="hidden" id="action" name="action" value="saveSchedule" />
-                                <button type="submit" class="btn btn-primary">Save</button>
+                                <button id="saveScheduleBtn" type="submit" class="btn btn-primary">Save</button>
                                 <button type="button" class="btn btn-default">Clear</button>                                
                             <?php } ?>
 						</form>                    

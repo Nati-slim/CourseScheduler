@@ -203,9 +203,6 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
 							echo "<li id=\"loginLi\"><a id=\"login\" data-toggle=\"modal\" href=\"#loginModal\">Log In</a></li>";
 						} ?>
 						
-						<!--<li><a id="facebook" href="https://facebook.com/janetalkstech" title="Connect with Jane Ullah on Facebook!">F</a></li>
-						<li><a id="twitter" href="https://twitter.com/janetalkstech" title="Connect with Jane Ullah on Twitter!">T</a></li>
-						<li><a id="google" href="https://plus.google.com/+JaneUllah" title="Connect with Jane Ullah on Googl+">G</a></li>-->
 					</ul>				  
 				</div><!-- /.nav-collapse -->
 			</div><!-- /.container -->
@@ -222,7 +219,7 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
 						<?php if (strlen($errorMessage) > 0) { 
 							echo "<script type=\"text/javascript\"> $('#errorMessage').show(); </script>";	
 						?>
-							<p id="errorMessage" class="alert alert-warning"><?php echo $errorMessage;?></p>
+							<p id="errorMessage" class="alert alert-danger"><?php echo $errorMessage;?></p>
 						<?php  }else if (strlen($errorMessage) == 0){	
 							echo "<script type=\"text/javascript\"> $('#errorMessage').hide(); </script>";
 						?>
