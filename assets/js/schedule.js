@@ -95,7 +95,7 @@ $(function(){
                 $('body').css('cursor', 'auto');
                 if (msg.errorMessage.length == 0){
                     $('#saveScheduleError').empty().hide();
-                    $('#saveScheduleSuccess').empty().append("Successfully saved " + msg.shortName + " to database.").
+                    $('#saveScheduleSuccess').empty().append("Successfully saved <strong>" + msg.shortName + "</strong> to database.").
                     show();setTimeout(function(){
                         location.reload();
                     }, 1000);
@@ -117,3 +117,37 @@ $(function(){
         }
 	});
 });
+
+    function updateSchedule(){
+        var shortName = $('#savedShortName').val();
+        var selectedScheduleID = $('#scheduleID').val();
+        $('body').css('cursor', 'wait');
+        $.ajax({
+            type: "POST",
+            url: 'classes/controllers/schedulecontroller.php',
+            data: { action:"updateSchedule",scheduleID : selectedScheduleID, savedShortName: shortName},
+            dataType: "json"
+        })
+        .done(function(msg){
+            $('body').css('cursor', 'auto');
+            if (msg.errorMessage.length == 0){
+                $('#saveScheduleError').empty().hide();
+                console.log(msg);
+                $('#saveScheduleSuccess').empty().append("Successfully saved <strong>" + msg.shortName + "</strong> to database.").
+                show();setTimeout(function(){
+                    location.reload();
+                }, 5000);
+            }else{
+                $('#saveScheduleError').empty().append(msg.errorMessage).show();
+                $('#saveScheduleSuccess').empty().hide();
+            }
+            console.log(msg);
+        })
+        .fail(function(msg){
+            $('body').css('cursor', 'auto');
+            $('#saveScheduleError').append(msg.responseText).show();
+            $('#saveScheduleSuccess').empty().hide();
+            console.log(msg.responseText);
+        });	
+        return false;
+    }

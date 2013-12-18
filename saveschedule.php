@@ -54,11 +54,11 @@ function getPost($var){
 $user = unserialize($session->loggedInUser);
 $session->defaultSchedule = unserialize($session->scheduleObj);
 $currentSchedule = $session->defaultSchedule;
-if ($session->defaultSchedule->isSaved()){
+/*if ($session->defaultSchedule->isSaved()){
     echo "Saved!.<br/>";
 }else{
     echo "NOT Saved!.<br/>";
-}
+}*/
 
 if ($user){
     //has all the schedules that the user was working with.
@@ -252,15 +252,14 @@ $ogdesc = "Plan your college schedule with ease using this course schedule appli
                             } ?>
                             
                             <!-- For now, prevent user from changing the short name. instead display what they have already-->
-                            <?php 
-                               
+                            <?php                                
                                 if ($currentSchedule->isSaved()) { ?>
                                     <div class="form-group">
                                         <input type="text" class="form-control" id="savedShortName" name="savedShortName" 
                                         value="<?php echo $currentSchedule->getShortName(); ?>">
                                     </div>
                                     <input type="hidden" id="action" name="action" value="updateSchedule" />
-                                    <button type="submit" class="btn btn-primary">Update</button>
+                                    <button type="button" onclick="updateSchedule()" class="btn btn-primary">Update</button>
                             <?php } else { ?>
                                 <div class="form-group">
                                     <label for="shortName1">Name Your Schedule!</label>

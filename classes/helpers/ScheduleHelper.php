@@ -30,7 +30,7 @@ class ScheduleHelper
                 $this->getschedule = $this->dbconn->prepare("select * from schedules where scheduleID = ?");
                 $this->getuserschedules = $this->dbconn->prepare("select * from schedules where userID = ?");
                 $this->saveschedule = $this->dbconn->prepare("insert into schedules (id,userID,scheduleID,scheduleObject,shortname,dateAdded) values(DEFAULT,?,?,?,?,NOW())");
-                $this->updateschedule = $this->dbconn->prepare("update schedule set shortName = ?, scheduleObject = ? where scheduleID = ?");
+                $this->updateschedule = $this->dbconn->prepare("update schedules set shortName = ?, scheduleObject = ? where scheduleID = ?");
                 $this->truncatetable = $this->dbconn->prepare("truncate table schedules");
                 $this->errorMessage = "";
             }

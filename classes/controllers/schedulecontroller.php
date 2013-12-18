@@ -155,6 +155,40 @@ function reconstructSchedule($arr)
 }
 
 /**
+ * Method to update the saved user schedule object to the database
+ * user must be logged in i.e. signed up to use this feature
+ * 
+ * @return array
+ * 
+ */ 
+function updateSchedule($userid,$user,$selectedSchedule,$scheduleID,$savedShortName){
+    $msg = array(); 
+    if ($scheduleID){
+        $scheduleHelper = new ScheduleHelper();
+        if ($selectedSchedule->getScheduleID() == $scheduleID){
+            $selectedSchedule->setShortName($savedShortName);
+            //save this schedule to the database
+            $saved = $scheduleHelper->updateSchedule($selectedSchedule);
+            if ($saved){
+                $msg['errorMessage'] = "";
+                $msg['shortName'] = $savedShortName;
+            }else{
+                $msg['errorMessage'] = fail("Failed to save schedule to database.",$scheduleHelper->errorMessage);
+            }
+        }else{
+            $msg['errorMessage'] = "Mismatch between found schedule object and the schedule id submitted";
+            $msg['scheduleID'] = $scheduleID;
+            $session->errorMessage = $msg['errorMessage'];
+        }
+    }else{
+        $msg['errorMessage'] = "Schedule ID not found.";
+        $msg['scheduleID'] = $scheduleID;
+        $session->errorMessage = $msg['errorMessage'];
+    }
+    return $msg;
+}
+
+/**
  * Method to save a user's schedule to the database
  * user must be logged in i.e. signed up to use this feature
  * 
@@ -166,8 +200,7 @@ function saveSchedule($userid,$user,$defaultSchedule,$scheduleID,$shortName1,$sh
     if (strcmp($shortName1, $shortName2) == 0){
         if ($scheduleID && strlen($scheduleID) > 0){                
             $scheduleHelper = new ScheduleHelper();
-            if ($defaultSchedule->getScheduleID() == $scheduleID){
-                
+            if ($defaultSchedule->getScheduleID() == $scheduleID){                
                 $defaultSchedule->setShortName($shortName1);
                 //save this schedule to the database
                 $savedId = $scheduleHelper->saveSchedule($defaultSchedule);
@@ -522,9 +555,44 @@ if ($requestType === 'POST') {
         if ($userid){
             if ($user){
                 if (strcmp($scheduleID, $selectedSchedule) == 0){
-                    
+                    $found = false;
+                    $res = updateSchedule($userid,$user,$defaultSchedule,$scheduleID,$savedShortName);
+                    //if no error, update schedule in user object
+                    if (strlen($res['errorMessage']) == 0){
+                        $defaultSchedule->setSaved(true);
+                        $defaultSchedule->setShortName($savedShortName);
+                        $session->schedule = $defaultSchedule->to_json();
+                        $session->scheduleObj = serialize($defaultSchedule);
+                        
+                        //update schedule insider user object
+                        foreach($user->getSchedules() as $userschedule){
+                            if (strcmp($scheduleID, $userschedule->getScheduleID()) == 0){
+                                $found = true;
+                                //Should simply replace the same scheduleID with a diff. object
+                                $user->addSchedule($defaultSchedule);
+                                //update the user object in session.
+                                $session->loggedInUser = serialize($user);
+                                $res['userMsg'] = "User object updated.";
+                                break;
+                            }
+                        }
+                        
+                        if ($found){
+                            echo json_encode($res);
+                        }else{
+                            $result['errorMessage'] = "Problem updating user object.";
+                            $session->errorMessage = $result['errorMessage'];
+                            echo json_encode($result);
+                        }
+                    }else{                        
+                        $result['errorMessage'] = $res['errorMessage'];
+                        $session->errorMessage = $res['errorMessage'];
+                        echo json_encode($result);
+                    }
                 }else{
-                    
+                    $result['errorMessage'] = "User object deserialized to null";
+                    $session->errorMessage = $result['errorMessage'];
+                    echo json_encode($result);
                 }
             }else{                
                 $result['errorMessage'] = "User object deserialized to null";
