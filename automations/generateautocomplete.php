@@ -4,6 +4,7 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 //open the csv files
 $path = HOME_DIR . "csv/coursepicker/";
+$jsonURLPath = "apps.janeullah.com/coursepicker/assets/json/tp/tp-";
 $fileList = array();
 
 //FORMAT of autocomplete 
@@ -22,12 +23,13 @@ $fileList = array();
     }
 ]*/
 
-foreach(glob('csvfiles/pre_tp_*.csv') as $file) {
-    //echo $path . $file . "\n";
+foreach(glob(CP_PATH . 'csvfiles/pre_tp_*.csv') as $file) {
+    echo $file . "\n";
     //Gets the name e.g. GWIN_201305
+    //printf(CP_PATH . 'csvfiles/pre_tp_*.csv' ."\n");
     $semester = substr($file,-15,-4);
     echo $semester . "\n";
-    $fileList[$semester] = file_get_contents($path . $file);
+    $fileList[$semester] = file_get_contents($file);
 }
 
 if (count($fileList) > 0){
@@ -44,7 +46,7 @@ if (count($fileList) > 0){
 				$course['coursePrefix'] = substr($line[0],1);
 				$course['courseNumber'] = trim("" . $line[1]);
 				$course['courseName'] = trim(substr($line[2],0,-1));
-				$course['value'] = $course['coursePrefix'] . "-" . $course['courseNumber'];
+				$course['value'] = $course['coursePrefix'] . " " . $course['courseNumber'];
 				$tokens = array();
 				$tokens[] = $course['coursePrefix'];
 				$tokens[] = $course['courseNumber'];	
@@ -60,11 +62,12 @@ if (count($fileList) > 0){
 		//GWIN_201305
 		$arrVal = explode("_",$key);
 		//echo $jsonFile;
-		$jsonFile = HOME_DIR . "apps.janeullah.com/coursepicker/assets/json/tp/tp-" . $arrVal[1] . "-" . $arrVal[0] . ".json";
+		$jsonFile = HOME_DIR . $jsonURLPath . $arrVal[1] . "-" . $arrVal[0] . ".json";
 		//$jsonFile = HOME_DIR . "csv/coursepicker/jsonfiles/tp-"  . $arrVal[1] . "-" . $arrVal[0] . ".json";
 		file_put_contents($jsonFile,json_encode($csvArray));
 	}
 }else{
+    printf(CP_PATH . 'csvfiles/pre_tp_*.csv' ."\n");
 	printf(" Did not properly generate the sorted and sliced csv files.\n");
 	exit();
 }

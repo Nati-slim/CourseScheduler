@@ -11,7 +11,7 @@ rm -rfv /home/user/csv/coursepicker/csvfiles/*
 #need simple dom for this
 /usr/local/php5/bin/php /home/user/csv/coursepicker/grabcsvfiles.php
 
-cd csvfiles
+cd /home/user/csvfiles
 for i in `ls *.csv`; do
 	echo '/home/user/csv/coursepicker/csvfiles/'$i; 
 	
@@ -21,7 +21,7 @@ for i in `ls *.csv`; do
 	#isolate just the course Prefix, course Number and course Name for slicing up for the typeahead.js json files
 	cut -d',' -f3-5 '/home/user/csv/coursepicker/csvfiles/sorted_'$i | sort -u > '/home/user/csv/coursepicker/csvfiles/pre_tp_'$i
 done
-cd ..
+cd /home/user/
 
 #generate the .json files needed for the autocomplete feature
 /usr/local/php5/bin/php /home/user/csv/coursepicker/generateautocomplete.php
