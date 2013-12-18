@@ -178,30 +178,8 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
                     $.getJSON("assets/json/uga_building_names.json", function(data){
                         uga_buildings = data;
                         lscache.set('uga_buildings', JSON.stringify(data),43200);
-                    });
-                    
-                    /*if (uga_building === null){
-                        <?php 
-                            if (isset($session->uga_file)){
-                                $session->uga_file = file_get_contents("assets/json/uga_building_names.json");
-                            }
-                            echo "uga_buildings = $.parseJSON(" . json_encode($session->uga_file) . ");"; 
-                            echo "console.log(\"used php to grab the json file.\");";
-                        ?>
-                    }else{
-                        console.log("stored list of uga buildings in lscache.");
-                    }*/
+                    });  
                 }
-                /*if (localStorage.getItem("uga_buildings") === null) {
-                    $.getJSON("assets/json/uga_building_names.json", function(data){
-                        var uga_buildings = data;
-                        localStorage.setItem('uga_buildings', JSON.stringify(data));
-                    });
-                    console.log("stored list of uga buildings in local storage.");
-                }else{
-                    var uga_buildings = JSON.parse(localStorage.getItem("uga_buildings"));
-                    console.log("retrieved list of uga buildings from localStorage.");
-                }*/
             }catch(e){
                 <?php 
                     if (isset($session->uga_file)){
