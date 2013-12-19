@@ -13,6 +13,8 @@ class User{
 	private $lastname;
 	private $email;
 	private $schedules;
+    private $registration_ip;
+    
 	public $errorMessage;
 
 	function __construct($id,$userid,$username,$hash,$email,$date,$verified = 0,$firstname = "",$lastname = ""){
@@ -53,6 +55,10 @@ class User{
 	public function getUserid(){
 		return $this->userid;
 	}
+    
+    public function isVerified(){
+        return $this->emailVerified;
+    }
 	
     /**
      * Function to return the array of UserSchedule objects
@@ -90,24 +96,22 @@ class User{
 		return $this->registration_date;
 	}
 		
+    public function setRegistrationDate($date){
+        $this->registration_date = $date;
+    }
+    
 	public function setErrorMessage($msg){
 		$this->errorMessage = $msg;
 	}
-	
-	/*public function setSchedule($userschedule){
-		$this->schedules[$userschedule->getScheduleID()] = $userschedule;
-	}
     
-    public function updateSchedule($userschedule){
-        if ($userschedule && $userschedule instanceof UserSchedule){
-            $this->schedules[$userschedule->getScheduleID()] = $userschedule;
-			$this->errorMessage = "";
-			return true;
-        }
-        $this->errorMessage = "Invalid object found. needs to be a userschedule object.";
-		return false;
-    }*/
+    public function setRegistrationIP($ip){
+        $this->registration_ip = $ip;
+    }
 	
+    public function setVerification($status){
+        $this->emailVerified = $status;
+    }
+    
 	public function addSchedule($userschedule){
 		if ($userschedule){
 			$this->schedules[$userschedule->getScheduleID()] = $userschedule;

@@ -280,7 +280,7 @@ var selectOptions;
 				//expand just the first section 
 				msg += "<div id=\"collapse" + index + "\" class=\"panel-collapse collapse in\">";
 			}
-      		msg += "<div class=\"panel-body\">";
+      		msg += "<div class=\"panel-body\" style=\"padding:4px;\">";
       		msg += "<span class=\"row1 right\">" + section.lecturer + "</span>";
       		msg += "<span class=\"row1 left\">";
       		//link the class url

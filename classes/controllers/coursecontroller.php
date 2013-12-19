@@ -138,7 +138,11 @@ if ($requestType === 'POST') {
         $semester = getPost('semesterSelected');
         $course = getPost('courseEntry');
         if (strlen(trim($semester)) > 0 && strlen(trim($course)) > 0) {
-            $courseArray = explode("-", $course);
+            //
+            $courseArray = explode(" ", $course);
+            if (count($courseArray) != 2){
+                $courseArray = explode("-", $course);
+            }
             $semesterArray = explode("-", $semester);
             if (count($courseArray) == 2 && count($semesterArray) == 2) {
                 $session->semesterSelected = $semesterArray[0] . "-"
@@ -159,13 +163,13 @@ if ($requestType === 'POST') {
                     echo json_encode($result);
                 }
             } else {
-                $result['errorMessage'] = "Invalid parameters found.";
-                $session->errorMessage = "Invalid parameters found.";
+                $result['errorMessage'] = "Please enter a course like this: CSCI-1302 or CSCI 1302";
+                $session->errorMessage = $result['errorMessage'];
                 echo json_encode($result);
             }
         } else {
-            $result['errorMessage'] = "Invalid parameters found.";
-            $session->errorMessage = "Invalid parameters found.";
+            $result['errorMessage'] = "Please refresh the page. Missing the data for the semester and campus";
+            $session->errorMessage = $result['errorMessage'];
             echo json_encode($result);
         }
     } elseif (strcmp($action, "filterSections") == 0) {

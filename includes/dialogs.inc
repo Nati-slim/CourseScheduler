@@ -94,7 +94,7 @@
 						<form id="signupForm" name="signupForm" class="form-signin" method="post" action="classes/controllers/usercontroller.php" role="form">
 							  <div class="form-group">
 									<label for="username">Username</label>
-									<input type="text" class="form-control" id="username" name="username" placeholder="Enter email" required>
+									<input type="text" class="form-control" id="username" name="username" placeholder="Enter username" required>
 							  </div>
 							  <div class="form-group">
 									<label for="email">Email address</label>

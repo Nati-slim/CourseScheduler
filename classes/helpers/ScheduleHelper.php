@@ -13,6 +13,7 @@ class ScheduleHelper
     private $getuserschedules;
     private $truncatetable;
     public $errorMessage;
+    private $dbconn;
 
     /**
      * Default constructor to access the database
@@ -27,11 +28,11 @@ class ScheduleHelper
                 $this->errorMessage = "Failed to connect to MySQL: (" . $this->dbconn->connect_errno . ") " . $this->dbconn->error;
             } else {
                 //echo $this->dbconn->host_info . "\n";
-                $this->getschedule = $this->dbconn->prepare("select * from schedules where scheduleID = ?");
-                $this->getuserschedules = $this->dbconn->prepare("select * from schedules where userID = ?");
-                $this->saveschedule = $this->dbconn->prepare("insert into schedules (id,userID,scheduleID,scheduleObject,shortname,dateAdded) values(DEFAULT,?,?,?,?,NOW())");
-                $this->updateschedule = $this->dbconn->prepare("update schedules set shortName = ?, scheduleObject = ? where scheduleID = ?");
-                $this->truncatetable = $this->dbconn->prepare("truncate table schedules");
+                $this->getschedule = $this->dbconn->prepare("select * from coursepicker_schedules where scheduleID = ?");
+                $this->getuserschedules = $this->dbconn->prepare("select * from coursepicker_schedules where userID = ?");
+                $this->saveschedule = $this->dbconn->prepare("insert into coursepicker_schedules (id,userID,scheduleID,scheduleObject,shortname,dateAdded) values(DEFAULT,?,?,?,?,NOW())");
+                $this->updateschedule = $this->dbconn->prepare("update coursepicker_schedules set shortName = ?, scheduleObject = ? where scheduleID = ?");
+                $this->truncatetable = $this->dbconn->prepare("truncate table coursepicker_schedules");
                 $this->errorMessage = "";
             }
         } catch (Exception $e) {

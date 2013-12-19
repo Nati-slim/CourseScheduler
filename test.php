@@ -1,11 +1,11 @@
 <?php
-require_once "classes/helpers/session.php";
-require_once "classes/models/Course.php";
-require_once "classes/models/Section.php";
-require_once "classes/models/Meeting.php";
-require_once "classes/models/UserSchedule.php";
-include_once "../../creds/parse_coursepicker.inc";
-require_once "../../creds/coursepicker_debug.inc";
+require_once("classes/helpers/session.php");
+require_once("classes/models/Course.php");
+require_once("classes/models/Section.php");
+require_once("classes/models/Meeting.php");
+require_once("classes/models/UserSchedule.php");
+include_once("../../creds/parse_coursepicker.inc");
+require_once("../../creds/coursepicker_debug.inc");
 $session = new Session();
 $controller = "classes/controllers/schedulecontroller.php";
 $errorMessage = $session->errorMessage;
@@ -39,7 +39,6 @@ function fail($pub, $pvt = ''){
 	//exit("An error occurred ($msg).\n");
 	return $msg;
 }
-
 /**
  * Function to undo effects of magic quotes
  * Returns the $_POST value matching the provided key
@@ -83,6 +82,10 @@ if (!isset($sectionListingsJSON)){
 	$sectionListingsJSON = "{}";
 }
 
+
+$uga_file = file_get_contents("assets/json/uga_building_names.json");
+//echo count($schedule);
+//print_r($schedule);
 
 $title = "Course Picker - Save Your Schedule";
 $longdesc = "";
@@ -144,6 +147,8 @@ $ogdesc = "Plan your college schedule with ease using this course schedule appli
 		<!-- Bootstrap -->
 		<link href="assets/css/bootstrap.min.css" rel="stylesheet">
 		<link href="assets/css/picker.css" rel="stylesheet">
+		<link href="assets/css/typeahead.js-bootstrap.css" rel="stylesheet">
+		<link href="assets/css/tt-suggestions.css" rel="stylesheet">
 		<link href="assets/css/signin.css" rel="stylesheet">
 
 		<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -159,10 +164,15 @@ $ogdesc = "Plan your college schedule with ease using this course schedule appli
         <?php } ?>
 		<!-- Include all compiled plugins (below), or include individual files as needed -->
 		<script src="assets/js/bootstrap.min.js" type="text/javascript"></script>	
+		<script src="http://twitter.github.com/hogan.js/builds/2.0.0/hogan-2.0.0.js" type="text/javascript"></script>
+
 		<!--JS handling saving, sharing, downloading schedules -->
 		<script src="assets/js/schedule.js" type="text/javascript"></script>
+		<!--JS related to the dynamic addition of the course navigation elements -->
+		<script src="assets/js/drawings.js" type="text/javascript"></script>
 		<!--JS related to the signup/login functions -->
 		<script src="assets/js/register.js" type="text/javascript"></script>
+		<?php echo "<script type=\"text/javascript\"> var uga_buildings = $.parseJSON(" . json_encode($uga_file) . "); </script>"; ?>
 
 	</head>
 	<body>
@@ -231,7 +241,7 @@ $ogdesc = "Plan your college schedule with ease using this course schedule appli
 									?>
 								</select>
 							</div>
-							<a id="popoverOption" class="btn" href="#" data-content="Popup with option trigger" rel="popover" data-placement="bottom" data-original-title="Title">Popup with option trigger</a>
+							
 							<div class="alert alert-danger" id="saveScheduleError" style="display:none"></div>
 							<div class="alert alert-success" id="saveScheduleSuccess" style="display:none"></div>
                             <!-- Setting the hidden input field used for error checking-->
@@ -249,7 +259,7 @@ $ogdesc = "Plan your college schedule with ease using this course schedule appli
                                         value="<?php echo $currentSchedule->getShortName(); ?>">
                                     </div>
                                     <input type="hidden" id="action" name="action" value="updateSchedule" />
-                                    <button id="updateScheduleBtn" type="button" onclick="updateSchedule()" class="btn btn-primary">Update</button>
+                                    <button type="button" onclick="updateSchedule()" class="btn btn-primary">Update</button>
                             <?php } else { ?>
                                 <div class="form-group">
                                     <label for="shortName1">Name Your Schedule!</label>
@@ -261,7 +271,7 @@ $ogdesc = "Plan your college schedule with ease using this course schedule appli
                                 </div>
 
                                 <input type="hidden" id="action" name="action" value="saveSchedule" />
-                                <button id="saveScheduleBtn" type="submit" class="btn btn-primary">Save</button>
+                                <button type="submit" class="btn btn-primary">Save</button>
                                 <button type="button" class="btn btn-default">Clear</button>                                
                             <?php } ?>
 						</form>                    
@@ -282,9 +292,9 @@ $ogdesc = "Plan your college schedule with ease using this course schedule appli
 
 			<hr>
 
-        <footer>
-            <p>&copy; <a href="http://janeullah.com" title="Jane Ullah">Jane Ullah 2014</a></p>
-        </footer>
+			<footer>
+				<p>&copy; Jane Ullah 2014</p>
+			</footer>
 
 		</div><!--/.container-->
     <?php require_once("includes/dialogs.inc") ?>	

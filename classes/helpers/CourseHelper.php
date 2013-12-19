@@ -49,6 +49,7 @@ class CourseHelper
     private $addcourse;
     private $truncatetable;
     public $errorMessage;
+    private $dbconn;
 
     /**
      * Default constructor to access the database

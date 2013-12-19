@@ -169,17 +169,28 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
 		<!--http://stackoverflow.com/questions/2010892/storing-objects-in-html5-localstorage -->
         <script type="text/javascript">
             try{
-                var d = lscache.get('uga_building');
-                if (d){
-                    var uga_buildings = JSON.parse(d);
+                var uga_buildings = lscache.get('uga_buildings');
+                if (uga_buildings){
                     console.log("retrieved list of uga buildings from lscache.");
                 }else{
-                    var uga_buildings = null;
                     $.getJSON("assets/json/uga_building_names.json", function(data){
                         uga_buildings = data;
                         lscache.set('uga_buildings', JSON.stringify(data),43200);
-                    });  
+                    })
+                    .done(function() {
+                        console.log( "second success" );
+                    })
+                    .fail(function() {
+                        console.log( "getJSON request failed. :( " );
+                        <?php 
+                            if (isset($session->uga_file)){
+                                $session->uga_file = file_get_contents("assets/json/uga_building_names.json");
+                            }
+                            echo "var uga_buildings = $.parseJSON(" . json_encode($session->uga_file) . ");"; 
+                        ?>
+                    }) 
                 }
+                //console.log(uga_buildings);
             }catch(e){
                 <?php 
                     if (isset($session->uga_file)){
@@ -308,7 +319,7 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
 								limit: 10,
 								prefetch: $('#jsonURL').val(),                                     
 								template: [                                                                 
-									'<p class="tt-courseShortname">{{coursePrefix}}-{{courseNumber}}</p>',                         
+									'<p class="tt-courseShortname">{{coursePrefix}} {{courseNumber}}</p>',                         
 									'<p class="tt-courseName">{{courseName}}</p>'                    
 								].join(''),                                                                 
 								engine: Hogan                
@@ -351,9 +362,9 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
 
       	<hr>
 
-     	<footer>
-        	<p>&copy; Jane Ullah 2014</p>
-      	</footer>
+        <footer>
+            <p>&copy; <a href="http://janeullah.com" title="Jane Ullah">Jane Ullah 2014</a></p>
+        </footer>
 
     </div><!--/.container-->
     <?php require_once("includes/dialogs.inc") ?>	

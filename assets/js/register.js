@@ -1,21 +1,3 @@
-/*$(function() {
-    /*$("#signup,#login").hover(
-            function() {
-                $(this).animate({ color: "#FC4349" }, 'slow');
-            },function() {
-                $(this).animate({ color: "#f0f0f0" }, 'slow');
-        });
-});
-$(function() {
-	$('#gravatarImg').hover(function(){
-		$('#submenu').show();
-		console.log("triggered");
-	},function(){
-		$('#submenu').hide();
-		console.log("menu hidden");
-	});
-});*/
-
 function logout(){
 	$.ajax({
 		type: "POST",
@@ -46,6 +28,7 @@ $(function(){
 		})
 		.done(function(msg){
 			$('body').css('cursor', 'auto');
+            //errorMessage will be empty if no problems
 			if (msg.errorMessage.length > 0){
 				$('#signupError').empty();
 				$('#signupError').append(msg.errorMessage);
@@ -56,13 +39,14 @@ $(function(){
 				}, 10000);
 			}else{
 				$('#signupError').empty().hide();
-				$('#signupSuccess').empty().append("Successfully signed up for CoursePicker! You can now login.").show();
+				$('#signupSuccess').empty().append("Successfully signed up for CoursePicker! An activation email has been sent to the email address you provided. In the meantime, please login to save your created schedules.").show();
 				$('#signupForm').hide("slow",function(){});
-				console.log("Successfully signed up");
+				console.log("Successfully signed up.");
+                //Don't hide div if signup issue found
+                setTimeout(function(){
+                        location.reload();
+                }, 5000);
 			}
-			setTimeout(function(){
-					location.reload();
-            }, 2000);
 		})
 		.fail(function(msg){
 			$('body').css('cursor', 'auto');

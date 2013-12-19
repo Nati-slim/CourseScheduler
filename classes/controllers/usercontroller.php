@@ -32,6 +32,14 @@ require_once '../../includes/recaptcha/recaptchalib.php';
 $session = new Session();
 $result = array();
 $debug = DEBUGSTATUS;
+//Set up debug stuff
+//When  not debugging, log to a file!
+if (!$debug) {
+    ini_set("display_errors", 0);
+    ini_set("log_errors", 1);
+    //Define where do you want the log to go, syslog or a file of your liking with
+    ini_set("error_log", "syslog");
+}
 
 //http://www.openwall.com/articles/PHP-Users-Passwords
 // Base-2 logarithm of the iteration count used for password stretching
@@ -53,14 +61,7 @@ function __autoload($class_name)
     include '../models/'. $class_name . '.php';
 }
 
-//Set up debug stuff
-//When  not debugging, log to a file!
-if (!$debug) {
-    ini_set("display_errors", 0);
-    ini_set("log_errors", 1);
-    //Define where do you want the log to go, syslog or a file of your liking with
-    ini_set("error_log", "syslog");
-}
+
 
 /**
  * The $pvt debugging messages may contain characters that would need to be
@@ -85,6 +86,42 @@ function fail($pub, $pvt = '')
     return $msg;
 }
 
+/**
+  * Retrieves the best guess of the client's actual IP address.
+  * Takes into account numerous HTTP proxy headers due to variations
+  * in how different ISPs handle IP addresses in headers between hops.
+  */
+function get_ip_address() {
+    // check for shared internet/ISP IP
+    if (!empty($_SERVER['HTTP_CLIENT_IP']) && validate_ip($_SERVER['HTTP_CLIENT_IP'])){
+        return $_SERVER['HTTP_CLIENT_IP'];
+    }
+    // check for IPs passing through proxies
+    if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+        // check if multiple ips exist in var
+        $iplist = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
+        foreach ($iplist as $ip) {
+            if (validate_ip($ip)){
+                return $ip;
+            }
+        }
+    }
+
+    if (!empty($_SERVER['HTTP_X_FORWARDED']) && validate_ip($_SERVER['HTTP_X_FORWARDED'])){
+        return $_SERVER['HTTP_X_FORWARDED'];
+    }
+    if (!empty($_SERVER['HTTP_X_CLUSTER_CLIENT_IP']) && validate_ip($_SERVER['HTTP_X_CLUSTER_CLIENT_IP'])){
+        return $_SERVER['HTTP_X_CLUSTER_CLIENT_IP'];
+    }
+    if (!empty($_SERVER['HTTP_FORWARDED_FOR']) && validate_ip($_SERVER['HTTP_FORWARDED_FOR'])){
+        return $_SERVER['HTTP_FORWARDED_FOR'];
+    }
+    if (!empty($_SERVER['HTTP_FORWARDED']) && validate_ip($_SERVER['HTTP_FORWARDED'])){
+        return $_SERVER['HTTP_FORWARDED'];
+    }
+    // return unreliable ip since all else failed
+    return $_SERVER['REMOTE_ADDR'];
+}
 
 /**
  * Get either a Gravatar URL or complete image tag for a specified email address.
@@ -178,10 +215,12 @@ function usernameCheck($username)
  * @return string token
  *
  */
-function generateUserid($length = 40)
+function generateUserid($length = 16)
 {
+    //bin2hex(openssl_random_pseudo_bytes(16));
+    //base64_encode(openssl_random_pseudo_bytes($length, $strong));
     if (function_exists('openssl_random_pseudo_bytes')) {
-        $token = base64_encode(openssl_random_pseudo_bytes($length, $strong));
+        $token = bin2hex(openssl_random_pseudo_bytes($length, $strong));
         if ($strong) {
             return $token;
         }
@@ -201,16 +240,61 @@ function generateUserid($length = 40)
  * @return string token
  *
  */
-function generateToken($length = 40)
+function generateToken($length = 20)
 {
+    //bin2hex(openssl_random_pseudo_bytes(16));
+    //base64_encode(openssl_random_pseudo_bytes($length, $strong));
+    
     if (function_exists('openssl_random_pseudo_bytes')) {
-        $token = base64_encode(openssl_random_pseudo_bytes($length, $strong));
+        $token = bin2hex(openssl_random_pseudo_bytes($length, $strong));
         if ($strong) {
             return $token;
         }
     }
 
     return sha1(uniqid(mt_rand(), true));
+}
+
+function sendVerificationEmail($user){
+    
+}
+
+function sendWelcomeEmail($username,$email,$token,$ip){    
+    require_once '../../../../creds/mail.inc';
+    require_once '../../includes/phpmailer/PHPMailerAutoload.php';
+    
+    $mail = new PHPMailer;
+    $mail->isSMTP();            // Set mailer to use SMTP
+    $mail->Host = CP_SMTP_SERVER;               // Specify main and backup server
+    $mail->SMTPAuth = true;                     // Enable SMTP authentication
+    $mail->Username = CP_EMAIL;        // SMTP username
+    $mail->Password = CP_MAIL_SECRET;        // SMTP password
+    $mail->SMTPSecure = 'tls';                  // Enable encryption, 'ssl' also accepted
+
+    $mail->From = CP_REPLYTO;
+    $mail->FromName = CP_NAME;
+    $mail->addAddress($email, $username);  // Add a recipient
+    $mail->addReplyTo(CP_REPLYTO, CP_NAME);
+    // Set word wrap to 50 characters
+    $mail->WordWrap = 50; 
+        
+    $mail->Subject = CP_WELCOME_SUBJECT;
+    $body = '<div style="background-color:#F0F0F0;color:#004A61;font-size:20px;">Thank you for registering to use <a href="http://bit.ly/coursepicker" title="UGA Course Picker by Jane Ullah">Course Picker</a>.</div>';
+    $body .= '<div style="display:block;">This registration occurred on ' . date('l jS \of F Y h:i:s A');
+    $body .= ' from the IP Address ('.$ip.').</div>';
+    $body .= '<div style="display:block;">Please activate your account by <a href="http://apps.janeullah.com/coursepicker/activate.php?token=' . $token. '" title="Click to activate your account.">clicking this link.</a></div>';
+    $mail->Body = $body; 
+    $plaintext = "Thank you for registering to use Course Picker [http://apps.janeullah.com/coursepicker/]";
+    $plaintext .= "Please activate your account by copying this link and pasting into your web browser: http://apps.janeullah.com/coursepicker/activate.php?token=" . $token;
+    $mail->AltBody = $plaintext;
+
+    if(!$mail->send()) {
+       $msg = 'Message could not be sent.';
+       $msg .= 'Mailer Error: ' . $mail->ErrorInfo;
+       return $msg;
+    }
+
+    return '';
 }
 
 $requestType = $_SERVER['REQUEST_METHOD'];
@@ -254,17 +338,25 @@ if ($requestType === 'POST') {
                             } else {
                                 unset($hasher);
                                 $db = new UserHelper();
-                                $res = $db->addUser($userid, $username, $email, $hash);
+                                //generate token
+                                $token = generateToken(16);
+                                $ip = get_ip_address();
+                                //http://stackoverflow.com/questions/4982701/best-way-to-store-ip-in-database
+                                $res = $db->addUser($userid, $username, $email, $hash,$token,ip2long($ip));
                                 if ($res === false) {
                                     $result['errorMessage'] = fail('Problem creating this user account.', $db->errorMessage);
                                     $session->errorMessage = $result['errorMessage'];
                                     echo json_encode($result);
                                 } else {
-                                    $result['errorMessage'] = "";
-                                    //$result['id'] = $res;
+                                    //store user id in session after user id logged in.
                                     $session->id = $res;
                                     $session->userid = $userid;
+                                    $result['errorMessage'] = sendWelcomeEmail($username,$email,$token,$ip);
                                     $session->errorMessage = $result['errorMessage'];
+                                    if (strlen($result['errorMessage']) != 0){
+                                        $result['ip'] = $ip;
+                                        $result['token'] = $token; 
+                                    }
                                     echo json_encode($result);
                                 }
                             }

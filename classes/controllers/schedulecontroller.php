@@ -95,16 +95,19 @@ function getPost($var)
  * to-generate-a-random-unique-alphanumeric-string
  * http://www.openwall.com/articles/PHP-Users-Passwords
  * Function to generate a cryptographically secure token
- * 
+ *
  * @param int $length default is 40
- * 
+ *
  * @return string token
- * 
- */ 
+ *
+ */
 function generateToken($length = 40)
 {
+    //bin2hex(openssl_random_pseudo_bytes(16));
+    //base64_encode(openssl_random_pseudo_bytes($length, $strong));
+    
     if (function_exists('openssl_random_pseudo_bytes')) {
-        $token = base64_encode(openssl_random_pseudo_bytes($length, $strong));
+        $token = bin2hex(openssl_random_pseudo_bytes($length, $strong));
         if ($strong) {
             return $token;
         }

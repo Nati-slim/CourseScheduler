@@ -13,6 +13,7 @@ class ReportListingHelper{
 	private $getofferingbyterm;
 	private $truncateTable;
 	public $errorMessage;
+    private $dbconn;
 
 	/**
 	 * Default constructor to access the database
