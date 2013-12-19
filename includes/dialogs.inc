@@ -24,15 +24,25 @@
 					</div>
 					<div class="modal-body">
 						<p>
-                            <strong>Usage</strong>:
+                            <strong>What</strong>:
 							<ol id="what">
                                 <li>This is a labor of love by <a href="http://janeullah.com" title="Jane Ullah!">Jane Ullah</a>. :) </li>
-                                <li>Other projects: DawgTransit, DawgSpeak, and Restaurant Health Inspection Records app on Google Play.</li>
+                                <li>Other projects: <a href="http://dawgtransit.com" title="DawgTransit - Get around UGA's campus with ease.">DawgTransit</a>, <a href="http://apps.janeullah.com/dawgspeak" title="UGA SLanguage Dictionary">DawgSpeak</a>, and <a href="https://play.google.com/store/apps/details?id=org.janeullah.android.healthrecords" title="Restaurant Health Inspection Records">Restaurant Health Inspection Records app</a> on Google Play.</li>
                                 <li>I write at <a href="http://janetalkscode.com" title="Jane Talks Code!">Jane Talks Code</a> and tweet <a href="https://twitter.com/janetalkstech" title="@janetalkstech on Twitter">@janetalkstech</a>.</li>
                                 <li>The source code for this web application is hosted <a href="https://github.com/janoulle/CourseScheduler" title="CoursePicker Source Code">on Github</a>.<br/><span xmlns:dct="http://purl.org/dc/terms/" property="dct:title">CoursePicker</span> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>.</li>
-                                <li><a href="https://mixpanel.com/f/partner"><img src="//cdn.mxpnl.com/site_media/images/partner/badge_light.png" alt="Mobile Analytics" /></a></li>
                             </ol>                            
 						</p>
+                        <p>
+                            <strong>Credits</strong>:
+                            <ol id="credits">
+                                <li>I'm using <a href="https://mixpanel.com/free/" title="Mixpanel">Mixpanel</a>, <a href="http://www.google.com/analytics/" title="Google Analytics">Google Analytics</a> and <a href="http://statcounter.com/" title="Statcounter">Statcounter</a> for event tracking and analytics. <a href="https://mixpanel.com/f/partner"><img src="//cdn.mxpnl.com/site_media/images/partner/badge_light.png" alt="Mobile Analytics" style="width:114px;height:36px;" width="114" height="36"/></a></li>
+                                <li><a href="http://www.openwall.com/phpass/" title="Portable PHP password hashing framework">Portable PHP password hashing framework</a> or phpass was used for hashing the passwords and I made extensive use of the functions listed on the OpenWall article about <a href="http://www.openwall.com/articles/PHP-Users-Passwords" title="managing a PHP application's users and passwords">managing a PHP application's users and passwords</a>.</li>
+                                <li><a href="https://github.com/PHPMailer/PHPMailer" title="PHPMailer">PHP Mailer</a> was used to handle the task of sending emails to users that sign up for the Course Picker site. Eventually, I'd like this task to be outsourced to Mailchimp.</li>
+                                <li><a href="https://www.google.com/recaptcha" title="reCAPTCHA by Google">reCAPTCHA</a> is an "anti-bot service that helps digitize books". I used it in preventing automated submissions of the signup form.</li>
+                                <li><a href="http://simplehtmldom.sourceforge.net/" title="PHP Simple HTML DOM Parser">PHP Simple HTML DOM Parser</a> is another awesome tool that I use a lot for scraping web pages to extract useful information. For parsing HTML with Java, I use <a href="http://jsoup.org/" title="Java HTML Parser">JSoup</a> and I highly recommend that as well.</li>
+                            </ol>
+                        </p>
+                        
                         <p>
                             <strong>Usage</strong>:
                             <ol id="instructions">
@@ -45,16 +55,6 @@
                             </ol>
                         </p>
                         
-                        <p>
-                            <strong>Credits</strong>:
-                            <ol id="credits">
-                                <li>I'm using <a href="https://mixpanel.com/free/" title="Mixpanel">Mixpanel</a>, <a href="http://www.google.com/analytics/" title="Google Analytics">Google Analytics</a> and <a href="http://statcounter.com/" title="Statcounter">Statcounter</a> for event tracking and analytics. </li>
-                                <li><a href="http://www.openwall.com/phpass/" title="Portable PHP password hashing framework">Portable PHP password hasing framework</a> or phpass was used for hashing the passwords and I made extensive use of the functions listed on the OpenWall article about <a href="http://www.openwall.com/articles/PHP-Users-Passwords" title="managing a PHP application's users and passwords">managing a PHP application's users and passwords</a>.</li>
-                                <li><a href="https://github.com/PHPMailer/PHPMailer" title="PHPMailer">PHP Mailer</a> was used to handle the task of sending emails to users that sign up for the Course Picker site. Eventually, I'd like this task to be outsourced to Mailchimp.</li>
-                                <li><a href="https://www.google.com/recaptcha" title="reCAPTCHA by Google">reCAPTCHA</a> is an "anti-bot service that helps digitize books". I used it in preventing automated submissions of the signup form.</li>
-                                <li><a href="http://simplehtmldom.sourceforge.net/" title="PHP Simple HTML DOM Parser">PHP Simple HTML DOM Parser</a> is another awesome tool that I use a lot for scraping web pages to extract useful information. The Java spirit animal of this type of tool is <a href="http://jsoup.org/" title="Java HTML Parser">JSoup</a> and I highly recommend that as well.</li>
-                            </ol>
-                        </p>
 					</div>
 				</div><!-- /.modal-content -->
 		  </div><!-- /.modal-dialog -->

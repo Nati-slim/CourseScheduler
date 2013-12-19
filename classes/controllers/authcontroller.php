@@ -1,7 +1,7 @@
 <?php
-require_once '../helpers/UserHelper.php';
-require_once '../../../../creds/dhpath.inc';
-require_once '../../../../creds/coursepicker_debug.inc';
+require_once dirname(__FILE__) . '/../helpers/UserHelper.php';
+require_once dirname(__FILE__) . '/../../../../creds/dhpath.inc';
+require_once dirname(__FILE__) . '/../../../../creds/coursepicker_debug.inc';
 $result = array();
 session_start();
 $debug = DEBUGSTATUS;
@@ -23,7 +23,7 @@ if (!$debug) {
  */
 function __autoload($class_name)
 {
-    include '../models/'. $class_name . '.php';
+    include dirname(__FILE__) . '/../models/'. $class_name . '.php';
 }
 
 

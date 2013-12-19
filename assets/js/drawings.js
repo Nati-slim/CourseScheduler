@@ -32,13 +32,10 @@ var selectOptions;
 						classDiv += "<span class=\"row1 right\">" + section.lecturer + "</span><span class=\"row1 left\">";
 						
 						var campus = $('#infoMessage').text();
-						if (campus.indexOf("Athens") > 0){
-							classDiv += "<a href=\"http://bulletin.uga.edu/Link.aspx?cid=" + section.coursePrefix + "" + section.courseNumber;
-							classDiv += "\" title=\"UGA Bulletin Listing for " + section.courseName + "\">";
-							classDiv += section.coursePrefix + "-" + section.courseNumber + "</a></span><br/>";
-						}else{
-							classDiv += section.coursePrefix + "-" + section.courseNumber + "</span><br/>";
-						}
+                        classDiv += "<a href=\"http://bulletin.uga.edu/Link.aspx?cid=" + section.coursePrefix + "" + section.courseNumber;
+                        classDiv += "\" title=\"UGA Bulletin Listing for " + section.courseName + "\">";
+                        classDiv += section.coursePrefix + "-" + section.courseNumber + "</a></span><br/>";
+						
 						classDiv += "<span class=\"row2\">" +getBuildingName(section.buildingNumber) + " - Room #" +  section.roomNumber+"</span>";
 						classDiv += "<span class=\"meetingTimes\">";
 						var mtgs = section.meetings;
@@ -273,7 +270,7 @@ var selectOptions;
 		*/
 		function generateDiv(index,section){
 			var msg = "";
-			msg += "<div class=\"panel panel-default\">";
+			msg += "<div class=\"panel panel-default drag\">";
 			if (section.status === 'Available'){
 				msg += "<div class=\"panel-heading available\">";
 			}else{

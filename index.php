@@ -138,8 +138,23 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
 		<link href="assets/css/picker.css" rel="stylesheet">
 		<link href="assets/css/sections.css" rel="stylesheet">
 		<link href="assets/css/typeahead.js-bootstrap.css" rel="stylesheet">
-		<link href="assets/css/tt-suggestions.css" rel="stylesheet">
 		<link href="assets/css/signin.css" rel="stylesheet">
+        <style type="text/css">
+            .tt-courseShortname{
+                font-weight: bold
+            }
+
+            .tt-courseName{
+                font-size: 14px;
+                margin-left:6px;
+            }
+
+            .tt-lecturer{
+                float: right;
+                font-style: italic;
+            }
+
+        </style>
 
 		<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 		<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -149,20 +164,31 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
 		<![endif]-->
 		<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 		<script src="https://code.jquery.com/jquery-1.10.2.min.js" type="text/javascript"></script>
-		<script src="assets/js/draggable.js" type="text/javascript"></script>
+        <!--<script type="text/javascript">
+            var node = document.createElement('script');
+            node.type = 'text/javascript';
+            node.async = true;
+            node.src = 'assets/js/draggable.js';
+            $('.container').append(node);
+            // Now insert the node into the DOM, perhaps using insertBefore()
+        </script>-->
 		<!-- Include all compiled plugins (below), or include individual files as needed -->
-		<script src="assets/js/canvasstyle.js" type="text/javascript"></script>
+		<script src="assets/js/canvasstyle.min.js" type="text/javascript"></script>
 		<script src="assets/js/bootstrap.min.js" type="text/javascript"></script>	
-		<script src="http://twitter.github.com/hogan.js/builds/2.0.0/hogan-2.0.0.js" type="text/javascript"></script>
+		<script src="assets/js/hogan.min.js" type="text/javascript"></script>
 
 		<!--JS handling saving, sharing, downloading schedules -->
 		<script src="assets/js/schedule.js" type="text/javascript"></script>
 		<!--JS related to the dynamic addition of the course navigation elements -->
-		<script src="assets/js/drawings.js" type="text/javascript"></script>
+		<script src="assets/js/drawings.min.js" type="text/javascript"></script>
 		<!--JS related to the signup/login functions -->
 		<script src="assets/js/register.js" type="text/javascript"></script>
         <!-- Pamela Fox's lscache library https://github.com/pamelafox/lscache-->
-		<script src="assets/js/lscache.js" type="text/javascript"></script>
+		<script src="assets/js/lscache.min.js" type="text/javascript"></script>
+        <!-- http://dte-project.googlecode.com/svn/trunk/jquery-draggable/ | http://grantm.github.io/jquery-udraggable/#examples-->
+        <script src="assets/js/draggable.min.js" type="text/javascript"></script>
+        <script src="assets/js/jquery.event.ue.js" type="text/javascript"></script>
+        <script src="assets/js/jquery.udraggable.js" type="text/javascript"></script>
 		<!--http://stackoverflow.com/questions/2010892/storing-objects-in-html5-localstorage -->
         <script type="text/javascript">
             try{
@@ -200,7 +226,6 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
             } 
             
         </script>
-
 	</head>
 	<body>
 		<div class="navbar navbar-fixed-top navbar-inverse" role="navigation">
@@ -233,8 +258,8 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
 							$submenu .= "\"  title=\"Gravatar image for " . $session->username . "\"/><b class=\"caret\" style=\"float:right;\"></b></a>";
 							$submenu .= "<ul id=\"menuDropdown\" class=\"dropdown-menu\">"
 										. "<li id=\"welcome\">Welcome, " .  $session->username. "</li>"
-										. "<li id=\"logoutLi\"><a href=\"#logout\" title=\"Click to log out!\" onclick=\"logout()\">Logout</a></li>"
 										. "<li id=\"saveScheduleLi\"><a href=\"http://apps.janeullah.com/coursepicker/saveschedule.php\" title=\"Click to save your created schedules.\">Save Schedule</a></li>"
+										. "<li id=\"logoutLi\"><a href=\"#logout\" title=\"Click to log out!\" onclick=\"logout()\">Logout</a></li>"
 										."</ul>"
 										."</li>";
 							echo $submenu;
@@ -286,9 +311,12 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
 								</optgroup>
 							</select>
 						</form>
+                        <script type="text/javascript">
+                            $('#semesterSelection').val(<?php echo "'" . $semesterSelected . "'";?>);
+                        </script>
 					</div>
 					
-					<div id="searchBox" class="sidebar" rel="popover" data-placement="top" data-toggle="popover" data-trigger="hover" data-content="Search by the the course prefix e.g. ENGL, course number e.g 1101, or course name e.g. ENGLISH COMP I">
+					<div id="searchBox" class="sidebar" rel="popover" data-placement="top" data-toggle="popover" data-trigger="hover" data-content="Start typing and select an option from the menu presented to trigger a submission. Otherwise, you will need to submit your entry using the button.">
 						<span class="intro">Search: </span><br/>		
 						<input id="jsonURL" name="jsonURL" type="hidden" value="<?php echo $jsonURL;?>" />
 						<input type="hidden" name="selectedSemester" id="selectedSemester" value="<?php echo $semesterSelected; ?>" />
@@ -330,39 +358,13 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
                                 
 								var semSelected = $('#selectedSemester').val();
 								var courseValue  = datum.value;
-                                _gaq.push(['_trackEvent', 'Typeahead Selected', courseValue,  'User selected ' + courseValue]);
-								$('body').css('cursor', 'wait');
-								//console.log("semSelected: " + semSelected + "\n" + "courseValue: " + courseValue + "\n");
-								$.ajax({
-									type: "POST",
-									url: 'classes/controllers/coursecontroller.php',
-									data: { action : "getSections", semesterSelected : semSelected, courseEntry : courseValue},
-									dataType: "json"
-								})
-								.done(function(msg){
-									$('body').css('cursor', 'auto');
-									//console.log(msg);
-									sListings = msg;
-									populateSections(msg);
-								})
-								.fail(function(msg){
-									$('body').css('cursor', 'auto');
-									console.log(msg + "Error getting sections.");
-								});
-							});  
-                            
-                            
-                            //If the user doesn't use typeahead to choose an entry
-                            /*$('#courseEntry').change(function(){
-                                var value = $(this).val();
-                                console.log(value); 
-                                if ((value.indexOf(" ") < 0) || (value.indexOf(",") < 0)){
-                                    $('#messages').empty().append("<p class=\"alert alert-danger\">Please enter a delimiter between the course prefix and course number.</p>").show();
+                                if (semSelected == ""){
+                                    $('#messages').empty().append("<p class=\"alert alert-danger\">Please refresh the page. There was a problem getting your semester selection.</p>").show();
                                     setTimeout(function(){ 
                                         $('#messages').hide("slow",function(){}); 
                                     }, 4000);
                                 }else{
-                                    _gaq.push(['_trackEvent', 'Other Input Entered', value,  'User selected ' + value]);
+                                    _gaq.push(['_trackEvent', 'Typeahead Selected', courseValue,  'User selected ' + courseValue]);
                                     $('body').css('cursor', 'wait');
                                     //console.log("semSelected: " + semSelected + "\n" + "courseValue: " + courseValue + "\n");
                                     $.ajax({
@@ -379,16 +381,66 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
                                     })
                                     .fail(function(msg){
                                         $('body').css('cursor', 'auto');
-                                        console.log(msg + "Error getting sections.");
+                                        $('#messages').empty().append("<p class=\"alert alert-danger\">" + msg.responseText+ "</p>").show();
+                                        setTimeout(function(){ 
+                                            $('#messages').hide("slow",function(){}); 
+                                        }, 4000);  
+                                        console.log(msg.responseText);
                                     });
                                 }
-                            });*/                          
+							});  
+                                                     
 						});
+                        
+                        /**
+                        Workaround for when the user doesn't choose an option from
+                        the typehead suggestions.
+                        */ 
+                        function getSections(){
+                            var entry = $('#courseEntry').val();                            
+                            var err = "<p class=\"alert alert-danger\">Please enter a course name and number for submission like this XXXX-1234 or XXXX 1234</p>";
+                            if (entry == ""){
+                                $('#messages').empty().append(err).show();
+                                setTimeout(function(){ 
+                                    $('#messages').hide("slow",function(){}); 
+                                }, 4000);
+                            }else if (entry.length < 9){
+                                $('#messages').empty().append(err).show();
+                                setTimeout(function(){ 
+                                    $('#messages').hide("slow",function(){}); 
+                                }, 4000);
+                            }else{
+                                var semSelected = $('#selectedSemester').val();
+                                _gaq.push(['_trackEvent', 'Other Input Entered', value,  'User selected ' + value]);
+                                $('body').css('cursor', 'wait');
+                                //console.log("semSelected: " + semSelected + "\n" + "courseValue: " + courseValue + "\n");
+                                $.ajax({
+                                    type: "POST",
+                                    url: 'classes/controllers/coursecontroller.php',
+                                    data: { action : "getSections", semesterSelected : semSelected, courseEntry : entry},
+                                    dataType: "json"
+                                })
+                                .done(function(msg){
+                                    $('body').css('cursor', 'auto');
+                                    $('#messages').empty();
+                                    sListings = msg;
+                                    populateSections(msg);
+                                })
+                                .fail(function(msg){
+                                    $('body').css('cursor', 'auto');
+                                    $('#messages').empty().append(msg.responseText).show();
+                                    setTimeout(function(){ 
+                                        $('#messages').hide("slow",function(){}); 
+                                    }, 4000);
+                                    console.log("<p class=\"alert alert-danger\">" + msg.responseText+ "</p>");
+                                });
+                            }
+                        }
 					</script>
 				</div><!--/sidebar-->
 			</div>
 
-			<div class="col-xs-12 col-md-9" id="canvasDiv">
+			<div class="col-xs-12 col-md-9 drop" id="canvasDiv">
     	  		<canvas id="scheduleCanvas" width="780" height="750">
 				</canvas>
 			</div>

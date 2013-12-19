@@ -4,6 +4,7 @@ class UserSchedule{
 	private $scheduleID;
 	private $shortName;
 	private $imageIDs;
+    private $dateAdded;
 	private $userid;
     private $saved;
 	//UNIV
@@ -25,6 +26,8 @@ class UserSchedule{
 		$this->campus = "";
 		$this->semester = "";
         $this->saved = false;
+        $this->dateAdded = new DateTime(null, new DateTimeZone('America/New_York'));//date('Y-m-d H:i:s');
+        $this->errorMessage = "";
 	}
 	
 	public static function makeSchedule($userid,$campus,$semester,$scheduleID){
@@ -33,8 +36,6 @@ class UserSchedule{
 			$obj->setCampus($campus);
 			$obj->setSemester($semester);
 			$obj->setScheduleID($scheduleID);
-			$obj->setErrorMessage("");
-            $obj->setSaved(false);
 			return $obj;
 		}catch(Exception $e){
 			printf("Error instantiating user schedule object: " . $e->getMessage() . "\n");
@@ -178,6 +179,11 @@ class UserSchedule{
 		return $this->scheduleID;
 	}
 	
+    //http://stackoverflow.com/questions/470617/get-current-date-and-time-in-php
+    public function getDateAdded(){
+        return $this->dateAdded->format('Y-m-d H:i:s');
+    }
+    
 	public function getCampus(){
 		return $this->campus;
 	}

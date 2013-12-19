@@ -1,13 +1,13 @@
 <?php
-require_once "classes/helpers/session.php";
-require_once "classes/models/Course.php";
-require_once "classes/models/Section.php";
-require_once "classes/models/Meeting.php";
-require_once "classes/models/UserSchedule.php";
-require_once "../../creds/coursepicker_debug.inc";
-require_once "../../creds/dhpath.inc";
+require_once dirname(__FILE__) . '/classes/helpers/session.php';
+require_once dirname(__FILE__) . '/classes/models/Course.php';
+require_once dirname(__FILE__) . '/classes/models/Section.php';
+require_once dirname(__FILE__) . '/classes/models/Meeting.php';
+require_once dirname(__FILE__) . '/classes/models/UserSchedule.php';
+require_once dirname(__FILE__) . '/../../creds/coursepicker_debug.inc';
+require_once dirname(__FILE__) . '/../../creds/dhpath.inc';
 $session = new Session();
-$controller = "classes/controllers/schedulecontroller.php";
+$controller = dirname(__FILE__) . '/classes/controllers/schedulecontroller.php';
 $errorMessage = $session->errorMessage;
 
 //Needed for serialization/deserialization
@@ -196,6 +196,7 @@ $ogdesc = "Plan your college schedule with ease using this course schedule appli
 							$submenu .= "\"  title=\"Gravatar image for " . $session->username . "\"/><b class=\"caret\" style=\"float:right;\"></b></a>";
 							$submenu .= "<ul id=\"menuDropdown\" class=\"dropdown-menu\">"
 										. "<li id=\"welcome\">Welcome, " .  $session->username. "</li>"
+										. "<li id=\"saveScheduleLi\"><a href=\"http://apps.janeullah.com/coursepicker/saveschedule.php\" title=\"Click to save your created schedules.\">Save Schedule</a></li>"
 										. "<li id=\"logoutLi\"><a href=\"#logout\" onclick=\"logout()\">Logout</a></li>"
 										."</ul>"
 										."</li>";
@@ -230,8 +231,15 @@ $ogdesc = "Plan your college schedule with ease using this course schedule appli
 										}
 									?>
 								</select>
+                                <script type="text/javascript">
+                                    var value = <?php echo "'" . $session->selectedScheduleID . "'";?>;
+                                    if (value == ''){
+                                        value = 0;
+                                    }
+                                    $('#selectedSchedule').val(value);
+                                </script>
 							</div>
-							<a id="popoverOption" class="btn" href="#" data-content="Popup with option trigger" rel="popover" data-placement="bottom" data-original-title="Popover test">Popup with option trigger</a>
+							<a style="display:none;" id="popoverOption" class="btn" href="#" data-content="Popup with option trigger" rel="popover" data-placement="bottom" data-original-title="Popover test">Popup with option trigger</a>
 							<div class="alert alert-danger" id="saveScheduleError" style="display:none"></div>
 							<div class="alert alert-success" id="saveScheduleSuccess" style="display:none"></div>
                             <!-- Setting the hidden input field used for error checking-->

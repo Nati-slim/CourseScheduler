@@ -20,17 +20,17 @@
  * @since      N/A
  * @deprecated N/A
  */
-require_once '../../includes/mixpanel/lib/Mixpanel.php';
-require_once '../models/Course.php';
-require_once '../models/Section.php';
-require_once '../models/Meeting.php';
-require_once '../models/UserSchedule.php';
-require_once '../helpers/CourseHelper.php';
-require_once '../helpers/ScheduleHelper.php';
-require_once '../helpers/session.php';
-require_once '../../../../creds/coursepicker_debug.inc';
-require_once '../../../../creds/dhpath.inc';
-require_once '../../../../creds/mixpanel_coursepicker.inc';
+require_once dirname(__FILE__) . '/../../includes/mixpanel/lib/Mixpanel.php';
+require_once dirname(__FILE__) . '/../models/Course.php';
+require_once dirname(__FILE__) . '/../models/Section.php';
+require_once dirname(__FILE__) . '/../models/Meeting.php';
+require_once dirname(__FILE__) . '/../models/UserSchedule.php';
+require_once dirname(__FILE__) . '/../helpers/CourseHelper.php';
+require_once dirname(__FILE__) . '/../helpers/ScheduleHelper.php';
+require_once dirname(__FILE__) . '/../helpers/session.php';
+require_once dirname(__FILE__) . '/../../../../creds/coursepicker_debug.inc';
+require_once dirname(__FILE__) . '/../../../../creds/dhpath.inc';
+require_once dirname(__FILE__) . '/../../../../creds/mixpanel_coursepicker.inc';
 $session = new Session();
 $result = array();
 $debug = DEBUGSTATUS;
@@ -48,7 +48,7 @@ $mp = Mixpanel::getInstance(CP_MIXPANEL_TOKEN);
  */
 function __autoload($class_name)
 {
-    include '../models/'. $class_name . '.php';
+    include dirname(__FILE__) . '/../models/'. $class_name . '.php';
 }
 
 //Set up debug stuff

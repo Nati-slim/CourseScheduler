@@ -1,9 +1,9 @@
 <?php
 //place this file in a directory not accessible over the internet
-require_once '../../../../creds/coursepicker.inc';
-require_once '../models/Course.php';
-require_once '../models/Section.php';
-require_once '../models/Meeting.php';
+require_once dirname(__FILE__) . '/../../../../creds/coursepicker.inc';
+require_once dirname(__FILE__) . '/../models/Course.php';
+require_once dirname(__FILE__) . '/../models/Section.php';
+require_once dirname(__FILE__) . '/../models/Meeting.php';
 
 class ScheduleHelper
 {
@@ -11,6 +11,7 @@ class ScheduleHelper
     private $saveschedule;
     private $updateschedule;
     private $getuserschedules;
+    private $getsingleschedule;
     private $truncatetable;
     public $errorMessage;
     private $dbconn;
@@ -29,8 +30,9 @@ class ScheduleHelper
             } else {
                 //echo $this->dbconn->host_info . "\n";
                 $this->getschedule = $this->dbconn->prepare("select * from coursepicker_schedules where scheduleID = ?");
+                $this->getsingleschedule = $this->dbconn->prepare("select * from coursepicker_schedules where scheduleID = ?");
                 $this->getuserschedules = $this->dbconn->prepare("select * from coursepicker_schedules where userID = ?");
-                $this->saveschedule = $this->dbconn->prepare("insert into coursepicker_schedules (id,userID,scheduleID,scheduleObject,shortname,dateAdded) values(DEFAULT,?,?,?,?,NOW())");
+                $this->saveschedule = $this->dbconn->prepare("insert into coursepicker_schedules (id,userID,scheduleID,scheduleObject,shortname,dateAdded) values(DEFAULT,?,?,?,?,?)");
                 $this->updateschedule = $this->dbconn->prepare("update coursepicker_schedules set shortName = ?, scheduleObject = ? where scheduleID = ?");
                 $this->truncatetable = $this->dbconn->prepare("truncate table coursepicker_schedules");
                 $this->errorMessage = "";
@@ -40,6 +42,42 @@ class ScheduleHelper
         }
     }
 
+    public function getSingleSchedule($scheduleID){
+        $results = array();
+        try {
+            if (!($this->getsingleschedule)) {
+                $this->errorMessage = "Prepare for getsingleschedule failed: (" . $this->dbconn->errno . ") " . $this->dbconn->error;
+            } elseif (!($this->getsingleschedule->bind_param("s",$scheduleID))) {
+                $this->errorMessage = "Binding parameters for getsingleschedule failed: (" . $this->getsingleschedule->errno . ") " . $this->getsingleschedule->error;
+            } elseif (!($this->getsingleschedule->execute())) {
+                $this->errorMessage = "Execute failed for getsingleschedule : (" . $this->getsingleschedule->errno . ") " . $this->getsingleschedule->error;
+            } elseif (!(($stored = $this->getsingleschedule->store_result())) && $this->dbconn->errno) {
+                //switched from using fetch() to store_result() because of mysql error 2014 about commands being out of sync
+                //storeresult buffers the fetched data
+                $this->errorMessage = "Fetch failed (DB): (" . $this->dbconn->errno . ") " . $this->dbconn->error;
+                $this->errorMessage .= "Fetch for getsingleschedule failed (STMT): (" . $this->getsingleschedule->errno . ") " . $this->getsingleschedule->error;
+            } elseif (!($this->getsingleschedule->bind_result($id,$userid,$schedID,$schedObj,$shortname,$dateAdded))) {
+                $this->errorMessage = "Binding for getsingleschedule results failed: (" . $this->getsingleschedule->errno . ") " . $this->getsingleschedule->error;
+            } else {
+                if ($this->getsingleschedule->fetch() && !($this->dbconn->errno)) {
+                    $results['shortname'] = $shortname;
+                    $results['scheduleObj'] = $schedObj;
+                }
+                if ($this->dbconn->errno) {
+                    $this->errorMessage = "Fetch failed (DB): (" . $this->dbconn->errno . ") " . $this->dbconn->error;
+                    $this->errorMessage .= "Fetch failed (STMT): (" . $this->getsingleschedule->errno . ") " . $this->getsingleschedule->error;
+                } else {
+                    $this->errorMessage = "No Offering found.";
+                }
+            }
+            $this->getschedule->free_result();
+        } catch (Exception $e) {
+            $this->errorMessage = $e->getMessage();
+        }
+
+        return $results;
+    }
+    
     /**
      * Truncate the tables
      */
@@ -89,9 +127,6 @@ class ScheduleHelper
                 if ($this->dbconn->errno) {
                     $this->errorMessage = "Fetch failed (DB): (" . $this->dbconn->errno . ") " . $this->dbconn->error;
                     $this->errorMessage .= "Fetch failed (STMT): (" . $this->getschedule->errno . ") " . $this->getschedule->error;
-                    $this->errorMessage = "Db error.";
-                } else {
-                    $this->errorMessage = "No Offering found.";
                 }
             }
             $this->getschedule->free_result();
@@ -116,7 +151,7 @@ class ScheduleHelper
         try {
             if (!($this->saveschedule)) {
                 $this->errorMessage =  "Prepare failed for saveSchedule: (" . $this->dbconn->errno . ") " . $this->dbconn->error;
-            } elseif (!($this->saveschedule->bind_param("ssss",$schedule->getUserId(),$schedule->getScheduleID(),serialize($schedule),$schedule->getShortName()))) {
+            } elseif (!($this->saveschedule->bind_param("sssss",$schedule->getUserId(),$schedule->getScheduleID(),serialize($schedule),$schedule->getShortName(),$schedule->getDateAdded()))) {
                 $this->errorMessage =  "Binding parameters failed for saveSchedule: (" . $this->saveschedule->errno . ") " . $this->saveschedule->error;
             } elseif (!($value = $this->saveschedule->execute())) {
                 $this->errorMessage =  "Execute failed for saveSchedule: (" . $this->saveschedule->errno . ") " . $this->saveschedule->error;

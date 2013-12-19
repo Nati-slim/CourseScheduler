@@ -361,8 +361,8 @@ function drawMeeting(x,y,ctx,text,callNumber,startMinute,endMinute,startHour,end
 	ctx.rect(x,y,CELL_WIDTH,height);
 	ctx.fill();
 	//draw text on top of rectangle in this order!
-	ctx.font = "16px Georgia";
-	ctx.fillStyle = "#000000";
+	ctx.font = "bold 16px Georgia";
+	ctx.fillStyle = "#f0f0f0";
 	ctx.textAlign = 'center';
 	ctx.fillText(text,x+55,y+20);
 	ctx.fillText(callNumber,x+40,y+35);
