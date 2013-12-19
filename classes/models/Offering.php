@@ -9,6 +9,7 @@ class Offering{
 	private $term;
 	private $campus;
 	private $lastModified;
+    public $errorMessage;
 
 	/**
 	 * Constructor for the Offering class
@@ -26,9 +27,9 @@ class Offering{
 			//http://stackoverflow.com/questions/9490177/how-to-generate-date-for-mysql-datetime-type-with-php
 			$time = strtotime($dateModified);
 			$this->lastModified = date('Y-m-d H:i:s',$time);
-			$errorMessage = "";
+			$this->errorMessage = "";
 		}catch(Exception $e){
-			echo "Error instantiating Course object: " . $e->getMessage() . "\n";
+			$this->errorMessage =  "Error instantiating Course object: " . $e->getMessage() . "\n";
 		}
 	}
 

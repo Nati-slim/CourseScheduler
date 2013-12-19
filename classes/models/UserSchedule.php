@@ -158,10 +158,22 @@ class UserSchedule{
 		return true;
 	}
 
+    /**
+     * Returns the short name of the schedule
+     * 
+     *@return string the short name selected by user
+     *  
+     */ 
 	public function getShortName(){
 		return $this->shortName;
 	}
-	
+
+    /**
+     * Returns the schedule ID of the schedule
+     * 
+     *@return string the schedule ID of the UserSchedule object
+     *  
+     */ 
 	public function getScheduleID(){
 		return $this->scheduleID;
 	}

@@ -5,6 +5,8 @@ require_once("../models/Section.php");
 require_once("../models/Meeting.php");
 require_once("../model/UserSchedule.php");
 require_once("../helpers/CourseHelper.php");
+require_once '../../../../creds/dhpath.inc';
+require_once '../../../../creds/coursepicker_debug.inc';
 //error_reporting(0);
 /**
  * Returns the $_POST value matching the provided key

@@ -1,5 +1,7 @@
 <?php
 require_once '../helpers/UserHelper.php';
+require_once '../../../../creds/dhpath.inc';
+require_once '../../../../creds/coursepicker_debug.inc';
 $result = array();
 session_start();
 $debug = DEBUGSTATUS;
@@ -9,7 +11,7 @@ if (!$debug) {
     ini_set("display_errors", 0);
     ini_set("log_errors", 1);
     //Define where do you want the log to go, syslog or a file of your liking with
-    ini_set("error_log", "syslog");
+    ini_set("error_log", ERROR_PATH);
 }
 
 /**
@@ -170,9 +172,13 @@ if ($requestType === 'POST') {
                                 if (!$user->isVerified()){
                                     //Get ip address                     
                                     $activation_ip = ip2long(get_ip_address());
-                                    $res = $db->saveMetadata($user,$token,$activation_ip);
+                                    $res = $db->saveMetadata($user,$token,$activation_ip,1);
                                     if ($res){
                                         $result['errorMessage'] = "";
+                                        /*$result['id'] = $res;
+                                        $result['username'] = $user->getUsername();
+                                        $result['token'] = $token;
+                                        $result['ip'] = $activation_ip;*/
                                         echo json_encode($result);
                                     }else{
                                         $result['errorMessage'] = fail("Unable to save user metadata to database",$db->errorMessage);

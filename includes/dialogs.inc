@@ -19,33 +19,42 @@
 		  <div class="modal-dialog">
 				<div class="modal-content">
 					<div class="modal-header">
-						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true" style="font-weight:bold;color: black;opacity: 1;">&times;</button>
 						<h4 class="modal-title" id="aboutModalLabel">About Course Picker!</h4>
 					</div>
 					<div class="modal-body">
 						<p>
-							This is a labor of love by <a href="http://janeullah.com" title="Jane Ullah!">Jane Ullah</a>. :)
-                            I write at <a href="http://janetalkscode.com" title="Jane Talks Code!">Jane Talks Code</a> and tweet <a href="https://twitter.com/janetalkstech" title="@janetalkstech on Twitter">@janetalkstech</a>. The source code for this web application is hosted 
-                            as <a href="https://github.com/janoulle/CourseScheduler" title="CoursePicker Source Code">CourseScheduler on Github</a>
+                            <strong>Usage</strong>:
+							<ol id="what">
+                                <li>This is a labor of love by <a href="http://janeullah.com" title="Jane Ullah!">Jane Ullah</a>. :) </li>
+                                <li>Other projects: DawgTransit, DawgSpeak, and Restaurant Health Inspection Records app on Google Play.</li>
+                                <li>I write at <a href="http://janetalkscode.com" title="Jane Talks Code!">Jane Talks Code</a> and tweet <a href="https://twitter.com/janetalkstech" title="@janetalkstech on Twitter">@janetalkstech</a>.</li>
+                                <li>The source code for this web application is hosted <a href="https://github.com/janoulle/CourseScheduler" title="CoursePicker Source Code">on Github</a>.<br/><span xmlns:dct="http://purl.org/dc/terms/" property="dct:title">CoursePicker</span> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>.</li>
+                                <li><a href="https://mixpanel.com/f/partner"><img src="//cdn.mxpnl.com/site_media/images/partner/badge_light.png" alt="Mobile Analytics" /></a></li>
+                            </ol>                            
 						</p>
                         <p>
-                            Usage:
-                            <ul>
-                                <li>Search for a course by either course prefix e.g. CSCI or course number (e.g. 1302) or any common names.</li>
-                                <li>Choose from the autocomplete menu or manually enter the course you desire in this manner as long as you separate the course prefix from the course number by a dash</li>
+                            <strong>Usage</strong>:
+                            <ol id="instructions">
+                                <li>Terms: <strong>course prefix</strong>: CSCI or ENGL, <strong>course number</strong: e.g. 1302 or 1101 and <strong>course name</strong>: SOFT DEVELOPMENT or ENGLISH COMP I</li>
+                                <li>Search for a course by any combination of the <strong>course prefix</strong>, <strong>course number</strong> and <strong>course name</strong>. Please don't be alarmed if you only type the course prefix and receive results that don't match the course prefix exactly. This is because the course prefix you are searching for is also in the course name of some of the results that were returned to you.</li>
+                                <li>If you choose to search by couse prefix only, I recommend entering the term and having a space after the word. If that doesn't work, add a number after the space e.g. HIST 1 or HIST 2 to bring up specific results.</li>
+                                <li>Choose from the autocomplete menu or manually enter the course you desire in this manner as long as you separate the course prefix from the course number by a dash or space</li>
                                 <li>Select a section from the list</li>
-                                <li>Optional:
-                                    <ul>
-                                        <li>Signup as a user to save your schedule</li>
-                                        <li>Signup to also be able to save different versions of your schedule!</li>
-                                    </ul>
-                                </li>
-                                        
-                            </ul>
+                                <li><strong>Bonus</strong>Signup as a user to save your schedule and to have different versions of your schedule!</li>                                        
+                            </ol>
                         </p>
-						<p>
-							<a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a><br /><span xmlns:dct="http://purl.org/dc/terms/" property="dct:title">CoursePicker</span> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>.
-						</p>					
+                        
+                        <p>
+                            <strong>Credits</strong>:
+                            <ol id="credits">
+                                <li>I'm using <a href="https://mixpanel.com/free/" title="Mixpanel">Mixpanel</a>, <a href="http://www.google.com/analytics/" title="Google Analytics">Google Analytics</a> and <a href="http://statcounter.com/" title="Statcounter">Statcounter</a> for event tracking and analytics. </li>
+                                <li><a href="http://www.openwall.com/phpass/" title="Portable PHP password hashing framework">Portable PHP password hasing framework</a> or phpass was used for hashing the passwords and I made extensive use of the functions listed on the OpenWall article about <a href="http://www.openwall.com/articles/PHP-Users-Passwords" title="managing a PHP application's users and passwords">managing a PHP application's users and passwords</a>.</li>
+                                <li><a href="https://github.com/PHPMailer/PHPMailer" title="PHPMailer">PHP Mailer</a> was used to handle the task of sending emails to users that sign up for the Course Picker site. Eventually, I'd like this task to be outsourced to Mailchimp.</li>
+                                <li><a href="https://www.google.com/recaptcha" title="reCAPTCHA by Google">reCAPTCHA</a> is an "anti-bot service that helps digitize books". I used it in preventing automated submissions of the signup form.</li>
+                                <li><a href="http://simplehtmldom.sourceforge.net/" title="PHP Simple HTML DOM Parser">PHP Simple HTML DOM Parser</a> is another awesome tool that I use a lot for scraping web pages to extract useful information. The Java spirit animal of this type of tool is <a href="http://jsoup.org/" title="Java HTML Parser">JSoup</a> and I highly recommend that as well.</li>
+                            </ol>
+                        </p>
 					</div>
 				</div><!-- /.modal-content -->
 		  </div><!-- /.modal-dialog -->

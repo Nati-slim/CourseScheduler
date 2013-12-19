@@ -36,8 +36,7 @@ class ScheduleHelper
                 $this->errorMessage = "";
             }
         } catch (Exception $e) {
-            echo 'ERROR: ' . $e->getMessage();
-            exit();
+            $this->errorMessage = $e->getMessage();
         }
     }
 

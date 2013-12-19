@@ -4,8 +4,8 @@ require_once "classes/models/Course.php";
 require_once "classes/models/Section.php";
 require_once "classes/models/Meeting.php";
 require_once "classes/models/UserSchedule.php";
-include_once "../../creds/parse_coursepicker.inc";
 require_once "../../creds/coursepicker_debug.inc";
+require_once "../../creds/dhpath.inc";
 $session = new Session();
 $controller = "classes/controllers/schedulecontroller.php";
 $errorMessage = $session->errorMessage;
@@ -24,7 +24,7 @@ if (!$debug){
     ini_set("display_errors", 0);
     ini_set("log_errors", 1);
     //Define where do you want the log to go, syslog or a file of your liking with
-    ini_set("error_log", "syslog");
+    ini_set("error_log", ERROR_PATH);
 }
 
 function fail($pub, $pvt = ''){
@@ -231,7 +231,7 @@ $ogdesc = "Plan your college schedule with ease using this course schedule appli
 									?>
 								</select>
 							</div>
-							<a id="popoverOption" class="btn" href="#" data-content="Popup with option trigger" rel="popover" data-placement="bottom" data-original-title="Title">Popup with option trigger</a>
+							<a id="popoverOption" class="btn" href="#" data-content="Popup with option trigger" rel="popover" data-placement="bottom" data-original-title="Popover test">Popup with option trigger</a>
 							<div class="alert alert-danger" id="saveScheduleError" style="display:none"></div>
 							<div class="alert alert-success" id="saveScheduleSuccess" style="display:none"></div>
                             <!-- Setting the hidden input field used for error checking-->

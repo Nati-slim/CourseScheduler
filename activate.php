@@ -1,6 +1,7 @@
 <?php
 require_once dirname(__FILE__) . '/../../creds/coursepicker_debug.inc';
 require_once dirname(__FILE__) . '/classes/helpers/UserHelper.php';  
+require_once dirname(__FILE__) . '/../../creds/dhpath.inc';
 
 session_start();
          
@@ -14,7 +15,7 @@ if (!$debug) {
     ini_set("display_errors", 0);
     ini_set("log_errors", 1);
     //Define where do you want the log to go, syslog or a file of your liking with
-    ini_set("error_log", "syslog");
+    ini_set("error_log", ERROR_PATH);
 }
 
 $result = array();

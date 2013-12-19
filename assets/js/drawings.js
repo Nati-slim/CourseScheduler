@@ -1,5 +1,9 @@
 var selectOptions;
 		$(function(){
+            //toggle popover for the search box
+            $('#searchBox').popover();
+            
+            //function to clear local storage and change the semester selection
 			$('#semesterSelection').change(function(){
 				clearLocalStorage();
             	$('#semesterSelectionForm').submit();
@@ -62,6 +66,8 @@ var selectOptions;
 		/* Function called when user clicks the Remove All Button*/
 		function removeAll(){
 			$('#removeAllSectionInfo').show();
+            //_trackEvent(category, action, opt_label, opt_value, opt_noninteraction)
+            _gaq.push(['_trackEvent', 'Create New User Schedule', 'Remove All Button Clicked', 'Clear Schedule']);
 			$('body').css('cursor', 'wait');
 			$.ajax({
 				type: "POST",
@@ -121,7 +127,8 @@ var selectOptions;
     	
     	/* Add listener to checkboxes and return an array of currently selected items*/
     	function addCheckboxListener(){
-			$('.checkedElement').change(function(){
+			$('.checkedElement').change(function(){                
+                _gaq.push(['_trackEvent', 'Filter Sections', 'Clicked Checkbox',  $(this).val()]);
 				$('body').css('cursor', 'wait');
 				$.ajax({
 					type: "POST",
@@ -153,6 +160,7 @@ var selectOptions;
 			//console.log(size);
 			if (size != 0){
 				$('#controlCheckboxes').show();
+                $('.checkedElement').popover();
 				$('#sectionsFound').empty().show();
 				$('#sectionFoundHeader').remove();
 				var title = $('#collapseColumn').attr("title");

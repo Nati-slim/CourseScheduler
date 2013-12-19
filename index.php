@@ -1,21 +1,17 @@
 <?php
-require_once("classes/helpers/session.php");
-include_once("../../creds/parse_coursepicker.inc");
-require_once("../../creds/coursepicker_debug.inc");
+require_once "classes/helpers/session.php";
+require_once "../../creds/coursepicker_debug.inc";
+require_once "../../creds/dhpath.inc";
 $session = new Session();
 $controller = "classes/controllers/controller.php";
 $errorMessage = $session->errorMessage;
-/*Grab the json file of building names
-if (!isset($session->uga_file)){
-    $session->uga_file = file_get_contents("assets/json/uga_building_names.json");
-}*/
 
 $debug = DEBUGSTATUS;
 if ($debug){
     ini_set("display_errors", 0);
     ini_set("log_errors", 1);
     //Define where do you want the log to go, syslog or a file of your liking with
-    ini_set("error_log", "syslog");
+    ini_set("error_log", ERROR_PATH);
 }
 
 /**
@@ -153,6 +149,7 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
 		<![endif]-->
 		<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 		<script src="https://code.jquery.com/jquery-1.10.2.min.js" type="text/javascript"></script>
+		<script src="assets/js/draggable.js" type="text/javascript"></script>
 		<!-- Include all compiled plugins (below), or include individual files as needed -->
 		<script src="assets/js/canvasstyle.js" type="text/javascript"></script>
 		<script src="assets/js/bootstrap.min.js" type="text/javascript"></script>	
@@ -201,6 +198,7 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
                 console.log("Error getting item from local storage.");
                 console.log(e);
             } 
+            
         </script>
 
 	</head>
@@ -235,7 +233,8 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
 							$submenu .= "\"  title=\"Gravatar image for " . $session->username . "\"/><b class=\"caret\" style=\"float:right;\"></b></a>";
 							$submenu .= "<ul id=\"menuDropdown\" class=\"dropdown-menu\">"
 										. "<li id=\"welcome\">Welcome, " .  $session->username. "</li>"
-										. "<li id=\"logoutLi\"><a href=\"#logout\" onclick=\"logout()\">Logout</a></li>"
+										. "<li id=\"logoutLi\"><a href=\"#logout\" title=\"Click to log out!\" onclick=\"logout()\">Logout</a></li>"
+										. "<li id=\"saveScheduleLi\"><a href=\"http://apps.janeullah.com/coursepicker/saveschedule.php\" title=\"Click to save your created schedules.\">Save Schedule</a></li>"
 										."</ul>"
 										."</li>";
 							echo $submenu;
@@ -251,16 +250,16 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
 
     <div class="container">
     	<div class="row" style="margin-top:25px;">
-		    <div class="col-xs-6 col-md-3" id="leftdiv">
+		    <div class="col-xs-6 col-sm-6 col-md-3" id="leftdiv">
 				<div class="row">
 					<p id="infoMessage" class="alert alert-info">
 						<?php echo $semesters[$semesterSelected]; ?>
 					</p>
-					<div class="sidebar">
+					<div class="sidebar" id="messages">
 						<?php if (strlen($errorMessage) > 0) { 
 							echo "<script type=\"text/javascript\"> $('#errorMessage').show(); </script>";	
 						?>
-							<p id="errorMessage" class="alert alert-danger"><?php echo $errorMessage;?></p>
+                        <p id="errorMessage" class="alert alert-danger"><?php echo $errorMessage;?></p>
 						<?php  }else if (strlen($errorMessage) == 0){	
 							echo "<script type=\"text/javascript\"> $('#errorMessage').hide(); </script>";
 						?>
@@ -289,19 +288,21 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
 						</form>
 					</div>
 					
-					<div id="searchBox" class="sidebar">
-						<span class="intro">Search:</span><br/>		
+					<div id="searchBox" class="sidebar" rel="popover" data-placement="top" data-toggle="popover" data-trigger="hover" data-content="Search by the the course prefix e.g. ENGL, course number e.g 1101, or course name e.g. ENGLISH COMP I">
+						<span class="intro">Search: </span><br/>		
 						<input id="jsonURL" name="jsonURL" type="hidden" value="<?php echo $jsonURL;?>" />
 						<input type="hidden" name="selectedSemester" id="selectedSemester" value="<?php echo $semesterSelected; ?>" />
-						<input class="form-control" type="text" id="courseEntry" name="courseEntry" placeholder="e.g. CSCI 1302" />
+						<input class="form-control" type="text" id="courseEntry" name="courseEntry" placeholder="e.g. CSCI 1302 or FINANCE" />
 					</div>
 
 					<div id="controlCheckboxes" style="display:none;" class="checkboxes">
-						<input checked type="checkbox" class="checkedElement" id="Available" name="Available" value="Available"/><span id="AvailableSpan">Available</span><br/>
-						<input checked type="checkbox" class="checkedElement" id="Full" name="Full" value="Full"/><span id="FullSpan">Full</span><br/>
-						<input checked type="checkbox" class="checkedElement" id="Cancelled" name="Cancelled" value="Cancelled"/><span id="CancelledSpan">Cancelled</span>
+                        <!-- data-content="Popup with option trigger" rel="popover" data-placement="bottom" data-original-title="Title" -->
+                        <!-- rel="popover" data-placement="right" data-toggle="popover" data-trigger="hover" data-content="Check this box to see available sections"-->
+						<input checked type="checkbox" class="checkedElement" id="Available" name="Available" value="Available" rel="popover" data-placement="right" data-toggle="popover" data-trigger="hover" data-content="Check this box to see available sections"/><span id="AvailableSpan">Available</span><br/>
+						<input checked type="checkbox" class="checkedElement" id="Full" name="Full" value="Full" rel="popover" data-placement="right" data-toggle="popover" data-trigger="hover" data-content="Check this box to see full sections"/><span id="FullSpan">Full</span><br/>
+						<input checked type="checkbox" class="checkedElement" id="Cancelled" name="Cancelled" value="Cancelled" rel="popover" data-placement="right" data-toggle="popover" data-trigger="hover" data-content="Check this box to see cancelled sections"/><span id="CancelledSpan">Cancelled</span>
 					</div>
-
+                    
                     <div class="panel-group sidebar" id="sectionsFound">
 
 					</div>
@@ -326,8 +327,10 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
 							}).on('typeahead:selected',function(obj,datum){
 								//console.log(obj);
 								//console.log(datum.value);
+                                
 								var semSelected = $('#selectedSemester').val();
 								var courseValue  = datum.value;
+                                _gaq.push(['_trackEvent', 'Typeahead Selected', courseValue,  'User selected ' + courseValue]);
 								$('body').css('cursor', 'wait');
 								//console.log("semSelected: " + semSelected + "\n" + "courseValue: " + courseValue + "\n");
 								$.ajax({
@@ -346,7 +349,40 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
 									$('body').css('cursor', 'auto');
 									console.log(msg + "Error getting sections.");
 								});
-							});
+							});  
+                            
+                            
+                            //If the user doesn't use typeahead to choose an entry
+                            /*$('#courseEntry').change(function(){
+                                var value = $(this).val();
+                                console.log(value); 
+                                if ((value.indexOf(" ") < 0) || (value.indexOf(",") < 0)){
+                                    $('#messages').empty().append("<p class=\"alert alert-danger\">Please enter a delimiter between the course prefix and course number.</p>").show();
+                                    setTimeout(function(){ 
+                                        $('#messages').hide("slow",function(){}); 
+                                    }, 4000);
+                                }else{
+                                    _gaq.push(['_trackEvent', 'Other Input Entered', value,  'User selected ' + value]);
+                                    $('body').css('cursor', 'wait');
+                                    //console.log("semSelected: " + semSelected + "\n" + "courseValue: " + courseValue + "\n");
+                                    $.ajax({
+                                        type: "POST",
+                                        url: 'classes/controllers/coursecontroller.php',
+                                        data: { action : "getSections", semesterSelected : semSelected, courseEntry : courseValue},
+                                        dataType: "json"
+                                    })
+                                    .done(function(msg){
+                                        $('body').css('cursor', 'auto');
+                                        //console.log(msg);
+                                        sListings = msg;
+                                        populateSections(msg);
+                                    })
+                                    .fail(function(msg){
+                                        $('body').css('cursor', 'auto');
+                                        console.log(msg + "Error getting sections.");
+                                    });
+                                }
+                            });*/                          
 						});
 					</script>
 				</div><!--/sidebar-->

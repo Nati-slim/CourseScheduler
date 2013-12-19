@@ -57,7 +57,7 @@ class UserHelper{
 		}
 	}
 	
-    function saveMetadata($user,$token, $ip,$verifiedstatus = 1){
+    function saveMetadata($user,$token, $ip,$verifiedstatus){
 		try{
 			if (!($this->setmetadata)){
 				$this->errorMessage =  "Prepare failed for saveMetadata: (" . $this->dbconn->errno . ") " . $this->dbconn->error;
@@ -65,16 +65,20 @@ class UserHelper{
 				$this->errorMessage =  "Binding parameters failed for setmetadata: (" . $this->setmetadata->errno . ") " . $this->setmetadata->error;
 			}elseif (!($value = $this->setmetadata->execute())){
 				$this->errorMessage =  "Execute failed for setmetadata: (" . $this->setmetadata->errno . ") " . $this->setmetadata->error;
-			}else{
-				$this->errorMessage = "";
+			}else{                
                 $inserted_id = $this->dbconn->insert_id;
+                $this->checkactivationtoken->free_result();
                 if (!($this->setverifiedstatus)){
                     $this->errorMessage =  "Prepare failed for setverifiedstatus: (" . $this->dbconn->errno . ") " . $this->dbconn->error;
+                    return false;
                 }elseif (!($this->setverifiedstatus->bind_param("ds",$verifiedstatus,$user->getUsername()))){
                     $this->errorMessage =  "Binding parameters failed for setverifiedstatus: (" . $this->setverifiedstatus->errno . ") " . $this->setverifiedstatus->error;
+                    return false;
                 }elseif (!($value = $this->setverifiedstatus->execute())){
                     $this->errorMessage =  "Execute failed for setverifiedstatus: (" . $this->setverifiedstatus->errno . ") " . $this->setverifiedstatus->error;
+                    return false;
                 }else{
+                    $this->errorMessage = "";
                     return $inserted_id;
                 }
 			}
@@ -109,8 +113,9 @@ class UserHelper{
                 $this->errorMessage = "Binding for checkactivationtoken results failed: (" . $this->checkactivationtoken->errno . ") " . $this->checkactivationtoken->error;
             }else{
                 if ($this->checkactivationtoken->fetch() && !($this->dbconn->errno)){
-                    //$id,$userid,$username,$hash,$email,$date,$verified = 0,$firstname = "",$lastname = ""
-					$user = new User($id,$userid,$username,$passhash,$email,$registration_date,$emailVerified,$firstname,$lastname);
+					$user = new User($id,$userid,$name,$passhash,$email,$registration_date,$emailVerified,$firstname,$lastname);
+                    $user->setRegistrationDate($registration_date);
+                    $user->setRegistrationIP($registration_ip);
 					if ($user){
                         //compare emails
                         if ($email === $presentedEmail){
@@ -159,7 +164,7 @@ class UserHelper{
 			}else{
 				if ($this->authenticateuser->fetch() && !($this->dbconn->errno)){
 					//$id,$userid,$username,$hash,$email,$date,$verified = 0,$firstname = "",$lastname = ""
-					$user = new User($id,$userid,$username,$passhash,$email,$registration_date,$emailVerified,$firstname,$lastname);
+					$user = new User($id,$userid,$name,$passhash,$email,$registration_date,$emailVerified,$firstname,$lastname);
                     $user->setRegistrationDate($registration_date);
                     $user->setRegistrationIP($registration_ip);
 					if ($user){

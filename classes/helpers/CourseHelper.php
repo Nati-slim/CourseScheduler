@@ -75,7 +75,7 @@ building,room,sch,currentProgram) values(DEFAULT,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?
                 $this->errorMessage = "";
             }
         } catch (Exception $e) {
-            echo 'ERROR: ' . $e->getMessage();
+            $this->errorMessage =  'ERROR: ' . $e->getMessage();
         }
     }
 
@@ -89,9 +89,9 @@ building,room,sch,currentProgram) values(DEFAULT,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?
     {
         try {
             if (!($this->truncateTable)) {
-                echo "Prepare failed: (" . $this->dbconn->errno . ") " . $this->dbconn->error;
+                $this->errorMessage =  "Prepare failed: (" . $this->dbconn->errno . ") " . $this->dbconn->error;
             } elseif (!($value = $this->truncateTable->execute())) {
-                echo "Execute failed: (" . $this->truncateTable->errno . ") " . $this->truncateTable->error;
+                $this->errorMessage =  "Execute failed: (" . $this->truncateTable->errno . ") " . $this->truncateTable->error;
             } else {
                 $this->errorMessage = "";
             }
@@ -322,11 +322,11 @@ building,room,sch,currentProgram) values(DEFAULT,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?
     {
         try {
             if (!($this->addcourse)) {
-                echo "Prepare failed: (" . $this->dbconn->errno . ") " . $this->dbconn->error;
+                $this->errorMessage =  "Prepare failed: (" . $this->dbconn->errno . ") " . $this->dbconn->error;
             } elseif (!($this->addcourse->bind_param("sdsssssdssssdddddddssss", $items['term'], $items['callNumber'], $items['coursePrefix'], $items['courseNumber'], $items['courseName'], $items['lecturer'], $items['available'], $items['creditHours'], $items['session'], $items['days'], $items['startTime'], $items['endTime'], $items['casTaken'], $items['casRequired'], $items['dasTaken'], $items['dasRequired'], $items['totalTaken'], $items['totalRequired'], $items['totalAllowed'], $items['building'], $items['room'], $items['sch'], $items['currentProgram']))) {
-                echo "Binding parameters failed: (" . $this->addcourse->errno . ") " . $this->addcourse->error;
+                $this->errorMessage =  "Binding parameters failed: (" . $this->addcourse->errno . ") " . $this->addcourse->error;
             } elseif (!($value = $this->addcourse->execute())) {
-                echo "Execute failed: (" . $this->addcourse->errno . ") " . $this->addcourse->error;
+                $this->errorMessage =  "Execute failed: (" . $this->addcourse->errno . ") " . $this->addcourse->error;
             } else {
                 $this->errorMessage = "";
 

@@ -19,9 +19,9 @@ class Course{
 			$this->coursePrefix   = (string) $prefix; // It's good practice to use type-casting.
 			$this->courseNumber   = (string) $number;
 			$this->sectionListings = array();
-			$errorMessage = "";
+			$this->errorMessage = "";
 		}catch(Exception $e){
-			echo "Error instantiating Course object: " . $e->getMessage() . "\n";
+			$this->errorMessage =  "Error instantiating Course object: " . $e->getMessage() . "\n";
 		}
 	}
 

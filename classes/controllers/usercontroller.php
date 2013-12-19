@@ -18,27 +18,35 @@
  * @since      N/A
  * @deprecated N/A
  */
-require_once '../../../../creds/dhpath.inc';
-require_once '../../../../creds/captcha.inc';
-require_once '../../../../creds/coursepicker_debug.inc';
-require_once '../models/Course.php';
-require_once '../models/Section.php';
-require_once '../models/Meeting.php';
-require_once '../models/UserSchedule.php';
-require_once '../helpers/session.php';
-require_once '../helpers/UserHelper.php';
-require_once '../../includes/phppass/PasswordHash.php';
-require_once '../../includes/recaptcha/recaptchalib.php';
+require_once dirname(__FILE__) . '/../../../../creds/mixpanel_coursepicker.inc';
+require_once dirname(__FILE__) . '/../../../../creds/dhpath.inc';
+require_once dirname(__FILE__) . '/../../../../creds/coursepicker_debug.inc';
+require_once dirname(__FILE__) . '/../../../../creds/captcha.inc';
+require_once dirname(__FILE__) . '/../models/Course.php';
+require_once dirname(__FILE__) . '/../models/Section.php';
+require_once dirname(__FILE__) . '/../models/Meeting.php';
+require_once dirname(__FILE__) . '/../models/UserSchedule.php';
+require_once dirname(__FILE__) . '/../helpers/session.php';
+require_once dirname(__FILE__) . '/../helpers/UserHelper.php';
+require_once dirname(__FILE__) . '/../../includes/phppass/PasswordHash.php';
+require_once dirname(__FILE__) . '/../../includes/recaptcha/recaptchalib.php';
+require_once dirname(__FILE__) . '/../../includes/mixpanel/lib/Mixpanel.php';
 $session = new Session();
 $result = array();
 $debug = DEBUGSTATUS;
+
+// get the Mixpanel class instance, replace with your
+// project token
+$mp = Mixpanel::getInstance(CP_MIXPANEL_TOKEN);
+
+
 //Set up debug stuff
 //When  not debugging, log to a file!
 if (!$debug) {
     ini_set("display_errors", 0);
     ini_set("log_errors", 1);
     //Define where do you want the log to go, syslog or a file of your liking with
-    ini_set("error_log", "syslog");
+    ini_set("error_log", ERROR_PATH);
 }
 
 //http://www.openwall.com/articles/PHP-Users-Passwords
@@ -58,7 +66,7 @@ $hasher = new PasswordHash($hash_cost_log2, $hash_portable);
  */
 function __autoload($class_name)
 {
-    include '../models/'. $class_name . '.php';
+    include dirname(__FILE__) . '/../models/'. $class_name . '.php';
 }
 
 

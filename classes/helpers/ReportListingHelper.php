@@ -38,7 +38,7 @@ class ReportListingHelper{
 				$this->errorMessage = "";
 			}			
 		} catch(Exception $e) {
-			echo 'ERROR: ' . $e->getMessage();
+			$this->errorMessage = $e->getMessage();
 		}
 	}
 
@@ -110,11 +110,11 @@ class ReportListingHelper{
 		$dateModified = date('Y-m-d H:i:s',strtotime($lastModified));
 		try{
 			if (!($this->addsingleoffering)){
-				echo "Prepare failed: (" . $this->dbconn->errno . ") " . $this->dbconn->error;
+				$this->errorMessage =  "Prepare failed: (" . $this->dbconn->errno . ") " . $this->dbconn->error;
 			}else if (!($this->addsingleoffering->bind_param("ssss",$name,$term,$campus,$dateModified))){
-				echo "Binding parameters failed: (" . $this->addsingleoffering->errno . ") " . $this->addsingleoffering->error;
+				$this->errorMessage =  "Binding parameters failed: (" . $this->addsingleoffering->errno . ") " . $this->addsingleoffering->error;
 			}else if (!($value = $this->addsingleoffering->execute())){
-				echo "Execute failed: (" . $this->addsingleoffering->errno . ") " . $this->addsingleoffering->error;
+				$this->errorMessage =  "Execute failed: (" . $this->addsingleoffering->errno . ") " . $this->addsingleoffering->error;
 			}else{
 				$this->errorMessage = "";
 				return true;

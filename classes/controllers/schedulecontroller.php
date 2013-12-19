@@ -20,6 +20,7 @@
  * @since      N/A
  * @deprecated N/A
  */
+require_once '../../includes/mixpanel/lib/Mixpanel.php';
 require_once '../models/Course.php';
 require_once '../models/Section.php';
 require_once '../models/Meeting.php';
@@ -28,9 +29,16 @@ require_once '../helpers/CourseHelper.php';
 require_once '../helpers/ScheduleHelper.php';
 require_once '../helpers/session.php';
 require_once '../../../../creds/coursepicker_debug.inc';
+require_once '../../../../creds/dhpath.inc';
+require_once '../../../../creds/mixpanel_coursepicker.inc';
 $session = new Session();
 $result = array();
 $debug = DEBUGSTATUS;
+
+
+// get the Mixpanel class instance, replace with your
+// project token
+$mp = Mixpanel::getInstance(CP_MIXPANEL_TOKEN);
 /**
  * Function to autoload classes needed during serialization/unserialization
  * 
@@ -49,7 +57,7 @@ if (!$debug) {
     ini_set("display_errors", 0);
     ini_set("log_errors", 1);
     //Define where do you want the log to go, syslog or a file of your liking with
-    ini_set("error_log", "syslog");
+    ini_set("error_log", ERROR_PATH);
 }
 
 /**
@@ -323,6 +331,9 @@ if ($requestType === 'POST') {
                                 $session->infoMessage = "Section " . $callNum. " (". $section->getCoursePrefix()."-".$section->getCourseNumber().") added!";
                                 $session->schedule = $userschedule->to_json();
                                 $session->scheduleObj = serialize($userschedule);
+                                // track an event
+                                $mp->track("add section", array("success" => $callNum));
+                    
                                 //Fix logic of this later
                                 try {
                                     if ($user) {
@@ -417,7 +428,7 @@ if ($requestType === 'POST') {
                             $session->errorMessage = $result['userMessage'];
                         }
                     }
-                        
+                    $mp->track("remove section", array("success" => $callNum));
                     echo $userschedule->to_json();
                 }
             } else {
@@ -443,11 +454,13 @@ if ($requestType === 'POST') {
                 $arrayVal = explode("-", $semesterSelected);
                 //Remove all from the schedule will cause a new schedule id to be generated
                 if (count($arrayVal) == 2) {
+                    $oldScheduleID = $userschedule->getScheduleID();
                     $userschedule = UserSchedule::makeSchedule($userid, $arrayVal[1], $arrayVal[0], generateToken());
                     $session->schedule = $userschedule->to_json();
                     $session->scheduleObj = serialize($userschedule);
                     $result['errorMessage'] = "";
                     $session->errorMessage = "";
+                    $mp->track("remove all sections", array("old schedule id" => $oldScheduleID));
                 } else {
                     $result['errorMessage'] = "Invalid parameters found for the semester selected.";
                     $session->errorMessage = $result['errorMessage'];
@@ -479,6 +492,7 @@ if ($requestType === 'POST') {
                         $result['imgToken'] = $token;
                         $result['errorMessage'] = "";
                         $session->errorMessage = "";
+                        $mp->track("download schedule as image", array("image_token" => $token));
                     } else {
                         $result['imgToken'] = "";
                         $result['errorMessage'] = "Unable to save image to file";
@@ -532,6 +546,7 @@ if ($requestType === 'POST') {
                             }
                         }
                     }
+                    $mp->track("save schedule to database", array("saved_schedule_id" => $scheduleID));
                     echo json_encode($res);
                 }else{
                     $result['errorMessage'] = fail("Oops! You forgot to select a schedule to save.","Mismatch between selected schedule and the found schedule ID");
@@ -581,6 +596,7 @@ if ($requestType === 'POST') {
                         }
                         
                         if ($found){
+                            $mp->track("update schedule in database", array("saved_schedule_id" => $scheduleID));
                             echo json_encode($res);
                         }else{
                             $result['errorMessage'] = "Problem updating user object.";
@@ -642,6 +658,7 @@ if ($requestType === 'POST') {
                     }
                     $session->selectedScheduleID = $scheduleID;
                     $session->errorMessage = $result['errorMessage'];
+                    $mp->track("switch schedule", array("schedule" => $scheduleID));
                     echo json_encode($result);
                 }else{
                     $result['errorMessage'] = "Schedule not found.";

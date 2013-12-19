@@ -21,17 +21,21 @@
  * @since      N/A
  * @deprecated N/A
  */
+require_once '../../includes/mixpanel/lib/Mixpanel.php';
 require_once '../models/Course.php';
 require_once '../models/Section.php';
 require_once '../models/Meeting.php';
 require_once '../helpers/CourseHelper.php';
 require_once '../helpers/session.php';
+require_once '../../../../creds/mixpanel_coursepicker.inc';
 require_once '../../../../creds/coursepicker_debug.inc';
 require_once '../../../../creds/dhpath.inc';
 $session = new Session();
 $result = array();
 $debug = DEBUGSTATUS;
-
+// get the Mixpanel class instance, replace with your
+// project token
+$mp = Mixpanel::getInstance(CP_MIXPANEL_TOKEN);
 /**
  * Function to autoload classes needed during serialization/unserialization
  * 
@@ -147,8 +151,7 @@ if ($requestType === 'POST') {
             if (count($courseArray) == 2 && count($semesterArray) == 2) {
                 $session->semesterSelected = $semesterArray[0] . "-"
                                             . $semesterArray[1];
-                $session->jsonURL = "assets/json/tp/tp-"
-                . $semesterArray[0] . "-" . $semesterArray[1] . ".json";
+                $session->jsonURL = "assets/json/tp/tp-". $semesterArray[0] . "-" . $semesterArray[1] . ".json";
                 $db = new CourseHelper();
                 //$term,$coursePrefix,$courseNumber,$campus
                 try {
@@ -156,19 +159,24 @@ if ($requestType === 'POST') {
                     $session->courseSections = $courseSections;
                     $session->courseSectionsJSON = getSectionJSON($courseSections);
                     $session->errorMessage = "";
+                    // track an event
+                    $mp->track("get sections", array("success" => $course));
                     echo $session->courseSectionsJSON;
                 } catch (Exception $e) {
                     $result['errorMessage'] = $e->getMessage();
+                    //$mp->track("get sections", array("error" => $result['errorMessage']));
                     $session->errorMessage = $e->getMessage();
                     echo json_encode($result);
                 }
             } else {
                 $result['errorMessage'] = "Please enter a course like this: CSCI-1302 or CSCI 1302";
+                //$mp->track("get sections", array("error" => $result['errorMessage']));
                 $session->errorMessage = $result['errorMessage'];
                 echo json_encode($result);
             }
         } else {
             $result['errorMessage'] = "Please refresh the page. Missing the data for the semester and campus";
+            //$mp->track("get sections", array("error" => $result['errorMessage']));
             $session->errorMessage = $result['errorMessage'];
             echo json_encode($result);
         }
@@ -193,15 +201,18 @@ if ($requestType === 'POST') {
             $session->courseSectionJSON = getSectionJSON($filteredSections);
             $result['errorMessage'] = "";
             $session->errorMessage = "";
+            $mp->track("filter sections", array("available" => $available, "full" => $full, "cancelled" => $cancelled));
             echo $session->courseSectionJSON;
         } else {
             $result['errorMessage'] = "Please select a course first.";
-            $session->errorMessage = "Please select a course first.";
+            //$mp->track("filter sections", array("error" => $result['errorMessage']));
+            $session->errorMessage = $result['errorMessage'];
             echo json_encode($result);
         }
     } else {
         $result['errorMessage'] = "No action found.";
-        $session->errorMessage = "No action found.";
+        //$mp->track("filter sections", array("error" => $result['errorMessage']));
+        $session->errorMessage = $result['errorMessage'];
         echo json_encode($result);
     }
 } else {
