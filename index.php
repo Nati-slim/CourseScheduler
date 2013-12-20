@@ -176,7 +176,8 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
             // Now insert the node into the DOM, perhaps using insertBefore()
         </script>-->
 		<!-- Include all compiled plugins (below), or include individual files as needed -->
-		<script src="assets/js/canvasstyle.js" type="text/javascript"></script>
+        <script src="http://cdnjs.cloudflare.com/ajax/libs/fabric.js/1.4.0/fabric.min.js" type="text/javascript"></script>  
+		<script src="assets/js/coursepicker.js" type="text/javascript"></script>
 		<script src="assets/js/bootstrap.min.js" type="text/javascript"></script>	
 		<script src="assets/js/hogan.min.js" type="text/javascript"></script>
 
@@ -233,12 +234,7 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
                  echo "token = \"" . CP_PROD_MIXPANEL_TOKEN . "\";";
             }
             ?>
-        </script>
-        <!-- start Mixpanel -->
-        <script type="text/javascript">
-            
-        </script>
-        <!-- end Mixpanel -->        
+        </script>    
 	</head>
 	<body>
 		<div class="navbar navbar-fixed-top navbar-inverse" role="navigation">
@@ -467,6 +463,7 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
 
         <footer>
             <p>&copy; <a href="http://janeullah.com" title="Jane Ullah">Jane Ullah 2014</a></p>
+            <img src="assets/img/trash.png" id="trashcan">
         </footer>
 
     </div><!--/.container-->
