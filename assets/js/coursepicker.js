@@ -1,6 +1,6 @@
 //Initialized variables
 var colors = [ "#D9EDF7", "#0D63B6","#CC333F","#317A22","#E5924C","#C34B5F","#4682B4","#228B22","#EE3B3B","#6E7B8B","#7584B5" ];
-var daysOfWeek = [ "Monday", "Tuesday", "Wednesday", "Thursday", "Friday","Saturday" ];
+var daysOfWeek = [ "Monday", "Tuesday", "Wednesday", "Thursday", "Friday" ];
 var timesOfDay = [ "8:00am", "9:00am", "10:00am", "11:00am", "12:00pm",
 			"1:00pm", "2:00pm", "3:00pm", "4:00pm","5:00pm","6:00pm","7:00pm","8:00pm","9:00pm","10:00pm" ];
 //var sched = '{"8363":{"courseName":"ENGLISH COMP I","coursePrefix":"ENGL","courseNumber":"1101","callNumber":8363,"lecturer":"No Professor","status":"Available","buildingNumber":56,"roomNumber":"0060","casTaken":9,"casRequired":20,"campus":"UNIV","semester":"201402","meetings":{"M":"0905A-0955A","W":"0905A-0955A","F":"0905A-0955A"},"errorMessage":""},"5432":{"courseName":"INTRO AFRI AMER ST","coursePrefix":"AFAM","courseNumber":"2000","callNumber":5432,"lecturer":"MORROW","status":"Available","buildingNumber":53,"roomNumber":"0230","casTaken":24,"casRequired":30,"campus":"UNIV","semester":"201402","meetings":{"T":"1100A-1215P","R":"1100A-1215P"},"errorMessage":""},"91181":{"courseName":"ADR SEMINAR","coursePrefix":"JURI","courseNumber":"5735","callNumber":91181,"lecturer":"BURCH","status":"Available","buildingNumber":45,"roomNumber":"0203","casTaken":19,"casRequired":100,"campus":"UNIV","semester":"201402","meetings":{"T":"0230P-0420P"},"errorMessage":""}}';
@@ -63,9 +63,8 @@ function parseSection(section){
             var meeting = section.meetings[key];
             var dash = meeting.indexOf("-");
             var startHour, startMinute, endHour,endMinute;        
-            var left = CELL_WIDTH/2 + 5;
+            var left = CELL_WIDTH;
             var top = 0;
-            width = 120;
             var height = 0;
             
             //If the item starts with 0 e.g. 08, 09, parseInt returns 0 so
@@ -92,17 +91,16 @@ function parseSection(section){
             //Set the starting point for fabric to start drawing        
             if (key.localeCompare("M") == 0){
                 left = left;
-                width = 115;
             } else if (key.localeCompare("T") == 0){
-                left = left - 5 + CELL_WIDTH;
+                left = left + CELL_WIDTH;
             } else if (key.localeCompare("W") == 0){
-                left = left - 5 + CELL_WIDTH*2;
+                left = left + CELL_WIDTH*2;
             } else if (key.localeCompare("R") == 0){
-                left = left - 5 + CELL_WIDTH*3;
+                left = left + CELL_WIDTH*3;
             } else if (key.localeCompare("F") == 0){
-                left = left - 5 + CELL_WIDTH*4;
+                left = left + CELL_WIDTH*4;
             } else if (key.localeCompare("S") == 0){
-                left = left - 5 + CELL_WIDTH*5;
+                left = left + CELL_WIDTH*5;
             }
 
             var startAMPM = meeting.charAt(4);
@@ -121,7 +119,7 @@ function parseSection(section){
                 left: left,
                 top: top,
                 fill: colors[colorCounter],
-                width: width,
+                width: CELL_WIDTH,
                 height: height,
                 callNumber: section.callNumber,
                 coursePrefix: section.coursePrefix,
@@ -308,18 +306,10 @@ function drawTable(){
     line.set('selectable',false);
     ctx.add(line);
         
-    //Draw time column
-    var line = new fabric.Line([CELL_WIDTH/2,0,CELL_WIDTH/2,CANVAS_HEIGHT],{
-        left:CELL_WIDTH/2,
-        top:0,
-        stroke: 'black'
-    });
-    line.set('selectable',false);
-    ctx.add(line);
         
 	//Draw vertical lines
-    CELL_WIDTH = 120;
-	for ( var x = CELL_WIDTH + CELL_WIDTH/2; x <= CANVAS_WIDTH - CELL_WIDTH; x += CELL_WIDTH) {
+    CELL_WIDTH = 130;
+	for ( var x = CELL_WIDTH; x <= CANVAS_WIDTH - CELL_WIDTH; x += CELL_WIDTH) {
         var line = new fabric.Line([x, 0, x, CANVAS_HEIGHT], { 
             left: x,
             top: 0,
@@ -349,7 +339,7 @@ function drawTable(){
 		var time = new fabric.Text(timesOfDay[counter], {
             left: 2, 
             top: y+10,
-            fontSize: 16,
+            fontSize: 24,
             fontWeight: 'bold',
             textAlign: 'left',
             fill: '#000000',
@@ -361,12 +351,12 @@ function drawTable(){
 	}
     
  	//Draw days text messengers
-	var x = CELL_WIDTH/2 + 30;
+	var x = CELL_WIDTH + 15;
 	for ( var counter = 0; counter < daysOfWeek.length; counter++) {
 		var time = new fabric.Text(daysOfWeek[counter], {
             left: x, 
-            top: 5,
-            fontSize: 16,
+            top: 1,
+            fontSize: 22,
             fontWeight: 'bold',
             textAlign: 'left',
             textTransformation: 'uppercase',
@@ -428,6 +418,7 @@ var LabeledRect = fabric.util.createClass(fabric.Rect, {
     ctx.font = '20px Helvetica';
     ctx.fillStyle = '#fff';    
     ctx.fillText(this.coursePrefix + " " + this.courseNumber, -this.width/2, -this.height/2 + 20);
+    ctx.fillText(this.callNumber, -this.width/2, -this.height/2 + 40);
   }
 });
 

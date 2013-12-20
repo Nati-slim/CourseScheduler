@@ -271,7 +271,7 @@ $ogdesc = "Plan your college schedule with ease using this course schedule appli
 
         <footer>
             <p>&copy; <a href="http://janeullah.com" title="Jane Ullah">Jane Ullah 2014</a></p>
-            <img src="assets/img/trash.png" id="trashcan">
+            <img src="assets/img/trash.jpg" alt="Drag a rectangle over to the trashcan to delete the section from your schedule." id="trashcan">
         </footer>
 
 		</div><!--/.container-->

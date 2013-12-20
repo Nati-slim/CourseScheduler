@@ -1,6 +1,11 @@
 $(function(){
+    /**
+     * Function to get an image url
+     * of the schedule
+     * 
+     */ 
 	$('#downloadSchedule').on('click',function(){
-		var imgUrl = "" + canvasItem.toDataURL();
+		var imgUrl = "" + getDataUrl();
 		var index = imgUrl.indexOf(",");
 		if (index > 0){
 			//console.log("Index: " + index);
@@ -43,7 +48,10 @@ $(function(){
 		}	
 	});
 	
-	//Handling changing the user schedule in saveschedule.php
+	/**Handling changing the user schedule in saveschedule.php
+     * Switching the schedules when the user makes a change
+     * 
+     */ 
 	$('#selectedSchedule').change(function(){
         var scheduleSelectedID = $('#selectedSchedule').val();
         var optionText = $('option[value="'+scheduleSelectedID+'"]').text();
@@ -77,7 +85,10 @@ $(function(){
 		});	
 	});
     
-    
+    /**
+     * Saving the schedule
+     * 
+     */ 
     $('#saveScheduleForm').submit(function(e){
 		e.preventDefault();
         var itemSelected = $('#scheduleID').val();
@@ -121,40 +132,45 @@ $(function(){
         }
 	});
     
-    $('#popoverOption').popover({ trigger: "hover" });
+    //$('#popoverOption').popover({ trigger: "hover" });
 });
 
-    function updateSchedule(){
-        var shortName = $('#savedShortName').val();
-        var selectedScheduleID = $('#scheduleID').val();
-        ga('send', 'Schedule update', 'User clicked', 'shortName', shortName);
-        $('body').css('cursor', 'wait');
-        $.ajax({
-            type: "POST",
-            url: 'classes/controllers/schedulecontroller.php',
-            data: { action:"updateSchedule",scheduleID : selectedScheduleID, savedShortName: shortName},
-            dataType: "json"
-        })
-        .done(function(msg){
-            $('body').css('cursor', 'auto');
-            if (msg.errorMessage.length == 0){
-                $('#saveScheduleError').empty().hide();
-                console.log(msg);
-                $('#saveScheduleSuccess').empty().append("Successfully saved <strong>" + msg.shortName + "</strong> to database.").
-                show();setTimeout(function(){
-                    location.reload();
-                }, 5000);
-            }else{
-                $('#saveScheduleError').empty().append(msg.errorMessage).show();
-                $('#saveScheduleSuccess').empty().hide();
-            }
+function updateSchedule(){
+    var shortName = $('#savedShortName').val();
+    var selectedScheduleID = $('#scheduleID').val();
+    ga('send', 'Schedule update', 'User clicked', 'shortName', shortName);
+    $('body').css('cursor', 'wait');
+    $.ajax({
+        type: "POST",
+        url: 'classes/controllers/schedulecontroller.php',
+        data: { action:"updateSchedule",scheduleID : selectedScheduleID, savedShortName: shortName},
+        dataType: "json"
+    })
+    .done(function(msg){
+        $('body').css('cursor', 'auto');
+        if (msg.errorMessage.length == 0){
+            $('#saveScheduleError').empty().hide();
             console.log(msg);
-        })
-        .fail(function(msg){
-            $('body').css('cursor', 'auto');
-            $('#saveScheduleError').append(msg.responseText).show();
+            $('#saveScheduleSuccess').empty().append("Successfully saved <strong>" + msg.shortName + "</strong> to database.").
+            show();setTimeout(function(){
+                location.reload();
+            }, 5000);
+        }else{
+            $('#saveScheduleError').empty().append(msg.errorMessage).show();
             $('#saveScheduleSuccess').empty().hide();
-            console.log(msg.responseText);
-        });	
-        return false;
-    }
+        }
+        console.log(msg);
+    })
+    .fail(function(msg){
+        $('body').css('cursor', 'auto');
+        $('#saveScheduleError').append(msg.responseText).show();
+        $('#saveScheduleSuccess').empty().hide();
+        console.log(msg.responseText);
+    });	
+    return false;
+}
+    
+function getDataUrl(){
+    var c = document.getElementById("scheduleCanvas");
+    return c.toDataURL();
+}

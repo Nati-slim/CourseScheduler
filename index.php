@@ -464,7 +464,7 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
 
         <footer>
             <p>&copy; <a href="http://janeullah.com" title="Jane Ullah">Jane Ullah 2014</a></p>
-            <img src="assets/img/trash.png" id="trashcan">
+            <img style="visibility:hidden;" src="assets/img/trash.jpg" alt="Drag a rectangle over to the trashcan to delete the section from your schedule." id="trashcan">
         </footer>
 
     </div><!--/.container-->
