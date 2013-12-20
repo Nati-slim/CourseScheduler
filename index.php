@@ -252,7 +252,7 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
 					<ul class="nav navbar-nav">
 						<li class="active"><a href="./">Home</a></li>
 						<li><a href="#aboutModal" data-toggle="modal" id="about">About</a></li>
-						<li><a href="#contact" id="contact">Contact</a></li>
+						<li><a href="#howtoModal" data-toggle="modal" id="howto">How To</a></li>
 						<?php if (isset($session->userid)){ 
 							echo "<li><a id=\"downloadSchedule\" href=\"#pngModal\" data-toggle=\"modal\">Download Schedule</a></li>";
 						}
@@ -334,11 +334,21 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
 					</div>
 
 					<div id="controlCheckboxes" style="display:none;" class="checkboxes">
-                        <!-- data-content="Popup with option trigger" rel="popover" data-placement="bottom" data-original-title="Title" -->
-                        <!-- rel="popover" data-placement="right" data-toggle="popover" data-trigger="hover" data-content="Check this box to see available sections"-->
-						<input checked type="checkbox" class="checkedElement" id="Available" name="Available" value="Available" rel="popover" data-placement="right" data-toggle="popover" data-trigger="hover" data-content="Check this box to see available sections"/><span id="AvailableSpan">Available</span><br/>
-						<input checked type="checkbox" class="checkedElement" id="Full" name="Full" value="Full" rel="popover" data-placement="right" data-toggle="popover" data-trigger="hover" data-content="Check this box to see full sections"/><span id="FullSpan">Full</span><br/>
-						<input checked type="checkbox" class="checkedElement" id="Cancelled" name="Cancelled" value="Cancelled" rel="popover" data-placement="right" data-toggle="popover" data-trigger="hover" data-content="Check this box to see cancelled sections"/><span id="CancelledSpan">Cancelled</span>
+                        <div class="filterAvailability">
+                            <!-- data-content="Popup with option trigger" rel="popover" data-placement="bottom" data-original-title="Title" -->
+                            <!-- rel="popover" data-placement="right" data-toggle="popover" data-trigger="hover" data-content="Check this box to see available sections"-->
+                            <input checked type="checkbox" class="checkedElement" id="Available" name="Available" value="Available" rel="popover" data-placement="right" data-toggle="popover" data-trigger="hover" data-content="Check this box to see available sections"/><span id="AvailableSpan">Available</span><br/>
+                            <input checked type="checkbox" class="checkedElement" id="Full" name="Full" value="Full" rel="popover" data-placement="right" data-toggle="popover" data-trigger="hover" data-content="Check this box to see full sections"/><span id="FullSpan">Full</span><br/>
+                            <input checked type="checkbox" class="checkedElement" id="Cancelled" name="Cancelled" value="Cancelled" rel="popover" data-placement="right" data-toggle="popover" data-trigger="hover" data-content="Check this box to see cancelled sections"/><span id="CancelledSpan">Cancelled</span>
+                        </div>    
+                        <!--<div class="filterDay">
+                            <input checked type="checkbox" class="checkedDays" id="Monday" name="Monday" value="M" /><span class="filterDay">Mon</span>
+                            <input checked type="checkbox" class="checkedDays" id="Tuesday" name="Tuesday" value="T" /><span class="filterDay">Tue</span>
+                            <input checked type="checkbox" class="checkedDays" id="Wednesday" name="Wednesday" value="W" /><span class="filterDay">Wed</span>
+                            <input checked type="checkbox" class="checkedDays" id="Thursday" name="Thursday" value="R" /><span class="filterDay">Thu</span>
+                            <input checked type="checkbox" class="checkedDays" id="Friday" name="Friday" value="F" /><span class="filterDay">Fri</span>
+                        </div>-->
+                        <button type="button" id="filterListings" class="btn btn-xs btn-primary" >Filter Results</button>
 					</div>
                     
                     <div class="panel-group sidebar" id="sectionsFound">
@@ -464,7 +474,7 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
 
         <footer>
             <p>&copy; <a href="http://janeullah.com" title="Jane Ullah">Jane Ullah 2014</a></p>
-            <img style="visibility:hidden;" src="assets/img/trash.jpg" alt="Drag a rectangle over to the trashcan to delete the section from your schedule." id="trashcan">
+            <img src="assets/img/trash.jpg" style="visibility:hidden;"  width="38" height="30" alt="Drag a rectangle over to the trashcan to delete the section from your schedule." id="trashcan">
         </footer>
 
     </div><!--/.container-->

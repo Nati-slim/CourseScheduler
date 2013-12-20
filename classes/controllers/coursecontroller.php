@@ -191,7 +191,12 @@ if ($requestType === 'POST') {
     } elseif (strcmp($action, "filterSections") == 0) {
         $available = getPost('available');
         $full = getPost('full');
-        $cancelled = getPost('Cancelled');
+        $cancelled = getPost('cancelled');
+        /*$m = getPost('m');
+        $t = getPost('t');
+        $w = getPost('w');
+        $r = getPost('r');
+        $f = getPost('f');*/
         if (isset($session->courseSections)) {
             //Course sections will contain ALL the filters don't modify
             //use the JSONified version for results to the page
@@ -199,10 +204,13 @@ if ($requestType === 'POST') {
             $filteredSections = array();
             foreach ($courseSections as $section) {
                 $status = $section->getStatus();
-                if (($status == "Available" && $available == "true")
-                    || ($status == "Full" && $full == "true")
-                    || ($status == "Cancelled" && $cancelled == "true")
-                ) {
+                $filterOnAvailability = (($status == "Available" && $available == "true") || ($status == "Full" && $full == "true") || ($status == "Cancelled" && $cancelled == "true"));
+                if ($filterOnAvailability) {
+                    /*$meetings = $section->getMeetings();
+                    $filterOnDay = ($m == "true" && array_key_exists("M",$meetings)) or ($t == "true" && array_key_exists("T",$meetings)) or ($w == "true" && array_key_exists("W",$meetings)) or ($r == "true" && array_key_exists("R",$meetings)) or ($f == "true" && array_key_exists("F",$meetings));
+                    if ($filterOnDay){
+                        $filteredSections[$section->getCallNumber()] = $section;
+                    }*/
                     $filteredSections[$section->getCallNumber()] = $section;
                 }
             }
@@ -227,4 +235,9 @@ if ($requestType === 'POST') {
     $result['errorMessage'] = "Invalid request.";
     $session->errorMessage = "Invalid request.";
     echo json_encode($result);
+}
+
+
+function isDayInSection($key,$meetings){
+    return array_key_exists($key,$meetings);
 }

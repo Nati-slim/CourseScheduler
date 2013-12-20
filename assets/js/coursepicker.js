@@ -341,7 +341,7 @@ function drawTable(){
             top: y+10,
             fontSize: 24,
             fontWeight: 'bold',
-            textAlign: 'left',
+            textAlign: 'center',
             fill: '#000000',
             fontFamily: 'Helvetica Neue'
         });
@@ -389,38 +389,39 @@ function drawTable(){
  */ 
 var LabeledRect = fabric.util.createClass(fabric.Rect, {
 
-  type: 'sectionRectangle',
+    type: 'sectionRectangle',
 
-  initialize: function(options) {
-    options || (options = { });
+    initialize: function(options) {
+        options || (options = { });
 
-    this.callSuper('initialize', options);
-    this.set('coursePrefix', options.coursePrefix || '');
-    this.set('courseNumber', options.courseNumber || '');
-    this.set('callNumber', options.callNumber || '');
-    this.set({ rx: 10, ry: 10 });
-  },
+        this.callSuper('initialize', options);
+        this.set('coursePrefix', options.coursePrefix || '');
+        this.set('courseNumber', options.courseNumber || '');
+        this.set('callNumber', options.callNumber || '');
+        this.set({ rx: 10, ry: 10 });
+    },
 
-  toObject: function() {
-    return fabric.util.object.extend(this.callSuper('toObject'), {
-      callNumber: this.get('callNumber'),
-      coursePrefix: this.get('coursePrefix'),
-      courseNumber: this.get('courseNumber')
-    });
-  },
+    toObject: function() {
+        return fabric.util.object.extend(this.callSuper('toObject'), {
+            callNumber: this.get('callNumber'),
+            coursePrefix: this.get('coursePrefix'),
+            courseNumber: this.get('courseNumber')
+        });
+    },
 
-  _render: function(ctx) {
-    this.callSuper('_render', ctx);
+    _render: function(ctx) {
+        this.callSuper('_render', ctx);
 
-    // make font and fill values of labels configurable
-    /*ctx.font = this.labelFont;
-    ctx.fillStyle = this.labelFill;*/
-    ctx.font = '20px Helvetica';
-    ctx.fillStyle = '#fff';    
-    ctx.fillText(this.coursePrefix + " " + this.courseNumber, -this.width/2, -this.height/2 + 20);
-    ctx.fillText(this.callNumber, -this.width/2, -this.height/2 + 40);
-  }
+        // make font and fill values of labels configurable
+        /*ctx.font = this.labelFont;
+        ctx.fillStyle = this.labelFill;*/
+        ctx.font = '20px Helvetica';
+        ctx.fillStyle = '#fff';    
+        ctx.fillText(this.coursePrefix + " " + this.courseNumber, -this.width/2 + 10, -this.height/2 + 20);
+        ctx.fillText(this.callNumber, -this.width/2 + 40, -this.height/2 + 40);
+    }
 });
+
 
 /**
  * Detect movement of the rectangles 

@@ -125,30 +125,36 @@ var selectOptions;
     	}
     	
     	/* Add listener to checkboxes and return an array of currently selected items*/
-    	function addCheckboxListener(){
-			$('.checkedElement').change(function(){                
-                //_gaq.push(['_trackEvent', 'Filter Sections', 'Clicked Checkbox',  $(this).val()]);
-                ga('send', 'Filter Sections', 'User clicked', 'Checkbox', $(this).val());
-				$('body').css('cursor', 'wait');
-				$.ajax({
-					type: "POST",
-  					url: 'classes/controllers/coursecontroller.php',
-  					data: { action : "filterSections", available: $('#Available').is(":checked"), full : $('#Full').is(":checked"), cancelled : $('#Cancelled').is(":checked")},
-					dataType: "json"
-				})
-				.done(function(msg){
-					$('body').css('cursor', 'auto');
-					//console.log(msg);
-					sListings = msg;
-  					populateSections(msg);
-				})
-				.fail(function(msg){
-					$('body').css('cursor', 'auto');
-					console.log(msg + "Error getting sections.");
-				});
-			});			
+    	function filterListings(){             
+            var av = $('#Available').is(":checked");
+            var full = $('#Full').is(":checked");
+            var can = $('#Cancelled').is(":checked");
+            /*var m = $('#Monday').is(":checked");
+            var t = $('#Tuesday').is(":checked");
+            var w = $('#Wednesday').is(":checked");
+            var r = $('#Thursday').is(":checked");
+            var f = $('#Friday').is(":checked");
+            * , m : m,t : t,w : w,r : r,f : f
+            * */
+            $('body').css('cursor', 'wait');
+            $.ajax({
+                type: "POST",
+                url: 'classes/controllers/coursecontroller.php',
+                data: { action : "filterSections", available: av, full : full, cancelled : can},
+                dataType: "json"
+            })
+            .done(function(msg){
+                $('body').css('cursor', 'auto');
+                //console.log(msg);
+                sListings = msg;
+                populateSections(msg);
+            })
+            .fail(function(msg){
+                $('body').css('cursor', 'auto');
+                console.log(msg.responseText);
+            });
 		}
-		
+
 
 		/*
 		 * Called after submission of user's course-number selection
@@ -193,7 +199,10 @@ var selectOptions;
 						collapseDiv();
 					}
 				});			
-				addCheckboxListener();
+				//addCheckboxListener();
+                $('#filterListings').on('click',function(){
+                    filterListings();
+                });
 			}else{				
 				//$('#controlCheckboxes').hide();
 				$('#sectionsFound').empty().show();

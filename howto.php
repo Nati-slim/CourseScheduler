@@ -128,55 +128,6 @@ $shortdesc = "A course scheuling app for the University of Georgia Computer Scie
 		<script src="https://code.jquery.com/jquery-1.10.2.min.js" type="text/javascript"></script>
 		<!-- Include all compiled plugins (below), or include individual files as needed -->
 		<script src="assets/js/bootstrap.min.js" type="text/javascript"></script>	
-        <script type="text/javascript">
-            $(function(){
-                $('#confirmEmailForm').submit(function(e){
-                    e.preventDefault();
-                    var email1 = $('#confirmEmail1').val();
-                    var email2 = $('#confirmEmail2').val();
-                    if (email1 === email2){
-                        $.ajax({
-                            type: "POST",
-                            url: 'classes/controllers/authcontroller.php',
-                            data: $(this).serialize(),
-                            dataType: "json"
-                        })
-                        .done(function(msg){
-                            $('body').css('cursor', 'auto');
-                            console.log(msg);
-                            if (msg.errorMessage.length > 0){
-                                $('#confirmEmailError').empty();
-                                $('#confirmEmailError').append(msg.errorMessage).show();
-                                $('#confirmEmailSuccess').hide();
-                                setTimeout(function(){
-                                    $('#confirmEmailError').empty().hide("slow",function(){});
-                                }, 10000);
-                            }else{
-                                $('#confirmEmailError').empty().hide();
-                                $('#confirmEmailSuccess').empty().append("Account activated! You can continue to use <a href=\"http://apps.janeullah.com/coursepicker\" title=\"UGA Course Picker\">Course Picker</a>").show();		
-                                $('#confirmEmailForm').hide('slow', function(){ 
-                                    $('#confirmEmailForm').hide(); 
-                                });	
-                                setTimeout(function(){
-                                    window.location = "http://apps.janeullah.com/coursepicker/";                                    
-                                }, 22000);
-                                console.log("Successfully activated account in.");
-                            }
-                        })
-                        .fail(function(msg){
-                            $('body').css('cursor', 'auto');
-                            $('#confirmEmailError').empty().append(msg.responseText).show();
-                            $('#confirmEmailSuccess').empty().hide();
-                            console.log(msg.responseText);
-                        });
-                    }else{
-                        $('#confirmEmailError').empty().append("The 2 fields must match!").show();
-                        $('#confirmEmailSuccess').empty().hide();
-                    }  
-                    return false;
-                });
-            });
-        </script>
 	</head>
 	<body>
 		<div class="navbar navbar-fixed-top navbar-inverse" role="navigation">
@@ -203,27 +154,37 @@ $shortdesc = "A course scheuling app for the University of Georgia Computer Scie
 		<div class="container">
             <div class="row" style="margin-top:25px;">
                 <div class="col-xs-12 col-md-8" id="confirmEmailDiv">     
-                    
-                    <?php  if ($isValidToken) { ?>
-                        <div class="alert alert-danger" id="confirmEmailError" style="display:none"></div>
-                        <div class="alert alert-success" id="confirmEmailSuccess" style="display:none"></div>
-                        <form id="confirmEmailForm" name="confirmEmailForm" class="form-signin" role="form" method="post" action="classes/controllers/authcontroller.php">							
-                            <div class="form-group">
-                                <label for="confirmEmail1">Confirm Email</label>
-                                <input type="email" class="form-control" id="confirmEmail1" name="confirmEmail1" placeholder="Enter registration email used" value="" required/>
-                            </div>
-                            <div class="form-group">
-                                <label for="confirmEmail2">Re-Enter Email</label>
-                                <input type="email" class="form-control" id="confirmEmail2" name="confirmEmail2" placeholder="Enter registration email used" required>
-                            </div>
-                            <input type="hidden" id="token" name="token" value="<?php echo $validToken; ?>" />
-                            <input type="hidden" id="action" name="action" value="confirmEmail" />
-                            <button id="saveScheduleBtn" type="submit" class="btn btn-primary">Save</button>
-                            <button type="button" class="btn btn-default">Clear</button> 
-                        </form>   
-                    <?php } else { ?>  
-                        <p id="errorMessage" class="alert alert-danger"><?php echo $result['errorMessage']; ?></p>
-                    <?php } ?>
+                        <p>
+                            <strong>Terminology</strong>
+                            <ol class="instructions">
+                                <li><strong>course prefix</strong>: This is the 4 or 5 letter abbreviation of the course e.g. MATH for Mathematics, CSCI for Computer Science, ENGL for English, etc.</li>
+                                <li><strong>course number</strong>: This is the number that comes after the course prefix e.g. CSCI <strong>1302</strong> or ENGL <strong>1101</strong></li>
+                                <li><strong>course name</strong>: This is the "official" course name. For instance, ENGL 1101 is officially called "ENGLISH COMP I".</li>
+                                <li><strong>call number</strong>: This is the number uniquely identifying the section of the course. A course has many sections and a section can have many different meeting times.</li>
+                            </ol>
+                        </p>
+                        <p>
+                            <strong>Adding Classes</strong>:
+                            <ol class="instructions">
+                                <li>Search for a course by any combination of the <strong>course prefix</strong>, <strong>course number</strong> or <strong>course name</strong>. 
+                                Please don't be alarmed if you only type the course prefix and receive results that don't match the course prefix exactly. 
+                                This is because the course prefix you are searching for is also in the course name of some of the results that were returned to you.</li>
+                                <li>If you choose to search by couse prefix only, I recommend entering the term and having a space after the word. 
+                                If that doesn't work, add a number after the space e.g. ENGL 11 or HIST 22 to bring up more specific results.</li>
+                                <li>If you know the exact course prefix and course number, please type it out and choose the dropdown selection. </strong>THIS IS IMPORTANT FOR THE FORM TO WORK.</strong></li>
+                                <li>Choose from the autocomplete menu or manually enter the course you desire in this manner as long as you separate the course prefix from the course number by a dash or space</li>
+                                <li>Select a section from the list and your choice will be automatically submitted.</li>                                       
+                            </ol>
+                        </p>
+                        <p>
+                            <strong>Saving Schedules</strong>:
+                            <ol class="instructions">
+                                <li>This feature is available only to users that have signed up for the site.</li>
+                                <li>You can sign up for the service at any point during schedule creation.</li>
+                                <li>After signing up, you will be able to save your schedule to the database right away but you will need to confirm and activate your account by clicking
+                                the activation link sent to the email address you provided during signup.</li>
+                            </ol>
+                        </p>
                 </div>
             </div>
 

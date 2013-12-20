@@ -45,6 +45,16 @@ if (!$debug){
     $mp = Mixpanel::getInstance(CP_DEV_MIXPANEL_API_KEY);
 }
 
+$semesters = array();
+$semesters['201405-UNIV'] = '(Athens) Summer 2014';
+$semesters['201402-UNIV'] = '(Athens) Spring 2014';
+$semesters['201308-UNIV'] = '(Athens) Fall 2013';
+$semesters['201305-UNIV'] = '(Athens) Summer 2013';
+$semesters['201405-GWIN'] = '(Gwinnett) Summer 2014';
+$semesters['201402-GWIN'] = '(Gwinnett) Spring 2014';
+$semesters['201308-GWIN'] = '(Gwinnett) Fall 2013';
+$semesters['201305-GWIN'] = '(Gwinnett) Summer 2013';
+
 /**
  * Function to autoload classes needed during serialization/unserialization
  * 
@@ -322,9 +332,18 @@ if ($requestType === 'POST') {
                 try {
                     //Get section from database
                     $db = new CourseHelper();
-                    $section = $db->getSingleSection($arrayVal[0], $callNum, $arrayVal[1]);
+                    $section = $db->getSingleSection($arrayVal[0], $callNum, $arrayVal[1]);                   
+                    
+                    
                     if ($section) {
-                        if (strcmp($section->getStatus(), "Available") == 0) {
+                        //make sure the section's semester and campus matches the user schedule object                       
+                        if (strcmp($userschedule->getSemester(), $arrayVal[0]) != 0 || strcmp($userschedule->getCampus(), $arrayVal[1]) != 0){
+                            $result['callNumber'] = $callNum;
+                            $result['term'] = $arrayVal[0];
+                            $result['currentProgram']=  $arrayVal[1];
+                            $result['errorMessage'] = "This schedule is bound to the " . $semesters[$userschedule->getSemester()."-".$userschedule->getCampus()] . " semester. Only add courses from the " . $semesters[$userschedule->getSemester()."-".$userschedule->getCampus()] . " catalog.";
+                            $session->errorMessage = $result['errorMessage'];
+                        }elseif (strcmp($section->getStatus(), "Available") == 0) {
                             //print_r($userschedule);
                             $status = $userschedule->addSection($section);
                             if (!$status) {
@@ -464,6 +483,7 @@ if ($requestType === 'POST') {
                     $userschedule = UserSchedule::makeSchedule($userid, $arrayVal[1], $arrayVal[0], generateToken());
                     $session->schedule = $userschedule->to_json();
                     $session->scheduleObj = serialize($userschedule);
+                    $session->selectedScheduleID = $userschedule->getScheduleID();
                     $result['errorMessage'] = "";
                     $session->errorMessage = "";
                     $mp->track("remove all sections", array("old schedule id" => $oldScheduleID));
@@ -525,7 +545,7 @@ if ($requestType === 'POST') {
         $user = unserialize($session->loggedInUser);
         $defaultSchedule = unserialize($session->scheduleObj);
         $scheduleID = getPost('scheduleID');
-        $selectedSchedule = $session->selectedScheduleID;
+        $selectedSchedule = $defaultSchedule->getScheduleID();
         $shortName1 = getPost('shortName1');
         $shortName2 = getPost('shortName2');          
         if ($userid){
@@ -615,7 +635,7 @@ if ($requestType === 'POST') {
                         echo json_encode($result);
                     }
                 }else{
-                    $result['errorMessage'] = "User object deserialized to null";
+                    $result['errorMessage'] = "Mismatch between selected schedule and passed param of scheduleID.";
                     $session->errorMessage = $result['errorMessage'];
                     echo json_encode($result);
                 }
@@ -664,6 +684,10 @@ if ($requestType === 'POST') {
                     }
                     $session->selectedScheduleID = $scheduleID;
                     $session->errorMessage = $result['errorMessage'];
+                    
+                    //check the semester and campus. Update the semesterSelected and campus variables as needed                    
+                    $session->semesterSelected = $foundSchedule->getSemester() . "-" . $foundSchedule->getCampus();
+                    
                     $mp->track("switch schedule", array("schedule" => $scheduleID));
                     echo json_encode($result);
                 }else{

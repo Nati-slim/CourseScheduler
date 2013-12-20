@@ -41,17 +41,50 @@
                                 <li><a href="https://www.google.com/recaptcha" title="reCAPTCHA by Google">reCAPTCHA</a> is an "anti-bot service that helps digitize books". I used it in preventing automated submissions of the signup form.</li>
                                 <li><a href="http://simplehtmldom.sourceforge.net/" title="PHP Simple HTML DOM Parser">PHP Simple HTML DOM Parser</a> is another awesome tool that I use a lot for scraping web pages to extract useful information. For parsing HTML with Java, I use <a href="http://jsoup.org/" title="Java HTML Parser">JSoup</a> and I highly recommend that as well.</li>
                             </ol>
-                        </p>
-                        
+                        </p>                        
+					</div>
+				</div><!-- /.modal-content -->
+		  </div><!-- /.modal-dialog -->
+	</div><!-- /.modal -->
+	
+	<!-- How To Modal -->
+	<div class="modal fade" id="howtoModal" tabindex="-1" role="dialog" aria-labelledby="howtoModalLabel" aria-hidden="true">
+		  <div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true" style="font-weight:bold;color: black;opacity: 1;">&times;</button>
+						<h4 class="modal-title" id="howtoModalLabel">How To Use!</h4>
+					</div>
+					<div class="modal-body">                        
                         <p>
-                            <strong>Usage</strong>:
-                            <ol id="instructions">
-                                <li>Terms: <strong>course prefix</strong>: CSCI or ENGL, <strong>course number</strong: e.g. 1302 or 1101 and <strong>course name</strong>: SOFT DEVELOPMENT or ENGLISH COMP I</li>
-                                <li>Search for a course by any combination of the <strong>course prefix</strong>, <strong>course number</strong> and <strong>course name</strong>. Please don't be alarmed if you only type the course prefix and receive results that don't match the course prefix exactly. This is because the course prefix you are searching for is also in the course name of some of the results that were returned to you.</li>
-                                <li>If you choose to search by couse prefix only, I recommend entering the term and having a space after the word. If that doesn't work, add a number after the space e.g. HIST 1 or HIST 2 to bring up specific results.</li>
+                            <strong>Terminology</strong>
+                            <ol class="instructions">
+                                <li><strong>course prefix</strong>: This is the 4 or 5 letter abbreviation of the course e.g. MATH for Mathematics, CSCI for Computer Science, ENGL for English, etc.</li>
+                                <li><strong>course number</strong>: This is the number that comes after the course prefix e.g. CSCI <strong>1302</strong> or ENGL <strong>1101</strong></li>
+                                <li><strong>course name</strong>: This is the "official" course name. For instance, ENGL 1101 is officially called "ENGLISH COMP I".</li>
+                                <li><strong>call number</strong>: This is the number uniquely identifying the section of the course. A course has many sections and a section can have many different meeting times.</li>
+                            </ol>
+                        </p>
+                        <p>
+                            <strong>Adding Classes</strong>:
+                            <ol class="instructions">
+                                <li>Search for a course by any combination of the <strong>course prefix</strong>, <strong>course number</strong> or <strong>course name</strong>. 
+                                Please don't be alarmed if you only type the course prefix and receive results that don't match the course prefix exactly. 
+                                This is because the course prefix you are searching for is also in the course name of some of the results that were returned to you.</li>
+                                <li>If you choose to search by couse prefix only, I recommend entering the term and having a space after the word. 
+                                If that doesn't work, add a number after the space e.g. ENGL 11 or HIST 22 to bring up more specific results.</li>
+                                <li>If you know the exact course prefix and course number, please type it out and choose the dropdown selection. </strong>THIS IS IMPORTANT FOR THE FORM TO WORK.</strong></li>
                                 <li>Choose from the autocomplete menu or manually enter the course you desire in this manner as long as you separate the course prefix from the course number by a dash or space</li>
-                                <li>Select a section from the list</li>
-                                <li><strong>Bonus</strong>Signup as a user to save your schedule and to have different versions of your schedule!</li>                                        
+                                <li>Select a section from the list and your choice will be automatically submitted.</li>                                       
+                            </ol>
+                        </p>
+                        <p>
+                            <strong>Saving Schedules</strong>:
+                            <ol class="instructions">
+                                <li>This feature is available only to users that have signed up for the site.</li>
+                                <li>You can sign up for the service at any point during schedule creation.</li>
+                                <li>After signing up, you will be able to save your schedule to the database right away but you will need to confirm and activate your account by clicking
+                                the activation link sent to the email address you provided during signup.</li>
                             </ol>
                         </p>
                         
@@ -59,7 +92,7 @@
 				</div><!-- /.modal-content -->
 		  </div><!-- /.modal-dialog -->
 	</div><!-- /.modal -->
-	
+        
 	<!-- Login Modal -->
 	<div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginModalLabel" aria-hidden="true">
 		  <div class="modal-dialog">
