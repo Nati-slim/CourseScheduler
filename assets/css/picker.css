@@ -1,14 +1,7 @@
 #scheduleCanvas{
-    /*CSS rule for displaying the canvas object */
-	display:inline;
-	border: 2px solid #000000;
+	border: 2px solid #f0f0f0;
 }
 
-#canvasImage{
-    /*width:780px;
-    height:730px;*/
-    font-size:140%;
-}
 
 #courseEntry{
 	width:100%;

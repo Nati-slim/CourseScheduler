@@ -291,7 +291,8 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
 					</p>
 					<div class="sidebar" id="messages">
 						<?php if (strlen($errorMessage) > 0) { 
-							echo "<script type=\"text/javascript\"> $('#errorMessage').show(); </script>";	
+							echo "<script type=\"text/javascript\"> $('#errorMessage').show();";
+                            echo "setTimeout(function(){ $('#errorMessage').hide('slow',function(){}); },10000);</script>";	
 						?>
                         <p id="errorMessage" class="alert alert-danger"><?php echo $errorMessage;?></p>
 						<?php  }else if (strlen($errorMessage) == 0){	

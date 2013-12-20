@@ -12,7 +12,10 @@ var schedObj, colorCounter = 0;
 //arrays
 var meetings = [];
 
-
+/**
+ * 
+ * 
+ */ 
 $(document).ready(function(){
     CANVAS_WIDTH = $('canvas').width();
     CANVAS_HEIGHT = $('canvas').height();
@@ -21,8 +24,13 @@ $(document).ready(function(){
 	drawTable();
     getSchedule();
     ctx.renderAll();
+    onMove();
 });
 
+/**
+ * Function which grabs the schedule object
+ * and converts to JSON object
+ **/ 
 function getSchedule(){
     try{
         schedObj = JSON.parse(sched);
@@ -35,6 +43,11 @@ function getSchedule(){
     }
 }
 
+/**
+ * Function to look at each section, extract the meeting times 
+ * and draw on canvas.
+ * 
+ */ 
 function parseSection(section){
     colorCounter++;
     if (colorCounter == (colors.length-1)){
@@ -104,49 +117,29 @@ function parseSection(section){
             height = getRectangleHeight(startHour,startMinute,endHour,endMinute);
             top = getYCoordinate(startHour,startMinute,key);
             //draw rectangle
-            var rect = new fabric.Rect({
+            var rect = new LabeledRect({
                 left: left,
                 top: top,
                 fill: colors[colorCounter],
                 width: width,
                 height: height,
-                rx: 10,
-                ry: 10
+                callNumber: section.callNumber,
+                coursePrefix: section.coursePrefix,
+                courseNumber: section.courseNumber
             });
             //setting options for messing with the rectangle
             rect.set({
-                selectable: false,
-                borderColor: 'black',
                 lockRotation: true,
                 lockScalingX: true,
                 lockScalingY: true
             });
             
-            //draw text
-            var sectionInfo = section.coursePrefix 
-            var sectionInfo = new fabric.Text(coursePrefix + " " + courseNumber, {
-                left: left + 10, 
-                top: top,
-                fontSize: 16,
-                fontWeight: 'bold',
-                textAlign: 'left',
-                textTransformation: 'uppercase',
-                fill: '#ffffff',
-                fontFamily: 'Helvetica Neue'
-            });
-            sectionInfo.set('selectable',false);    
-            
-            var group = new fabric.Group([rect,sectionInfo],{
-                left: left,
-                top: top
-            });  
-            
 
-            group.on('selected', function() {
+            rect.on('selected', function() {
                 console.log('selected section ' + section.callNumber);
             });
             //group.set('selectable',false);     
-            ctx.add(group);
+            ctx.add(rect);
         });
     }catch(e){
         console.log("error in parse section.");
@@ -293,7 +286,10 @@ function getRectangleHeight(startHour,startMinute,endHour,stopMinute){
     return (CELL_HEIGHT * hourDiff) + (minDiff * 48/50);
 }
 
-
+/**
+ * 
+ * Draws the grid
+ */ 
 function drawTable(){
     // create a wrapper around native canvas element (with id="c")
     ctx = new fabric.Canvas('scheduleCanvas', {
@@ -380,18 +376,7 @@ function drawTable(){
         time.set('selectable',false);
 		x += CELL_WIDTH;
 		ctx.add(time);
-	}    
-       
-    var labeledRect = new LabeledRect({
-      width: 100,
-      height: 50,
-      left: 100,
-      top: 100,
-      label: 'test',
-      fill: '#aaf'
-    });
-
-    //ctx.add(labeledRect);   
+	} 
     
     //Add trashcan icon
     var img = document.getElementById('trashcan');//$('#trashcan').get();
@@ -408,21 +393,29 @@ function drawTable(){
     ctx.renderAll();
 }
 
+/**
+ * Custom Rectangle object for drawing meetings
+ * 
+ */ 
 var LabeledRect = fabric.util.createClass(fabric.Rect, {
 
-  type: 'labeledRect',
+  type: 'sectionRectangle',
 
   initialize: function(options) {
     options || (options = { });
 
     this.callSuper('initialize', options);
-    this.set('label', options.label || '');
+    this.set('coursePrefix', options.coursePrefix || '');
+    this.set('courseNumber', options.courseNumber || '');
+    this.set('callNumber', options.callNumber || '');
     this.set({ rx: 10, ry: 10 });
   },
 
   toObject: function() {
     return fabric.util.object.extend(this.callSuper('toObject'), {
-      label: this.get('label')
+      callNumber: this.get('callNumber'),
+      coursePrefix: this.get('coursePrefix'),
+      courseNumber: this.get('courseNumber')
     });
   },
 
@@ -433,8 +426,48 @@ var LabeledRect = fabric.util.createClass(fabric.Rect, {
     /*ctx.font = this.labelFont;
     ctx.fillStyle = this.labelFill;*/
     ctx.font = '20px Helvetica';
-    ctx.fillStyle = '#333';    
-    ctx.fillText(this.label, -this.width/2, -this.height/2 + 20);
+    ctx.fillStyle = '#fff';    
+    ctx.fillText(this.coursePrefix + " " + this.courseNumber, -this.width/2, -this.height/2 + 20);
   }
 });
 
+/**
+ * Detect movement of the rectangles 
+ * into the vicinity of the trash can
+ */ 
+function onMove(){
+    ctx.on('object:moving', function(e) {
+        var activeObject = e.target;
+       
+        //console.log(activeObject.get('left'), activeObject.get('top'));
+        var left = activeObject.get('left');
+        var top = activeObject.get('top');
+        if (left <= 17 && top <= 21){
+            console.log(activeObject);
+            
+            var callNum = activeObject.get('callNumber');
+            console.log("callNumber: " + callNum);
+            if (window.confirm("Are you sure you want to delete this section from your schedule?")) { 
+                $.ajax({
+                    type: "POST",
+                    url: 'classes/controllers/schedulecontroller.php',
+                    data: { action : "removeSection", sectionToBeRemoved : callNum},
+                    dataType: "json"
+                })
+                .done(function(msg){
+                    $('body').css('cursor', 'auto');
+                    var schedSectionID = "#schedule_" + callNum;
+                    $(schedSectionID).hide('slow', function(){ 
+                        $(schedSectionID).remove(); 
+                    });
+                    setTimeout(function () { location.reload(true); }, 1000);
+                })
+                .fail(function(msg){
+                    console.log(msg.responseTextvalue);
+                });
+            }else{
+                console.log("Declined.");
+            }
+        }
+    });
+}
