@@ -133,7 +133,8 @@ $ogdesc = "Plan your college schedule with ease using this course schedule appli
 		<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 		<script src="https://code.jquery.com/jquery-1.10.2.min.js" type="text/javascript"></script>	
         <?php if ($user && $schedule) { ?> 	
-            <script src="assets/js/canvasstyle.js" type="text/javascript"></script>
+            <script src="http://cdnjs.cloudflare.com/ajax/libs/fabric.js/1.4.0/fabric.min.js" type="text/javascript"></script>  
+            <script src="assets/js/coursepicker.js" type="text/javascript"></script>
         <?php } ?>
 		<!-- Include all compiled plugins (below), or include individual files as needed -->
 		<script src="assets/js/bootstrap.min.js" type="text/javascript"></script>	
@@ -270,6 +271,7 @@ $ogdesc = "Plan your college schedule with ease using this course schedule appli
 
         <footer>
             <p>&copy; <a href="http://janeullah.com" title="Jane Ullah">Jane Ullah 2014</a></p>
+            <img src="assets/img/trash.png" id="trashcan">
         </footer>
 
 		</div><!--/.container-->
