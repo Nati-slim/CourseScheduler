@@ -30,12 +30,20 @@ require_once dirname(__FILE__) . '/../helpers/session.php';
 require_once dirname(__FILE__) . '/../../../../creds/mixpanel_coursepicker.inc';
 require_once dirname(__FILE__) . '/../../../../creds/coursepicker_debug.inc';
 require_once dirname(__FILE__) . '/../../../../creds/dhpath.inc';
+
 $session = new Session();
 $result = array();
 $debug = DEBUGSTATUS;
+
 // get the Mixpanel class instance, replace with your
-// project token
-$mp = Mixpanel::getInstance(CP_MIXPANEL_TOKEN);
+// load production token
+if (!$debug){
+    $mp = Mixpanel::getInstance(CP_PROD_MIXPANEL_API_KEY);
+}else{
+    //load dev token
+    $mp = Mixpanel::getInstance(CP_DEV_MIXPANEL_API_KEY);
+}
+
 /**
  * Function to autoload classes needed during serialization/unserialization
  * 

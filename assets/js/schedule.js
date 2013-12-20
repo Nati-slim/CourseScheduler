@@ -6,6 +6,8 @@ $(function(){
 			//console.log("Index: " + index);
 			//Grabbing the base64 part only
 			imgUrl = imgUrl.substring(index+1);
+            
+            ga('send', 'Schedule png download', 'User clicked', 'imgurl', imgUrl);
 			//console.log("New imgurl: " + imgUrl);
 			$('body').css('cursor', 'wait');
 			$.ajax({
@@ -45,6 +47,7 @@ $(function(){
 	$('#selectedSchedule').change(function(){
         var scheduleSelectedID = $('#selectedSchedule').val();
         var optionText = $('option[value="'+scheduleSelectedID+'"]').text();
+        ga('send', 'Schedule change', 'User clicked', 'scheduleID', scheduleSelectedID);
 		$('body').css('cursor', 'wait');
 		$.ajax({
 			type: "POST",
@@ -83,7 +86,8 @@ $(function(){
         if (itemSelected == 0){
             $('#saveScheduleError').empty().append("Please select a schedule to save!").show();
             $('#saveScheduleSuccess').empty().hide();
-        }else if (shortName1 === shortName2){
+        }else if (shortName1 === shortName2){            
+            ga('send', 'Schedule save', 'User clicked', 'shortName', shortName1);
             $('body').css('cursor', 'wait');
             $.ajax({
                 type: "POST",
@@ -123,6 +127,7 @@ $(function(){
     function updateSchedule(){
         var shortName = $('#savedShortName').val();
         var selectedScheduleID = $('#scheduleID').val();
+        ga('send', 'Schedule update', 'User clicked', 'shortName', shortName);
         $('body').css('cursor', 'wait');
         $.ajax({
             type: "POST",

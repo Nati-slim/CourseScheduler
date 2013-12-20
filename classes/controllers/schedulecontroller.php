@@ -37,8 +37,14 @@ $debug = DEBUGSTATUS;
 
 
 // get the Mixpanel class instance, replace with your
-// project token
-$mp = Mixpanel::getInstance(CP_MIXPANEL_TOKEN);
+// load production token
+if (!$debug){
+    $mp = Mixpanel::getInstance(CP_PROD_MIXPANEL_API_KEY);
+}else{
+    //load dev token
+    $mp = Mixpanel::getInstance(CP_DEV_MIXPANEL_API_KEY);
+}
+
 /**
  * Function to autoload classes needed during serialization/unserialization
  * 

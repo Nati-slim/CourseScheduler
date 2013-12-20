@@ -2,6 +2,8 @@
 require_once dirname(__FILE__) . '/../helpers/UserHelper.php';
 require_once dirname(__FILE__) . '/../../../../creds/dhpath.inc';
 require_once dirname(__FILE__) . '/../../../../creds/coursepicker_debug.inc';
+require_once dirname(__FILE__) . '/../../../../creds/mixpanel_coursepicker.inc';
+require_once dirname(__FILE__) . '/../../includes/mixpanel/lib/Mixpanel.php';
 $result = array();
 session_start();
 $debug = DEBUGSTATUS;
@@ -12,7 +14,18 @@ if (!$debug) {
     ini_set("log_errors", 1);
     //Define where do you want the log to go, syslog or a file of your liking with
     ini_set("error_log", ERROR_PATH);
+    error_log("You messed up!", 3, ERROR_PATH);
 }
+
+// get the Mixpanel class instance, replace with your
+// load production token
+if (!$debug){
+    $mp = Mixpanel::getInstance(CP_PROD_MIXPANEL_API_KEY);
+}else{
+    //load dev token
+    $mp = Mixpanel::getInstance(CP_DEV_MIXPANEL_API_KEY);
+}
+
 
 /**
  * Function to autoload classes needed during serialization/unserialization
@@ -175,10 +188,7 @@ if ($requestType === 'POST') {
                                     $res = $db->saveMetadata($user,$token,$activation_ip,1);
                                     if ($res){
                                         $result['errorMessage'] = "";
-                                        /*$result['id'] = $res;
-                                        $result['username'] = $user->getUsername();
-                                        $result['token'] = $token;
-                                        $result['ip'] = $activation_ip;*/
+                                        $mp->track("user activation", array("success" => $email));
                                         echo json_encode($result);
                                     }else{
                                         $result['errorMessage'] = fail("Unable to save user metadata to database",$db->errorMessage);

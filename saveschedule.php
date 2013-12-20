@@ -55,11 +55,7 @@ function getPost($var){
 $user = unserialize($session->loggedInUser);
 $session->defaultSchedule = unserialize($session->scheduleObj);
 $currentSchedule = $session->defaultSchedule;
-/*if ($session->defaultSchedule->isSaved()){
-    echo "Saved!.<br/>";
-}else{
-    echo "NOT Saved!.<br/>";
-}*/
+
 
 if ($user){
     //has all the schedules that the user was working with.
@@ -107,25 +103,7 @@ $ogdesc = "Plan your college schedule with ease using this course schedule appli
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<meta name="description" content="<?php echo $shortdesc; ?>">
 		<meta name="author" content="Jane Ullah">
-		<!-- FB metadata -->
-		<meta property="og:locale" content="<?php echo $oglocale;?>" />
-		<meta property="og:title" content="<?php echo $ogtitle; ?>" />
-		<meta property="og:description" content="<?php echo $ogdesc; ?>"/>
-		<meta property="og:url" content="<?php echo $officialurl;?>" />
-		<meta property="og:site_name" content="<?php echo $ogtitle; ?>" />
-		<meta property="og:image" content="<?php echo $ogimg; ?>" />    
-
-		<!-- Twitter Card -->
-		<meta name="twitter:card" content="summary">
-		<meta name="twitter:site" content="<?php echo $coursepicker; ?>">
-		<meta name="twitter:title" content="<?php echo $ogtitle;?>">
-		<meta name="twitter:creator" content="<?php echo $creator; ?>">
-		<meta name="twitter:description" content="<?php echo $ogdesc;?>">
-		<meta name="twitter:image:src" content="<?php echo $ogimg;?>">
-		
-		<meta itemprop="name" content="<?php echo $ogtitle; ?>">
-		<meta itemprop="description" content="<?php echo $ogdesc;?>">
-		<meta itemprop="image" content="<?php echo $ogimg; ?>">
+        <meta name="robots" content="noindex">
 
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		

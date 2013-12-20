@@ -19,6 +19,7 @@ function logout(){
 $(function(){
 	//handle signups 
 	$('#signupForm').submit(function(e){
+        ga('send', 'Signup', 'User submitted', 'username', $('#username').val());
 		e.preventDefault();
 		$.ajax({
 			type: "POST",
@@ -62,6 +63,7 @@ $(function(){
 	
 	//Handle logins
 	$('#loginForm').submit(function(e){
+        ga('send', 'Login', 'User submitted', 'username', $('#username').val());
 		e.preventDefault();
 		$.ajax({
 			type: "POST",

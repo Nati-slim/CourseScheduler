@@ -6,6 +6,7 @@ var selectOptions;
             //function to clear local storage and change the semester selection
 			$('#semesterSelection').change(function(){
 				clearLocalStorage();
+                ga('send', 'Change Semester', 'User clicked', 'Dropdown box', $(this).val());
             	$('#semesterSelectionForm').submit();
 			});	
 			
@@ -64,8 +65,9 @@ var selectOptions;
 		function removeAll(){
 			$('#removeAllSectionInfo').show();
             //_trackEvent(category, action, opt_label, opt_value, opt_noninteraction)
-            _gaq.push(['_trackEvent', 'Create New User Schedule', 'Remove All Button Clicked', 'Clear Schedule']);
-			$('body').css('cursor', 'wait');
+            //_gaq.push(['_trackEvent', 'Create New User Schedule', 'Remove All Button Clicked', 'Clear Schedule']);
+			ga('send', 'Create New User Schedule', 'User clicked', 'Remove All Button Clicked', 'removeAll');
+            $('body').css('cursor', 'wait');
 			$.ajax({
 				type: "POST",
 				url: 'classes/controllers/schedulecontroller.php',
@@ -125,7 +127,8 @@ var selectOptions;
     	/* Add listener to checkboxes and return an array of currently selected items*/
     	function addCheckboxListener(){
 			$('.checkedElement').change(function(){                
-                _gaq.push(['_trackEvent', 'Filter Sections', 'Clicked Checkbox',  $(this).val()]);
+                //_gaq.push(['_trackEvent', 'Filter Sections', 'Clicked Checkbox',  $(this).val()]);
+                ga('send', 'Filter Sections', 'User clicked', 'Checkbox', $(this).val());
 				$('body').css('cursor', 'wait');
 				$.ajax({
 					type: "POST",
@@ -214,7 +217,8 @@ var selectOptions;
 		/* Add a single section*/
 		function addSection(callNumber){
 			var formName = "#addSectionForm_" + callNumber;
-			console.log(formName);
+			//console.log(formName);
+            ga('send', 'Add Section', 'User clicked', 'addSection', callNumber);
 			$(formName).submit();
 		}
 
@@ -223,7 +227,8 @@ var selectOptions;
 		 */ 
 		function removeSection(callNumber){
 			var formName = "#removeSectionForm_" + callNumber;
-			console.log(formName);
+			//console.log(formName);
+            ga('send', 'Remove Section', 'User clicked', 'removeSection', callNumber);
 			$('body').css('cursor', 'wait');
 			$.ajax({
 				type: "POST",

@@ -1,12 +1,53 @@
 <?php
 $session = new Session();
-require_once("../models/Course.php");
-require_once("../models/Section.php");
-require_once("../models/Meeting.php");
-require_once("../model/UserSchedule.php");
-require_once("../helpers/CourseHelper.php");
-require_once '../../../../creds/dhpath.inc';
-require_once '../../../../creds/coursepicker_debug.inc';
+require_once dirname(__FILE__) . '/../models/Course.php';
+require_once dirname(__FILE__) . '/../models/Section.php';
+require_once dirname(__FILE__) . '/../models/Meeting.php';
+require_once dirname(__FILE__) . '/../model/UserSchedule.php';
+require_once dirname(__FILE__) . '/../helpers/CourseHelper.php';
+require_once dirname(__FILE__) . '/../helpers/session.php';
+require_once dirname(__FILE__) . '/../../../../creds/coursepicker_debug.inc';
+require_once dirname(__FILE__) . '/../../../../creds/dhpath.inc';
+require_once dirname(__FILE__) . '/../../../../creds/mixpanel_coursepicker.inc';
+$session = new Session();
+$result = array();
+$debug = DEBUGSTATUS;
+
+
+// get the Mixpanel class instance, replace with your
+// load production token
+if (!$debug){
+    $mp = Mixpanel::getInstance(CP_PROD_MIXPANEL_API_KEY);
+}else{
+    //load dev token
+    $mp = Mixpanel::getInstance(CP_DEV_MIXPANEL_API_KEY);
+}
+
+$session = new Session();
+$result = array();
+$debug = DEBUGSTATUS;
+
+/**
+ * Function to autoload classes needed during serialization/unserialization
+ * 
+ * @param string $class_name name of the Class being loaded
+ *
+ * @return void
+ */
+function __autoload($class_name)
+{
+    include dirname(__FILE__) . '/../models/'. $class_name . '.php';
+}
+
+//Set up debug stuff
+//When  not debugging, log to a file!
+if (!$debug) {
+    ini_set("display_errors", 0);
+    ini_set("log_errors", 1);
+    //Define where do you want the log to go, syslog or a file of your liking with
+    ini_set("error_log", ERROR_PATH);
+}
+
 //error_reporting(0);
 /**
  * Returns the $_POST value matching the provided key

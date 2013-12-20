@@ -1,7 +1,8 @@
 <?php
-require_once "classes/helpers/session.php";
-require_once "../../creds/coursepicker_debug.inc";
-require_once "../../creds/dhpath.inc";
+require_once dirname(__FILE__) . '/classes/helpers/session.php';
+require_once dirname(__FILE__) . '/../../creds/coursepicker_debug.inc';
+require_once dirname(__FILE__) . '/../../creds/mixpanel_coursepicker.inc';
+require_once dirname(__FILE__) . '/../../creds/dhpath.inc';
 $session = new Session();
 $controller = "classes/controllers/controller.php";
 $errorMessage = $session->errorMessage;
@@ -122,9 +123,11 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
 		<meta itemprop="image" content="<?php echo $ogimg; ?>">
 
 		<script type="text/javascript">
+           
 			<?php
 				try{
 					echo "var sched = '". $sched . "';";
+                    echo "var tempSched = '". $sched . "';";
 					echo "var sListings = '". $sectionListingsJSON . "';";
 				}catch(Exception $e){
 					echo "console.log(\"Problem getting schedule.\");";
@@ -173,24 +176,23 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
             // Now insert the node into the DOM, perhaps using insertBefore()
         </script>-->
 		<!-- Include all compiled plugins (below), or include individual files as needed -->
-		<script src="assets/js/canvasstyle.min.js" type="text/javascript"></script>
+		<script src="assets/js/canvasstyle.js" type="text/javascript"></script>
 		<script src="assets/js/bootstrap.min.js" type="text/javascript"></script>	
 		<script src="assets/js/hogan.min.js" type="text/javascript"></script>
 
 		<!--JS handling saving, sharing, downloading schedules -->
 		<script src="assets/js/schedule.js" type="text/javascript"></script>
 		<!--JS related to the dynamic addition of the course navigation elements -->
-		<script src="assets/js/drawings.min.js" type="text/javascript"></script>
+		<script src="assets/js/drawings.js" type="text/javascript"></script>
 		<!--JS related to the signup/login functions -->
 		<script src="assets/js/register.js" type="text/javascript"></script>
         <!-- Pamela Fox's lscache library https://github.com/pamelafox/lscache-->
 		<script src="assets/js/lscache.min.js" type="text/javascript"></script>
         <!-- http://dte-project.googlecode.com/svn/trunk/jquery-draggable/ | http://grantm.github.io/jquery-udraggable/#examples-->
         <script src="assets/js/draggable.min.js" type="text/javascript"></script>
-        <script src="assets/js/jquery.event.ue.js" type="text/javascript"></script>
-        <script src="assets/js/jquery.udraggable.js" type="text/javascript"></script>
 		<!--http://stackoverflow.com/questions/2010892/storing-objects-in-html5-localstorage -->
         <script type="text/javascript">
+
             try{
                 var uga_buildings = lscache.get('uga_buildings');
                 if (uga_buildings){
@@ -224,8 +226,19 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
                 console.log("Error getting item from local storage.");
                 console.log(e);
             } 
+            var token = null;
+            <?php if (!$debug){
+                echo "token = \"" . CP_PROD_MIXPANEL_API_KEY . "\";";
+            }else{
+                 echo "token = \"" . CP_PROD_MIXPANEL_TOKEN . "\";";
+            }
+            ?>
+        </script>
+        <!-- start Mixpanel -->
+        <script type="text/javascript">
             
         </script>
+        <!-- end Mixpanel -->        
 	</head>
 	<body>
 		<div class="navbar navbar-fixed-top navbar-inverse" role="navigation">
@@ -320,7 +333,7 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
 						<span class="intro">Search: </span><br/>		
 						<input id="jsonURL" name="jsonURL" type="hidden" value="<?php echo $jsonURL;?>" />
 						<input type="hidden" name="selectedSemester" id="selectedSemester" value="<?php echo $semesterSelected; ?>" />
-						<input class="form-control" type="text" id="courseEntry" name="courseEntry" placeholder="e.g. CSCI 1302 or FINANCE" />
+						<input class="form-control" type="text" id="courseEntry" name="courseEntry" placeholder="e.g. CSCI 1302" />
 					</div>
 
 					<div id="controlCheckboxes" style="display:none;" class="checkboxes">
@@ -364,7 +377,8 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
                                         $('#messages').hide("slow",function(){}); 
                                     }, 4000);
                                 }else{
-                                    _gaq.push(['_trackEvent', 'Typeahead Selected', courseValue,  'User selected ' + courseValue]);
+                                    //_gaq.push(['_trackEvent', 'Typeahead Selected', courseValue,  'User selected ' + courseValue]);
+                                    ga('send', 'Typeahead Triggered', 'User selected', courseValue, 'courseEntry');
                                     $('body').css('cursor', 'wait');
                                     //console.log("semSelected: " + semSelected + "\n" + "courseValue: " + courseValue + "\n");
                                     $.ajax({
@@ -411,7 +425,8 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
                                 }, 4000);
                             }else{
                                 var semSelected = $('#selectedSemester').val();
-                                _gaq.push(['_trackEvent', 'Other Input Entered', value,  'User selected ' + value]);
+                                //_gaq.push(['_trackEvent', 'Other Input Entered', value,  'User selected ' + value]);
+                                ga('send', 'Typeahead Not Selected', 'User entered', value, 'getSections');
                                 $('body').css('cursor', 'wait');
                                 //console.log("semSelected: " + semSelected + "\n" + "courseValue: " + courseValue + "\n");
                                 $.ajax({

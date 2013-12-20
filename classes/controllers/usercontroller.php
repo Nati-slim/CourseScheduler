@@ -36,9 +36,13 @@ $result = array();
 $debug = DEBUGSTATUS;
 
 // get the Mixpanel class instance, replace with your
-// project token
-$mp = Mixpanel::getInstance(CP_MIXPANEL_TOKEN);
-
+// load production token
+if (!$debug){
+    $mp = Mixpanel::getInstance(CP_PROD_MIXPANEL_API_KEY);
+}else{
+    //load dev token
+    $mp = Mixpanel::getInstance(CP_DEV_MIXPANEL_API_KEY);
+}
 
 //Set up debug stuff
 //When  not debugging, log to a file!
@@ -365,6 +369,7 @@ if ($requestType === 'POST') {
                                         $result['ip'] = $ip;
                                         $result['token'] = $token; 
                                     }
+                                    $mp->track("user signup", array("userid" => $userid));
                                     echo json_encode($result);
                                 }
                             }
@@ -454,6 +459,7 @@ if ($requestType === 'POST') {
                             //set this last in case the user schedule object was found and added
                             $session->loggedInUser = serialize($user);
                             $session->userid = $user->getUserid();
+                            $mp->track("user login", array("userid" => $user->getUserid()));
                             echo json_encode($result);
                         } else {
                             $result['errorMessage'] = "Invalid credentials.";
