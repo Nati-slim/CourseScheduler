@@ -1,9 +1,9 @@
 <?php
-require_once '../classes/helpers/session.php';
-require_once '../classes/models/Course.php';
-require_once '../classes/models/Section.php';
-require_once '../classes/models/Meeting.php';
-require_once '../classes/models/UserSchedule.php';
+require_once dirname(__FILE__) . '/../classes/helpers/session.php';
+require_once dirname(__FILE__) . '/../classes/models/Course.php';
+require_once dirname(__FILE__) . '/../classes/models/Section.php';
+require_once dirname(__FILE__) . '/../classes/models/Meeting.php';
+require_once dirname(__FILE__) . '/../classes/models/UserSchedule.php';
 require_once dirname(__FILE__) . '/../../../creds/coursepicker_debug.inc';
 require_once dirname(__FILE__) . '/../../../creds/dhpath.inc';
 $session = new Session();
@@ -11,7 +11,7 @@ $errorMessage = $session->errorMessage;
 
 //Needed for serialization/deserialization
 function __autoload($class_name) {
-    include "../classes/models/". $class_name . '.php';
+    include dirname(__FILE__) . '/../classes/models/'. $class_name . '.php';
 }
 
 
@@ -40,15 +40,15 @@ function fail($pub, $pvt = ''){
 }
 
 //By loading this page, user should have an id in the url
+$requestType = $_SERVER['REQUEST_METHOD'];
 
-//$defaultSchedule = unserialize($session->scheduleObject);
+$defaultSchedule = unserialize($session->scheduleObject);
 //testing//
-$defaultSchedule = unserialize($session->scheduleObj);
-//testing//
-$sched = $session->schedule;
+$sched = $session->scheduleJSON;
 if (!isset($sched)){
 	$sched = "{}";
 }
+
 
 //Page Data
 $title = "Course Picker - Viewing Schedule";
@@ -185,7 +185,7 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
     	<div class="row" style="margin-top:25px;">
             <?php if ($defaultSchedule && $defaultSchedule instanceOf UserSchedule) { ?> 	
                 <div class="col-xs-6 col-sm-6 col-md-3" id="leftdiv">
-                    
+                    Date: <?php echo $defaultSchedule->getDateAdded(); ?>
                 </div>
 
                 <div class="col-xs-12 col-md-9 drop" id="canvasDiv">
@@ -194,6 +194,16 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
                 </div>
             <?php } else { ?>
                 <p id="infoMessage" class="alert alert-info">Looks like this isn't a valid schedule. Check the id or simply create one for yourself by visiting <a href="http://apps.janeullah.com/coursepicker" title="Course Picker">Course Picker</a> to get started.</p>
+                <?php if (strlen($errorMessage) > 0) { 
+                    echo "<script type=\"text/javascript\"> $('#errorMessage').show();";
+                    echo "setTimeout(function(){ $('#errorMessage').hide('slow',function(){}); },10000);</script>";	
+                ?>
+                <p id="errorMessage" class="alert alert-danger"><?php echo $errorMessage;?></p>
+                <?php  }else if (strlen($errorMessage) == 0){	
+                    echo "<script type=\"text/javascript\"> $('#errorMessage').hide(); </script>";
+                ?>
+							
+                <?php } ?>    
            <?php } ?>
 
 		</div><!--/row-->
@@ -208,7 +218,7 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
         </footer>
 
     </div><!--/.container-->
-    <?php require_once("../includes/dialogs.inc") ?>	
-    <?php require_once("../includes/analyticstracking.inc") ?>
+    <?php require_once dirname(__FILE__) . '/../includes/dialogs.inc'; ?>	
+    <?php require_once dirname(__FILE__) . '/../includes/analyticstracking.inc'; ?>
   </body>
 </html>

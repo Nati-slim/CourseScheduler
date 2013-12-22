@@ -184,6 +184,10 @@ class UserSchedule{
         return $this->dateAdded->format('Y-m-d H:i:s');
     }
     
+    public function setDateAdded($date){
+        $this->dateAdded = $date;
+    }
+    
 	public function getCampus(){
 		return $this->campus;
 	}

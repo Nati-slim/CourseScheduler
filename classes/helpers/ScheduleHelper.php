@@ -9,6 +9,7 @@ class ScheduleHelper
 {
     private $getschedule;
     private $saveschedule;
+    private $getschedulebyname;
     private $updateschedule;
     private $getuserschedules;
     private $getsingleschedule;
@@ -31,6 +32,7 @@ class ScheduleHelper
                 //echo $this->dbconn->host_info . "\n";
                 $this->getschedule = $this->dbconn->prepare("select * from coursepicker_schedules where scheduleID = ?");
                 $this->getsingleschedule = $this->dbconn->prepare("select * from coursepicker_schedules where scheduleID = ?");
+                $this->getschedulebyname = $this->dbconn->prepare("select * from coursepicker_schedules where shortname = ?");
                 $this->getuserschedules = $this->dbconn->prepare("select * from coursepicker_schedules where userID = ?");
                 $this->saveschedule = $this->dbconn->prepare("insert into coursepicker_schedules (id,userID,scheduleID,scheduleObject,shortname,dateAdded) values(DEFAULT,?,?,?,?,?)");
                 $this->updateschedule = $this->dbconn->prepare("update coursepicker_schedules set shortName = ?, scheduleObject = ? where scheduleID = ?");
@@ -42,6 +44,58 @@ class ScheduleHelper
         }
     }
 
+    /**
+     * Returns the schedule object inside an array with 2 items: shortname and the object
+     * otherwise it's an empty array
+     * 
+     * @param $sName the shortname
+     * 
+     * @return array shortname and scheduleObj as keys
+     * 
+     */ 
+    public function getScheduleByShortname($sName){
+        $results = array();
+        try {
+            if (!($this->getschedulebyname)) {
+                $this->errorMessage = "Prepare for getschedulebyname failed: (" . $this->dbconn->errno . ") " . $this->dbconn->error;
+            } elseif (!($this->getschedulebyname->bind_param("s",$sName))) {
+                $this->errorMessage = "Binding parameters for getschedulebyname failed: (" . $this->getschedulebyname->errno . ") " . $this->getschedulebyname->error;
+            } elseif (!($this->getschedulebyname->execute())) {
+                $this->errorMessage = "Execute failed for getschedulebyname : (" . $this->getschedulebyname->errno . ") " . $this->getschedulebyname->error;
+            } elseif (!(($stored = $this->getschedulebyname->store_result())) && $this->dbconn->errno) {
+                //switched from using fetch() to store_result() because of mysql error 2014 about commands being out of sync
+                //storeresult buffers the fetched data
+                $this->errorMessage = "Fetch failed (DB): (" . $this->dbconn->errno . ") " . $this->dbconn->error;
+                $this->errorMessage .= "Fetch for getschedulebyname failed (STMT): (" . $this->getschedulebyname->errno . ") " . $this->getschedulebyname->error;
+            } elseif (!($this->getschedulebyname->bind_result($id,$userid,$schedID,$schedObj,$shortname,$dateAdded))) {
+                $this->errorMessage = "Binding for getschedulebyname results failed: (" . $this->getschedulebyname->errno . ") " . $this->getschedulebyname->error;
+            } else {
+                if ($this->getschedulebyname->fetch() && !($this->dbconn->errno)) {
+                    $results['shortname'] = $shortname;
+                    $results['dateAdded'] = $dateAdded;
+                    $results['scheduleObj'] = $schedObj;
+                }
+                if ($this->dbconn->errno) {
+                    $this->errorMessage = "Fetch failed (DB): (" . $this->dbconn->errno . ") " . $this->dbconn->error;
+                    $this->errorMessage .= "Fetch failed (STMT): (" . $this->getschedulebyname->errno . ") " . $this->getschedulebyname->error;
+                }
+            }
+            $this->getschedulebyname->free_result();
+        } catch (Exception $e) {
+            $this->errorMessage = $e->getMessage();
+        }
+        return $results;
+    }
+    
+    /**
+     * Returns the schedule object inside an array with 2 items: shortname and the object
+     * otherwise it's an empty array
+     * 
+     * @param $scheduleID the schedule id
+     * 
+     * @return array shortname and scheduleObj as keys
+     * 
+     */ 
     public function getSingleSchedule($scheduleID){
         $results = array();
         try {
@@ -74,7 +128,6 @@ class ScheduleHelper
         } catch (Exception $e) {
             $this->errorMessage = $e->getMessage();
         }
-
         return $results;
     }
     

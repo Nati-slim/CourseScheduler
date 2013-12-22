@@ -1,11 +1,11 @@
 <?php
-$session = new Session();
 require_once dirname(__FILE__) . '/../models/Course.php';
 require_once dirname(__FILE__) . '/../models/Section.php';
 require_once dirname(__FILE__) . '/../models/Meeting.php';
-require_once dirname(__FILE__) . '/../model/UserSchedule.php';
-require_once dirname(__FILE__) . '/../helpers/CourseHelper.php';
+require_once dirname(__FILE__) . '/../models/UserSchedule.php';
+require_once dirname(__FILE__) . '/../helpers/ScheduleHelper.php';
 require_once dirname(__FILE__) . '/../helpers/session.php';
+require_once dirname(__FILE__) . '/../../includes/mixpanel/lib/Mixpanel.php';
 require_once dirname(__FILE__) . '/../../../../creds/coursepicker_debug.inc';
 require_once dirname(__FILE__) . '/../../../../creds/dhpath.inc';
 require_once dirname(__FILE__) . '/../../../../creds/mixpanel_coursepicker.inc';
@@ -107,20 +107,64 @@ function generateToken($length = 256){
     return sha1(uniqid(mt_rand(), true));
 }
 
+/**
+ * Function to check if the schedule ID is an alphanumeric string
+ * 
+ * @param string $id the id
+ * 
+ * @return string 'OK' if alphanumeric and not 'OK' otherwise
+ * 
+ */ 
+function checkToken($id){
+   if (ctype_alnum($id)) {
+        return 'OK';
+    }else{
+        return "Invalid token type";
+    }    
+}
+
 //ROUTE REQUEST
 $requestType = $_SERVER['REQUEST_METHOD'];
 if ($requestType === 'POST') {
-	$result['errorMessage'] = "Not yet implemented";
+	$result['errorMessage'] = "POST requests not honored";
     $session->errorMessage = $result['errorMessage'];
 	echo $res;
 }else if ($requestType === 'GET'){
-	$request = getGet('id');
-    if ($request){
-        
+	$name = getGet('id');
+    if ($name){
+        $test = checkToken($name);
+        if (strcmp($test, 'OK') == 0){
+            $db = new ScheduleHelper();
+            $res = $db->getScheduleByShortname($name);
+            if (count($res) == 3){
+                $shortName = $res['shortname'];
+                $date = $res['dateAdded'];
+                $scheduleObj = unserialize($res['scheduleObj']);
+                if ($scheduleObj and $scheduleObj instanceOf UserSchedule){
+                    $dateAdded = DateTime::createFromFormat('Y-m-d H:i:s',$date);
+                    $scheduleObj->setDateAdded($dateAdded);
+                    $result['errorMessage'] = "";
+                    $session->errorMessage = $result['errorMessage'];
+                    $session->scheduleObject = serialize($scheduleObj);
+                    $session->scheduleJSON = $scheduleObj->to_json();
+                }else{
+                    $result['errorMessage'] = "Failed to properly deserialize schedule object.";
+                    $session->errorMessage = $result['errorMessage'];
+                }
+            }else{
+                $result['errorMessage'] = fail("Failed to retrieve the object from the database",$db->errorMessage);
+                $session->errorMessage = $result['errorMessage'];
+            }
+        }else{
+            $result['errorMessage'] = $test;
+            $session->errorMessage = $result['errorMessage'];
+        }
     }else{
-        $result['errorMessage'] = "Missing proper parameter";
+        $result['errorMessage'] = "Improper parameter supplied";
         $session->errorMessage = $result['errorMessage'];
     }
+    //print_r($session->scheduleJSON);
+    //print_r($res);
 	header("Location: http://apps.janeullah.com/coursepicker/share/");
 }else{
 	$result['errorMessage'] = "Invalid request type";

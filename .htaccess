@@ -7,6 +7,12 @@ Header unset ETag
 FileETag None
 ExpiresActive On
 
+<IfModule mod_rewrite.c> 
+    #Rewriting url for sharing
+    RewriteEngine On
+    RewriteRule ^(share)/(id=.*) http://apps.janeullah.com/coursepicker/classes/controllers/sharingcontroller.php?$2
+</IfModule>
+
 <IfModule mod_deflate.c>
     # Enable Gzip
     SetOutputFilter DEFLATE
