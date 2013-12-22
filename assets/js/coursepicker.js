@@ -1,4 +1,5 @@
 //Initialized variables
+var DIVISOR = 60;
 var colors = [ "#D9EDF7", "#0D63B6","#CC333F","#317A22","#E5924C","#C34B5F","#4682B4","#228B22","#EE3B3B","#6E7B8B","#7584B5" ];
 var daysOfWeek = [ "Monday", "Tuesday", "Wednesday", "Thursday", "Friday" ];
 var timesOfDay = [ "8:00am", "9:00am", "10:00am", "11:00am", "12:00pm",
@@ -152,111 +153,115 @@ function parseSection(section){
 function getYCoordinate(startHour,startMinute,dayofWeek){
     var top = 30
 	if (startHour == 8){
-		return top;
+        if (startMinute == 0){
+            return top;
+        }else{
+            var extra = startMinute * 48/DIVISOR;
+            return top + parseInt(extra);
+        }
 	}else if (startHour == 9){
         if (startMinute == 0){
             return CELL_HEIGHT + top;
         }else{
-            var extra = startMinute * 48/50;
+            var extra = startMinute * 48/DIVISOR;
             return CELL_HEIGHT + top + parseInt(extra);
-        }
-		
+        }		
 	}else if (startHour == 10){        
         if (startMinute == 0){
             return (CELL_HEIGHT*2) + top;
         }else{
-            var extra = startMinute * 48/50;
+            var extra = startMinute * 48/DIVISOR;
             return (CELL_HEIGHT*2) + top + parseInt(extra);
         } 
 	}else if (startHour == 11){
         if (startMinute == 0){
             return (CELL_HEIGHT*3) + top;
         }else{
-            var extra = startMinute * 48/50;
+            var extra = startMinute * 48/DIVISOR;
             return (CELL_HEIGHT*3) + top + parseInt(extra);
         } 
 	}else if (startHour == 12){
         if (startMinute == 0){
             return (CELL_HEIGHT*4) + top;
         }else{
-            var extra = startMinute * 48/50;
+            var extra = startMinute * 48/DIVISOR;
             return (CELL_HEIGHT*4) + top + parseInt(extra);
         } 
 	}else if (startHour == 13){
         if (startMinute == 0){
             return (CELL_HEIGHT*5) + top;
         }else{
-            var extra = startMinute * 48/50;
+            var extra = startMinute * 48/DIVISOR;
             return (CELL_HEIGHT*5) + top + parseInt(extra);
         }  
 	}else if (startHour == 14){
         if (startMinute == 0){
             return (CELL_HEIGHT*6) + top;
         }else{
-            var extra = startMinute * 48/50;
+            var extra = startMinute * 48/DIVISOR;
             return (CELL_HEIGHT*6) + top + parseInt(extra);
         }        
 	}else if (startHour == 15){
         if (startMinute == 0){
             return (CELL_HEIGHT*7) + top;
         }else{
-            var extra = startMinute * 48/50;
+            var extra = startMinute * 48/DIVISOR;
             return (CELL_HEIGHT*7) + top + parseInt(extra);
         } 
 	}else if (startHour == 16){
         if (startMinute == 0){
             return (CELL_HEIGHT*8) + top;
         }else{
-            var extra = startMinute * 48/50;
+            var extra = startMinute * 48/DIVISOR;
             return (CELL_HEIGHT*8) + top + parseInt(extra);
         } 
 	}else if (startHour == 17){
         if (startMinute == 0){
             return (CELL_HEIGHT*9) + top;
         }else{
-            var extra = startMinute * 48/50;
+            var extra = startMinute * 48/DIVISOR;
             return (CELL_HEIGHT*9) + top + parseInt(extra);
         } 
 	}else if (startHour == 18){
         if (startMinute == 0){
             return (CELL_HEIGHT*10) + top;
         }else{
-            var extra = startMinute * 48/50;
+            var extra = startMinute * 48/DIVISOR;
             return (CELL_HEIGHT*10) + top + parseInt(extra);
         } 
 	}else if (startHour == 19){
         if (startMinute == 0){
             return (CELL_HEIGHT*11) + top;
         }else{
-            var extra = startMinute * 48/50;
+            var extra = startMinute * 48/DIVISOR;
             return (CELL_HEIGHT*11) + top + parseInt(extra);
         } 
 	}else if (startHour == 20){
         if (startMinute == 0){
             return (CELL_HEIGHT*12) + top;
         }else{
-            var extra = startMinute * 48/50;
+            var extra = startMinute * 48/DIVISOR;
             return (CELL_HEIGHT*12) + top + parseInt(extra);
         } 
 	}else if (startHour == 21){
         if (startMinute == 0){
             return (CELL_HEIGHT*13) + top;
         }else{
-            var extra = startMinute * 48/50;
+            var extra = startMinute * 48/DIVISOR;
             return (CELL_HEIGHT*13) + top + parseInt(extra);
         } 
 	}else if (startHour == 22){
         if (startMinute == 0){
             return (CELL_HEIGHT*14) + top;
         }else{
-            var extra = startMinute * 48/50;
+            var extra = startMinute * 48/DIVISOR;
             return (CELL_HEIGHT*14) + top + parseInt(extra);
         } 
 	}else{
         if (startMinute == 0){
             return (CELL_HEIGHT*15) + top;
         }else{
-            var extra = startMinute * 48/50;
+            var extra = startMinute * 48/DIVISOR;
             return (CELL_HEIGHT*15) + top + parseInt(extra);
         } 
     }
@@ -268,7 +273,7 @@ function getYCoordinate(startHour,startMinute,dayofWeek){
  */ 
 function getRectangleHeight(startHour,startMinute,endHour,stopMinute){
     var hourDiff = endHour - startHour;
-    var minDiff = startMinute;
+    var minDiff = stopMinute - startMinute;
     
     if (endHour > startHour){
         hourDiff = endHour - startHour;
@@ -281,7 +286,7 @@ function getRectangleHeight(startHour,startMinute,endHour,stopMinute){
     }
     //translate minDiff into pixel differences
     //cell height = 48, 60 mins in 1 hr
-    return (CELL_HEIGHT * hourDiff) + (minDiff * 48/50);
+    return (CELL_HEIGHT * hourDiff) + (minDiff * 48/DIVISOR);
 }
 
 /**
@@ -459,6 +464,7 @@ function onMove(){
                 });
             }else{
                 console.log("Declined.");
+                setTimeout(function () { location.reload(true); }, 200);
             }
         }
     });

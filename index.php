@@ -186,8 +186,6 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
 		<script src="assets/js/register.js" type="text/javascript"></script>
         <!-- Pamela Fox's lscache library https://github.com/pamelafox/lscache-->
 		<script src="assets/js/lscache.min.js" type="text/javascript"></script>
-        <!-- http://dte-project.googlecode.com/svn/trunk/jquery-draggable/ | http://grantm.github.io/jquery-udraggable/#examples-->
-        <script src="assets/js/draggable.min.js" type="text/javascript"></script>
 		<!--http://stackoverflow.com/questions/2010892/storing-objects-in-html5-localstorage -->
         <script type="text/javascript">
 
@@ -478,7 +476,7 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
 
         <footer>
             <p>&copy; <a href="http://janeullah.com" title="Jane Ullah">Jane Ullah 2014</a></p>
-            <img src="assets/img/trash.jpg" style="visibility:hidden;"  width="38" height="30" alt="Drag a rectangle over to the trashcan to delete the section from your schedule." id="trashcan">
+            <img src="assets/img/trash.jpg" style="visibility:hidden;"  width="38" height="30" alt="Drag a rectangle over to the trashcan to delete the section from your schedule." id="trashcan" />
         </footer>
 
     </div><!--/.container-->

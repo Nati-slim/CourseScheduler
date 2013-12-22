@@ -182,8 +182,9 @@ function reconstructSchedule($arr)
 }
 
 function validateShortname($name){
-    if (!preg_match("/^[a-z]$/i", $name)) {
-        return "Please enter only letters from the English alphabet.";
+    //if (preg_match("/^(?![- 0-9])([a-zA-Z0-9-])+{1,60}$/D", $name)) {
+    if (!preg_match("/^[0-9a-zA-Z]{1,80}$/D", $name)) {
+        return "Please enter only letters/numbers from the English alphabet.Must be at least 1 character.";        
     }else{
         return 'OK';
     }

@@ -135,7 +135,7 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
 		<!-- Include all compiled plugins (below), or include individual files as needed -->
         <?php if ($defaultSchedule && $defaultSchedule instanceOf UserSchedule) { ?> 	
             <script src="http://cdnjs.cloudflare.com/ajax/libs/fabric.js/1.4.0/fabric.min.js" type="text/javascript"></script>  
-            <script src="../assets/js/coursepicker.js" type="text/javascript"></script>
+            <script src="../assets/js/share.js" type="text/javascript"></script>
             <script src="../assets/js/schedule.js" type="text/javascript"></script>
         <?php } ?>
 		<script src="../assets/js/bootstrap.min.js" type="text/javascript"></script>	
@@ -191,8 +191,16 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
     	<div class="row" style="margin-top:25px;">
             <?php if ($defaultSchedule && $defaultSchedule instanceOf UserSchedule) { ?> 	
                 <div class="col-xs-6 col-sm-6 col-md-3" id="leftdiv">
-                    Last Saved: <?php echo $defaultSchedule->getDateAdded(); ?><br/>
-                    Semester/Campus: <?php echo $semesters[$defaultSchedule->getSemester() . "-" . $defaultSchedule->getCampus()]; ?><br/>
+                    
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                          <h3 class="panel-title">Schedule Details</h3>
+                        </div>
+                        <div class="panel-body">
+                            <strong>Last Saved</strong>: <?php echo $defaultSchedule->getDateAdded(); ?><br/>
+                            <strong>Semester/Campus</strong>: <?php echo $semesters[$defaultSchedule->getSemester() . "-" . $defaultSchedule->getCampus()]; ?><br/>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="col-xs-12 col-md-9 drop" id="canvasDiv">
@@ -220,8 +228,7 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
 
         <footer>
             <p>&copy; <a href="http://janeullah.com" title="Jane Ullah">Jane Ullah 2014</a></p>
-            <img src="assets/img/trash.jpg" style="visibility:hidden;"  width="38" height="30" alt="Drag a rectangle over to the trashcan to delete the section from your schedule." id="trashcan">
-        
+            <img src="assets/img/trash.jpg" style="visibility:hidden;"  width="38" height="30" alt="Drag a rectangle over to the trashcan to delete the section from your schedule." id="trashcan" />
         </footer>
 
     </div><!--/.container-->
