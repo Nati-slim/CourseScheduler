@@ -1,7 +1,7 @@
 function logout(){
 	$.ajax({
 		type: "POST",
-		url: 'classes/controllers/usercontroller.php',
+		url: 'http://apps.janeullah.com/coursepicker/classes/controllers/usercontroller.php',
 		data: {action:"logout"},
 		dataType: "json"
 	})
@@ -23,7 +23,7 @@ $(function(){
 		e.preventDefault();
 		$.ajax({
 			type: "POST",
-			url: 'classes/controllers/usercontroller.php',
+			url: 'http://apps.janeullah.com/coursepicker/classes/controllers/usercontroller.php',
 			data: $(this).serialize(),
 			dataType: "json"
 		})
@@ -67,7 +67,7 @@ $(function(){
 		e.preventDefault();
 		$.ajax({
 			type: "POST",
-			url: 'classes/controllers/usercontroller.php',
+			url: 'http://apps.janeullah.com/coursepicker/classes/controllers/usercontroller.php',
 			data: $(this).serialize(),
 			dataType: "json"
 		})
@@ -95,7 +95,7 @@ $(function(){
 		})
 		.fail(function(msg){
 			$('body').css('cursor', 'auto');
-			$('#loginError').empty().append("Error: " + msg).show();
+			$('#loginError').empty().append(msg.responseText).show();
 			$('#loginSuccess').empty().hide();
 			console.log(msg.responseText);
 		});
