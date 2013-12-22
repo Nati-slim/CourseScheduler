@@ -181,6 +181,14 @@ function reconstructSchedule($arr)
     return $userschedule;
 }
 
+function validateShortname($name){
+    if (!preg_match("/^[a-z]$/i", $name)) {
+        return "Please enter only letters from the English alphabet.";
+    }else{
+        return 'OK';
+    }
+}
+
 /**
  * Method to update the saved user schedule object to the database
  * user must be logged in i.e. signed up to use this feature
@@ -566,28 +574,41 @@ if ($requestType === 'POST') {
             if ($user){
                 if (strcmp($scheduleID, $selectedSchedule) == 0){
                     $found = false;
-                    $res = saveSchedule($userid,$user,$defaultSchedule,$scheduleID,$shortName1,$shortName2);
-                    if ($res['shortName']){
-                        $defaultSchedule->setSaved(true);
-                        $defaultSchedule->setShortName($shortName1);
-                        $session->schedule = $defaultSchedule->to_json();
-                        $session->scheduleObj = serialize($defaultSchedule);
-                        
-                        //update schedule insider user object
-                        foreach($user->getSchedules() as $userschedule){
-                            if (strcmp($scheduleID, $userschedule->getScheduleID()) == 0){
-                                $found = true;
-                                //Should simply replace the same scheduleID with a diff. object
-                                $user->addSchedule($defaultSchedule);
-                                //update the user object in session.
-                                $session->loggedInUser = serialize($user);
-                                $res['userMsg'] = "User object updated.";
-                                break;
+                    if ($shortName1 === $shortName2){
+                        $test = validateShortname($shortName1);
+                        if ($test === 'OK'){
+                            $res = saveSchedule($userid,$user,$defaultSchedule,$scheduleID,$shortName1,$shortName2);
+                            if ($res['shortName']){
+                                $defaultSchedule->setSaved(true);
+                                $defaultSchedule->setShortName($shortName1);
+                                $session->schedule = $defaultSchedule->to_json();
+                                $session->scheduleObj = serialize($defaultSchedule);
+                                
+                                //update schedule insider user object
+                                foreach($user->getSchedules() as $userschedule){
+                                    if (strcmp($scheduleID, $userschedule->getScheduleID()) == 0){
+                                        $found = true;
+                                        //Should simply replace the same scheduleID with a diff. object
+                                        $user->addSchedule($defaultSchedule);
+                                        //update the user object in session.
+                                        $session->loggedInUser = serialize($user);
+                                        $res['userMsg'] = "User object updated.";
+                                        break;
+                                    }
+                                }
                             }
+                            $mp->track("save schedule to database", array("saved_schedule_id" => $scheduleID));
+                            echo json_encode($res);  
+                        }else{
+                            $result['errorMessage'] = $test;
+                            $session->errorMessage = $result['errorMessage'];
+                            echo json_encode($result);
                         }
+                    }else{
+                        $result['errorMessage'] = "Please make sure the 2 name fields match.";
+                        $session->errorMessage = $result['errorMessage'];
+                        echo json_encode($result);
                     }
-                    $mp->track("save schedule to database", array("saved_schedule_id" => $scheduleID));
-                    echo json_encode($res);
                 }else{
                     $result['errorMessage'] = fail("Oops! You forgot to select a schedule to save.","Mismatch between selected schedule and the found schedule ID");
                     $session->errorMessage = $result['errorMessage'];
@@ -614,37 +635,46 @@ if ($requestType === 'POST') {
             if ($user){
                 if (strcmp($scheduleID, $selectedSchedule) == 0){
                     $found = false;
-                    $res = updateSchedule($userid,$user,$defaultSchedule,$scheduleID,$savedShortName);
-                    //if no error, update schedule in user object
-                    if (strlen($res['errorMessage']) == 0){
-                        $defaultSchedule->setSaved(true);
-                        $defaultSchedule->setShortName($savedShortName);
-                        $session->schedule = $defaultSchedule->to_json();
-                        $session->scheduleObj = serialize($defaultSchedule);
-                        
-                        //update schedule insider user object
-                        foreach($user->getSchedules() as $userschedule){
-                            if (strcmp($scheduleID, $userschedule->getScheduleID()) == 0){
-                                $found = true;
-                                //Should simply replace the same scheduleID with a diff. object
-                                $user->addSchedule($defaultSchedule);
-                                //update the user object in session.
-                                $session->loggedInUser = serialize($user);
-                                $res['userMsg'] = "User object updated.";
-                                break;
+                    
+                    //check that the name is still just alphabets
+                    $test = validateShortname($savedShortName);
+                    if ($test === 'OK'){
+                        $res = updateSchedule($userid,$user,$defaultSchedule,$scheduleID,$savedShortName);
+                        //if no error, update schedule in user object
+                        if (strlen($res['errorMessage']) == 0){
+                            $defaultSchedule->setSaved(true);
+                            $defaultSchedule->setShortName($savedShortName);
+                            $session->schedule = $defaultSchedule->to_json();
+                            $session->scheduleObj = serialize($defaultSchedule);
+                            
+                            //update schedule insider user object
+                            foreach($user->getSchedules() as $userschedule){
+                                if (strcmp($scheduleID, $userschedule->getScheduleID()) == 0){
+                                    $found = true;
+                                    //Should simply replace the same scheduleID with a diff. object
+                                    $user->addSchedule($defaultSchedule);
+                                    //update the user object in session.
+                                    $session->loggedInUser = serialize($user);
+                                    $res['userMsg'] = "User object updated.";
+                                    break;
+                                }
                             }
-                        }
-                        
-                        if ($found){
-                            $mp->track("update schedule in database", array("saved_schedule_id" => $scheduleID));
-                            echo json_encode($res);
-                        }else{
-                            $result['errorMessage'] = "Problem updating user object.";
-                            $session->errorMessage = $result['errorMessage'];
+                            
+                            if ($found){
+                                $mp->track("update schedule in database", array("saved_schedule_id" => $scheduleID));
+                                echo json_encode($res);
+                            }else{
+                                $result['errorMessage'] = "Problem updating user object.";
+                                $session->errorMessage = $result['errorMessage'];
+                                echo json_encode($result);
+                            }
+                        }else{                        
+                            $result['errorMessage'] = $res['errorMessage'];
+                            $session->errorMessage = $res['errorMessage'];
                             echo json_encode($result);
                         }
-                    }else{                        
-                        $result['errorMessage'] = $res['errorMessage'];
+                    }else{
+                        $result['errorMessage'] = $test;
                         $session->errorMessage = $res['errorMessage'];
                         echo json_encode($result);
                     }
