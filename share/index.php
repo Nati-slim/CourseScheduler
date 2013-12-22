@@ -38,6 +38,15 @@ function fail($pub, $pvt = ''){
 	//exit("An error occurred ($msg).\n");
 	return $msg;
 }
+$semesters = array();
+$semesters['201405-UNIV'] = '(Athens) Summer 2014';
+$semesters['201402-UNIV'] = '(Athens) Spring 2014';
+$semesters['201308-UNIV'] = '(Athens) Fall 2013';
+$semesters['201305-UNIV'] = '(Athens) Summer 2013';
+$semesters['201405-GWIN'] = '(Gwinnett) Summer 2014';
+$semesters['201402-GWIN'] = '(Gwinnett) Spring 2014';
+$semesters['201308-GWIN'] = '(Gwinnett) Fall 2013';
+$semesters['201305-GWIN'] = '(Gwinnett) Summer 2013';
 
 //By loading this page, user should have an id in the url
 $requestType = $_SERVER['REQUEST_METHOD'];
@@ -56,9 +65,6 @@ $author = "Jane Ullah";
 $shortdesc = "A course scheduling app for the University of Georgia (UGA) Computer Science students";
 $asseturl = "http://apps.janeullah.com/coursepicker/assets";
 $officialurl = "http://apps.janeullah.com/coursepicker/";
-$captchaurl = "../../creds/captcha.inc";
-$recaptchaurl = "../../auth/recaptcha/recaptchalib.php";
-$emailurl = "classes/controllers/auth.php";
 $oglocale = "en_US";
 $ogtitle = "Course Picker by Jane Ullah";
 $creator = "@janetalkstech";
@@ -185,7 +191,8 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
     	<div class="row" style="margin-top:25px;">
             <?php if ($defaultSchedule && $defaultSchedule instanceOf UserSchedule) { ?> 	
                 <div class="col-xs-6 col-sm-6 col-md-3" id="leftdiv">
-                    Date: <?php echo $defaultSchedule->getDateAdded(); ?>
+                    Last Saved: <?php echo $defaultSchedule->getDateAdded(); ?><br/>
+                    Semester/Campus: <?php echo $semesters[$defaultSchedule->getSemester() . "-" . $defaultSchedule->getCampus()]; ?><br/>
                 </div>
 
                 <div class="col-xs-12 col-md-9 drop" id="canvasDiv">

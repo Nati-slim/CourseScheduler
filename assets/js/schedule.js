@@ -17,12 +17,12 @@ $(function(){
 			$('body').css('cursor', 'wait');
 			$.ajax({
 				type: "POST",
-				url: 'classes/controllers/schedulecontroller.php',
+				url: 'http://apps.janeullah.com/coursepicker/classes/controllers/schedulecontroller.php',
 				data: { action : "downloadSchedule", dataUrl : imgUrl}
 			})
 			.done(function(msg){
 				$('body').css('cursor', 'auto');
-				//console.log(msg);
+				console.log(msg);
 				var msgObj = JSON.parse(msg);
 				//console.log(msgObj);
 				if (msgObj.imgToken.length > 0){
@@ -59,7 +59,7 @@ $(function(){
 		$('body').css('cursor', 'wait');
 		$.ajax({
 			type: "POST",
-			url: 'classes/controllers/schedulecontroller.php',
+			url: 'http://apps.janeullah.com/coursepicker/classes/controllers/schedulecontroller.php',
 			data: { action : "switchSchedule", scheduleID : scheduleSelectedID, optionChosen : optionText},
 			dataType: "json"
 		})
@@ -102,7 +102,7 @@ $(function(){
             $('body').css('cursor', 'wait');
             $.ajax({
                 type: "POST",
-                url: 'classes/controllers/schedulecontroller.php',
+                url: 'http://apps.janeullah.com/coursepicker/classes/controllers/schedulecontroller.php',
                 data: $(this).serialize(),
                 dataType: "json"
             })
@@ -142,7 +142,7 @@ function updateSchedule(){
     $('body').css('cursor', 'wait');
     $.ajax({
         type: "POST",
-        url: 'classes/controllers/schedulecontroller.php',
+        url: 'http://apps.janeullah.com/coursepicker/classes/controllers/schedulecontroller.php',
         data: { action:"updateSchedule",scheduleID : selectedScheduleID, savedShortName: shortName},
         dataType: "json"
     })

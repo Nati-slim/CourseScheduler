@@ -507,7 +507,21 @@ if ($requestType === 'POST') {
             $userid = $session->userid;
             if (isset($userid)) {
                 $userschedule = unserialize($session->scheduleObj);
-                if ($userid == $userschedule->getUserId()) {
+                $ref = $_SERVER['HTTP_REFERER'];
+                if (!$userschedule){
+                    //check for $session->scheduleObject
+                    $userschedule = unserialize($session->scheduleObject);
+                }
+                //check referer. let users coming from share/ download stuff too
+                //maybe investigate the removal of this check completely
+                //http://stackoverflow.com/questions/14854117/php-allow-access-to-specific-referrer-url-page-only
+                
+                //check if there are sections in the course
+                if (count($userschedule->getSchedule()) == 0){
+                    $result['imgToken'] = "";
+                    $result['errorMessage'] = "Please add at least 1 course to your schedule.";
+                    $session->errorMessage = $result['errorMessage'];
+                }elseif ($userid == $userschedule->getUserId() || ($ref === 'http://apps.janeullah.com/share/')) {
                     $imgData = base64_decode($imgDataUrl);
                     $token = bin2hex(openssl_random_pseudo_bytes(25));
                     $imgFile = $_SERVER["DOCUMENT_ROOT"]."/coursepicker/assets/schedules/schedule_" . $token . ".png";
@@ -594,7 +608,7 @@ if ($requestType === 'POST') {
         $user = unserialize($session->loggedInUser);
         $defaultSchedule = unserialize($session->scheduleObj);
         $scheduleID = getPost('scheduleID');
-        $selectedSchedule = $session->selectedScheduleID;
+        $selectedSchedule =  $defaultSchedule->getScheduleID();
         $savedShortName = getPost('savedShortName');     
         if ($userid){
             if ($user){

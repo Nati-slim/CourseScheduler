@@ -184,6 +184,10 @@ class UserSchedule{
         return $this->dateAdded->format('Y-m-d H:i:s');
     }
     
+    /**
+     * 
+     * @param $date DateTime object
+     */ 
     public function setDateAdded($date){
         $this->dateAdded = $date;
     }
