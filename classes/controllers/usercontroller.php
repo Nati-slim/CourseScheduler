@@ -479,18 +479,6 @@ if ($requestType === 'POST') {
             }
         }
     } elseif (strcmp($action, "logout") == 0) {
-        /*$session->loggedIn = false;
-        unset($session->id);
-        unset($session->loggedInUser);
-        unset($session->userid);
-        unset($session->username);
-        unset($session->email);
-        unset($session->userid);
-        unset($session->gravatar_url);
-        unset($session->scheduleObj);
-        unset($session->schedule);
-        unset($session->defaultSchedule);
-        unset($session->init);*/
         $session->unsetAll();
         $result['errorMessage'] = "";
         echo json_encode($result);
@@ -505,21 +493,3 @@ if ($requestType === 'POST') {
     echo json_encode($result);
 }
 
-/**
- * Call this to clear session variables
- *
- * @return void
- */
-function clearVariables()
-{
-    unset($session->id);
-    unset($session->loggedInUser);
-    unset($session->userid);
-    unset($session->username);
-    unset($session->email);
-    unset($session->userid);
-    unset($session->gravatar_url);
-    unset($session->scheduleObj);
-    unset($session->schedule);
-    unset($session->init);
-}

@@ -1,9 +1,9 @@
 <?php
-require_once dirname(__FILE__) . '/classes/helpers/session.php';
-require_once dirname(__FILE__) . '/classes/models/Course.php';
-require_once dirname(__FILE__) . '/classes/models/Section.php';
-require_once dirname(__FILE__) . '/classes/models/Meeting.php';
-require_once dirname(__FILE__) . '/classes/models/UserSchedule.php';
+require_once 'classes/helpers/session.php';
+require_once 'classes/models/Course.php';
+require_once 'classes/models/Section.php';
+require_once 'classes/models/Meeting.php';
+require_once 'classes/models/UserSchedule.php';
 require_once dirname(__FILE__) . '/../../creds/coursepicker_debug.inc';
 require_once dirname(__FILE__) . '/../../creds/dhpath.inc';
 $session = new Session();

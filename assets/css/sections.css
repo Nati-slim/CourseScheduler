@@ -10,7 +10,7 @@ span.underline{
 
 .plus-sign{
 	font-size: 140%;
-	color: #004A61;
+	color: #428BCA;
     /* http://stackoverflow.com/questions/6008324/fade-effect-on-link-hover
      * First we need to help some browsers along for this to work.
      * Just because a vendor prefix is there, doesn't mean it will
@@ -24,6 +24,17 @@ span.underline{
       transition:.5s;    
 }
 
+div.draggable{
+    width: inherit;
+    height: 50px;
+    border: 1px dotted #444444;
+    margin-bottom:3px;
+    padding:2px;
+    -moz-border-radius: 8px;
+    -webkit-border-radius: 8px;
+    -khtml-border-radius: 8px;
+    border-radius: 8px;
+}
 
 div.individualSection{
 	margin-top: 3px;
@@ -91,11 +102,11 @@ span.cancelled{
 }
 
 span.row2.right{
-	float:left;
+	float:right;
 }
 
 span.row2.left{
-	float:right;
+	float:left;
 }
 
 span.meetingTimes{
@@ -103,7 +114,26 @@ span.meetingTimes{
 	width:100px;
 	height: 100%;
 	margin: 0 auto;
+}
 
+span.sectionDay{
+	text-align:center;
+	padding:2px;	
+	margin:2px;
+    color:#444444;
+	border: 2px solid #428BCA;
+    -moz-border-radius: 20px;
+    -webkit-border-radius: 20px;
+    -khtml-border-radius: 20px;
+    border-radius: 20px;
+	letter-spacing:2px;
+	/*text-shadow: 1px 0 0 #000, -1px 0 0 #000, 0 1px 0 #000, 0 -1px 0 #000, 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;*/
+}
+
+span.sectionDay:hover{
+	background-color:#428BCA;
+	color:#F0F0F0;
+	font-weight:bold;
 }
 
 span.day{
@@ -136,11 +166,11 @@ span.day{
 }
 
 .rounded-corners {
-     -moz-border-radius: 20px;
+    -moz-border-radius: 20px;
     -webkit-border-radius: 20px;
     -khtml-border-radius: 20px;
-    behavior: url(http://apps.janeullah.com/assets/css/border-radius.htc);
     border-radius: 20px;
+    behavior: url(http://apps.janeullah.com/assets/css/border-radius.htc);
 }
 
 #removeAllButton{
@@ -215,7 +245,6 @@ span.day{
 
 .glyphicon-plus:hover{
     color:#FC4349;
-    font-size:22px;
 }
 
 

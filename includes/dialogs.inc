@@ -152,8 +152,8 @@
 							  </div>
 							  <div class="form-group">
 								<?php 								
-									require_once("includes/recaptcha/recaptchalib.php");
-									require_once("../../creds/captcha.inc");
+									require_once dirname(__FILE__) . '/recaptcha/recaptchalib.php';
+									require_once dirname(__FILE__) . '/../../../creds/captcha.inc';
 									$publickey = CP_PUBLIC_KEY;
 									echo recaptcha_get_html($publickey);
 								?>

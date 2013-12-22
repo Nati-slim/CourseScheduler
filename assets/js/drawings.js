@@ -1,7 +1,7 @@
 var selectOptions;
 		$(function(){
             //toggle popover for the search box
-            $('#searchBox').popover();
+            $('#manualEntry').popover();
             
             //function to clear local storage and change the semester selection
 			$('#semesterSelection').change(function(){
@@ -9,6 +9,7 @@ var selectOptions;
                 ga('send', 'Change Semester', 'User clicked', 'Dropdown box', $(this).val());
             	$('#semesterSelectionForm').submit();
 			});	
+            
 			
 			//Add schedule
 			try{
@@ -129,13 +130,6 @@ var selectOptions;
             var av = $('#Available').is(":checked");
             var full = $('#Full').is(":checked");
             var can = $('#Cancelled').is(":checked");
-            /*var m = $('#Monday').is(":checked");
-            var t = $('#Tuesday').is(":checked");
-            var w = $('#Wednesday').is(":checked");
-            var r = $('#Thursday').is(":checked");
-            var f = $('#Friday').is(":checked");
-            * , m : m,t : t,w : w,r : r,f : f
-            * */
             $('body').css('cursor', 'wait');
             $.ajax({
                 type: "POST",
@@ -177,13 +171,16 @@ var selectOptions;
 				var sectionDiv;
 				var allSections = "";
 				sListings = data;
-				var heading = "<span id=\"sectionFoundHeader\" class=\"intro\"><span id=\"collapseColumn\" title=\"Collapse this column\" class=\"glyphicon glyphicon-arrow-up pull-left\"></span>Sections Found:<span class=\"badge pull-right notification\">" + size + "</span><br/></span>";
+				var heading = "<span id=\"sectionFoundHeader\" class=\"intro\"><span id=\"collapseColumn\" ";
+                heading +=  "title=\"Collapse this column\" class=\"glyphicon glyphicon-arrow-up pull-left\"></span>";
+                heading += $('#courseEntry').val() + " sections:";
+                heading += "<span class=\"badge pull-right notification\">" + size + "</span><br/></span>";
 				/*Insert the head before the according div*/ 
 				$('#sectionsFound').before(heading);
 				//console.log(data);
 				Object.keys(data).forEach(function(key){
 					var section = data[key];
-					sectionDiv = generateDiv(counter,section);
+					sectionDiv = insertDiv(counter,section);//generateDiv(counter,section);
 					allSections += sectionDiv;
 					counter++;
 				});
@@ -211,12 +208,14 @@ var selectOptions;
 			}
 		}
 		
+        //Hide the column of listings when clicked
 		function collapseDiv(){
 			$('#collapseColumn').removeClass("glyphicon glyphicon-arrow-down pull-left").addClass("glyphicon glyphicon-arrow-up pull-left");
 			$('#collapseColumn').attr("title","Collapse this column");
 			$('#sectionsFound').show("slow",function(){});
 		}
 		
+        //Expand the column of listings when clicked
 		function expandDiv(){
 			$('#collapseColumn').removeClass("glyphicon glyphicon-arrow-up pull-left").addClass("glyphicon glyphicon-arrow-down pull-left");
 			$('#collapseColumn').attr("title","Expand this column");
@@ -279,61 +278,25 @@ var selectOptions;
 			return result;
 		}
 
-		/*
-		 Generate divs for the accordion
-		*/
-		function generateDiv(index,section){
-			var msg = "";
-			msg += "<div class=\"panel panel-default drag\">";
-			if (section.status === 'Available'){
-				msg += "<div class=\"panel-heading available\">";
-			}else{
-				msg += "<div class=\"panel-heading notavailable\">";
-			}
-			msg += "<h4 class=\"panel-title\">";
-			msg += "<a data-toggle=\"collapse\" data-parent=\"#accordion\" href=\"#collapse" + index+ "\">";
-          	msg += section.courseName + " # " + section.callNumber + "</a></h4></div>";
-			if (index > 0){
-				msg += "<div id=\"collapse" + index + "\" class=\"panel-collapse collapse\">";
-			}else{
-				//expand just the first section 
-				msg += "<div id=\"collapse" + index + "\" class=\"panel-collapse collapse in\">";
-			}
-      		msg += "<div class=\"panel-body\" style=\"padding:4px;\">";
-      		msg += "<span class=\"row1 right\">" + section.lecturer + "</span>";
-      		msg += "<span class=\"row1 left\">";
-      		//link the class url
-			var campus = $('#infoMessage').text();
-			if (campus.indexOf("Athens") > 0){
-				msg += "<a href=\"http://bulletin.uga.edu/Link.aspx?cid=" + section.coursePrefix + "" + section.courseNumber;
-				msg += "\" title=\"UGA Bulletin Listing for " + section.courseName + "\">";
-				msg += section.coursePrefix + "-" + section.courseNumber + "</a></span><br/>";
-			}else{
-				msg += section.coursePrefix + "-" + section.courseNumber + "</span><br/>";
-			}
-			//change color depending on availability
-			if (section.status == "Available"){
-				msg += "<span class=\"row1 right available\">" + section.status + "</span>";
-			}else if (section.status == "Full"){
-				msg += "<span class=\"row1 right full\">" + section.status + "</span>";
-			}else{
-				msg += "<span class=\"row1 right cancelled\">" + section.status + "</span>";
-			}
-			//Slots opens
-			msg += "<span class=\"row1 left\">" + section.casTaken + "/" + section.casRequired + "</span><br/>";
-			msg += "<span class=\"row1 right\">" +  getBuildingName(section.buildingNumber) + "</span>";
-			msg += "<span class=\"row1 left\">" + section.roomNumber +  "</span><br/>";
-			var mtgs = section.meetings;
-			Object.keys(mtgs).forEach(function(key){
-				msg += key + " : " + mtgs[key] + "<br/>";
-			});
+        function insertDiv(index,section){
+            var msg = "";
+            msg += "<div class=\"draggable " + section.status + "\"";
+            msg += "<span class=\"row1 right\">" + section.lecturer + "</span>";
+            msg += "<span class=\"row1 left\">" + section.casTaken + "/" + section.casRequired + "</span><br/>";
+            msg += "<span class=\"row2 left\">";
+            var mtgs = section.meetings;
+            Object.keys(mtgs).forEach(function(key){
+                msg += "<span title=\"" +mtgs[key] + "\" class=\"sectionDay\">";
+                msg += key + "</span>";
+            });
+            msg += "</span>";
+            
 			if (section.status === 'Available'){
 				msg += "<form name=\"addSectionForm_" + section.callNumber + "\" id=\"addSectionForm_" + section.callNumber + "\" method=\"post\" action=\"classes/controllers/schedulecontroller.php\">";
 				msg += "<input type=\"hidden\" id=\"action\" name=\"action\" value=\"addSection\"/>";
 				msg += "<input type=\"hidden\" id=\"addSectionCallNumber_" + section.callNumber  + "\" name=\"addSectionCallNumber\" value=\"" + section.callNumber + "\"/>";
 				msg += "<span title=\"Add this section to your schedule!\" onclick=\"addSection(" + section.callNumber + ")\" class=\"glyphicon glyphicon-plus pull-right plus-sign\"></span></form>";
 			}
-      		msg += "</div><!--panelBody--></div><!--panelCollapse--></div><!--panelDefault-->";
-      		//console.log(msg);
-			return msg;
-		}
+            msg += "</div>";
+            return msg;
+        }

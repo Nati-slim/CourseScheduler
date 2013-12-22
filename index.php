@@ -1,5 +1,5 @@
 <?php
-require_once dirname(__FILE__) . '/classes/helpers/session.php';
+require_once 'classes/helpers/session.php';
 require_once dirname(__FILE__) . '/../../creds/coursepicker_debug.inc';
 require_once dirname(__FILE__) . '/../../creds/mixpanel_coursepicker.inc';
 require_once dirname(__FILE__) . '/../../creds/dhpath.inc';
@@ -81,7 +81,7 @@ if (!isset($sectionListingsJSON)){
 //Page Data
 $title = "Course Picker";
 $longdesc = "";
-$shortdesc = "A course scheuling app for the University of Georgia (UGA) Computer Science students";
+$shortdesc = "A course scheduling app for the University of Georgia (UGA) Computer Science students";
 $asseturl = "http://apps.janeullah.com/coursepicker/assets";
 $officialurl = "http://apps.janeullah.com/coursepicker/";
 $captchaurl = "../../creds/captcha.inc";
@@ -326,11 +326,12 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
                         </script>
 					</div>
 					
-					<div id="searchBox" class="sidebar" rel="popover" data-placement="top" data-toggle="popover" data-trigger="hover" data-content="Start typing and select an option from the menu presented to trigger a submission. Otherwise, you will need to submit your entry using the button.">
+					<div id="searchBox" class="sidebar">
 						<span class="intro">Search: </span><br/>		
 						<input id="jsonURL" name="jsonURL" type="hidden" value="<?php echo $jsonURL;?>" />
 						<input type="hidden" name="selectedSemester" id="selectedSemester" value="<?php echo $semesterSelected; ?>" />
-						<input class="form-control" type="text" id="courseEntry" name="courseEntry" placeholder="e.g. CSCI 1302" />
+                        <input class="form-control" type="text" id="courseEntry" name="courseEntry" placeholder="e.g. CSCI 1302" /><br/>
+                        <span rel="popover" data-placement="bottom" data-toggle="popover" data-trigger="hover" data-content="Start typing and select an option from the menu presented to trigger a submission. Otherwise, you will need to submit your entry using the button." id="manualEntry" class="input-group-addon">Go</span>					
 					</div>
 
 					<div id="controlCheckboxes" style="display:none;" class="checkboxes">
@@ -341,17 +342,10 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
                             <input checked type="checkbox" class="checkedElement" id="Full" name="Full" value="Full" rel="popover" data-placement="right" data-toggle="popover" data-trigger="hover" data-content="Check this box to see full sections"/><span id="FullSpan">Full</span><br/>
                             <input checked type="checkbox" class="checkedElement" id="Cancelled" name="Cancelled" value="Cancelled" rel="popover" data-placement="right" data-toggle="popover" data-trigger="hover" data-content="Check this box to see cancelled sections"/><span id="CancelledSpan">Cancelled</span>
                         </div>    
-                        <!--<div class="filterDay">
-                            <input checked type="checkbox" class="checkedDays" id="Monday" name="Monday" value="M" /><span class="filterDay">Mon</span>
-                            <input checked type="checkbox" class="checkedDays" id="Tuesday" name="Tuesday" value="T" /><span class="filterDay">Tue</span>
-                            <input checked type="checkbox" class="checkedDays" id="Wednesday" name="Wednesday" value="W" /><span class="filterDay">Wed</span>
-                            <input checked type="checkbox" class="checkedDays" id="Thursday" name="Thursday" value="R" /><span class="filterDay">Thu</span>
-                            <input checked type="checkbox" class="checkedDays" id="Friday" name="Friday" value="F" /><span class="filterDay">Fri</span>
-                        </div>-->
                         <button type="button" id="filterListings" class="btn btn-xs btn-primary" >Filter Results</button>
 					</div>
                     
-                    <div class="panel-group sidebar" id="sectionsFound">
+                    <div class="sidebar" id="sectionsFound">
 
 					</div>
 
@@ -395,8 +389,11 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
                                         dataType: "json"
                                     })
                                     .done(function(msg){
+                                        //returns a parsed json object
                                         $('body').css('cursor', 'auto');
                                         //console.log(msg);
+                                        $('#messages').empty();
+                                        $('#errorMessage').empty().hide();
                                         sListings = msg;
                                         populateSections(msg);
                                     })
@@ -410,6 +407,11 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
                                     });
                                 }
 							});  
+                            
+                            //Listen for the user's input
+                            $('#manualEntry').on('click',function(){
+                                getSections();
+                            });
                                                      
 						});
                         
@@ -418,7 +420,8 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
                         the typehead suggestions.
                         */ 
                         function getSections(){
-                            var entry = $('#courseEntry').val();                            
+                            var entry = $('#courseEntry').val();  
+                            var semSelected = $('#selectedSemester').val();                          
                             var err = "<p class=\"alert alert-danger\">Please enter a course name and number for submission like this XXXX-1234 or XXXX 1234</p>";
                             if (entry == ""){
                                 $('#messages').empty().append(err).show();
@@ -431,11 +434,9 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
                                     $('#messages').hide("slow",function(){}); 
                                 }, 4000);
                             }else{
-                                var semSelected = $('#selectedSemester').val();
                                 //_gaq.push(['_trackEvent', 'Other Input Entered', value,  'User selected ' + value]);
-                                ga('send', 'Typeahead Not Selected', 'User entered', value, 'getSections');
+                                ga('send', 'Typeahead Not Selected', 'User entered', entry, 'getSections');
                                 $('body').css('cursor', 'wait');
-                                //console.log("semSelected: " + semSelected + "\n" + "courseValue: " + courseValue + "\n");
                                 $.ajax({
                                     type: "POST",
                                     url: 'classes/controllers/coursecontroller.php',
@@ -444,9 +445,15 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
                                 })
                                 .done(function(msg){
                                     $('body').css('cursor', 'auto');
-                                    $('#messages').empty();
-                                    sListings = msg;
-                                    populateSections(msg);
+                                    console.log(msg);
+                                    if (msg.length == 0){
+                                        $('#messages').empty().append("<p class=\"alert alert-info\">No sections found.</p>").show();
+                                    }else{
+                                        $('#messages').empty();
+                                        $('#errorMessage').empty().hide();
+                                        sListings = msg;
+                                        populateSections(msg);
+                                    }
                                 })
                                 .fail(function(msg){
                                     $('body').css('cursor', 'auto');

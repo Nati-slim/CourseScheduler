@@ -9,10 +9,19 @@ require_once dirname(__FILE__) . '/../helpers/session.php';
 require_once dirname(__FILE__) . '/../../../../creds/coursepicker_debug.inc';
 require_once dirname(__FILE__) . '/../../../../creds/dhpath.inc';
 require_once dirname(__FILE__) . '/../../../../creds/mixpanel_coursepicker.inc';
+
 $session = new Session();
 $result = array();
 $debug = DEBUGSTATUS;
 
+//Set up debug stuff
+//When  not debugging, log to a file!
+if (!$debug) {
+    ini_set("display_errors", 0);
+    ini_set("log_errors", 1);
+    //Define where do you want the log to go, syslog or a file of your liking with
+    ini_set("error_log", ERROR_PATH);
+}
 
 // get the Mixpanel class instance, replace with your
 // load production token
@@ -23,9 +32,6 @@ if (!$debug){
     $mp = Mixpanel::getInstance(CP_DEV_MIXPANEL_API_KEY);
 }
 
-$session = new Session();
-$result = array();
-$debug = DEBUGSTATUS;
 
 /**
  * Function to autoload classes needed during serialization/unserialization
@@ -39,13 +45,27 @@ function __autoload($class_name)
     include dirname(__FILE__) . '/../models/'. $class_name . '.php';
 }
 
-//Set up debug stuff
-//When  not debugging, log to a file!
-if (!$debug) {
-    ini_set("display_errors", 0);
-    ini_set("log_errors", 1);
-    //Define where do you want the log to go, syslog or a file of your liking with
-    ini_set("error_log", ERROR_PATH);
+/**
+ * The $pvt debugging messages may contain characters that would need to be
+ * quoted if we were producing HTML output, like we would be in a real app,
+ * but we're using text/plain here.  Also, $debug is meant to be disabled on
+ * a "production install" to avoid leaking server setup details.
+ * 
+ * @param string $pub public details of the error
+ * @param string $pvt Private details of the error
+ * 
+ * @return string $msg The error message
+ * 
+ */
+function fail($pub, $pvt = '')
+{
+    global $debug;
+    $msg = $pub;
+    if ($debug && $pvt !== '') {
+        $msg .= ": $pvt";
+    }
+
+    return $msg;
 }
 
 //error_reporting(0);
@@ -55,7 +75,7 @@ if (!$debug) {
  * @param String $var key in $_POST variable
  * @return String $val value matching $_POST['key']
  */
-function get_post_var($var){
+function getPost($var){
 	$val = filter_var($_POST[$var],FILTER_SANITIZE_MAGIC_QUOTES);
 	return $val;
 }
@@ -66,7 +86,7 @@ function get_post_var($var){
  * @param String $var key in $_POST variable
  * @return String $val value matching $_GET['key']
  */
-function get_get_var($var){
+function getGet($var){
 	$val = filter_var($_GET[$var],FILTER_SANITIZE_MAGIC_QUOTES);
 	return $val;
 }
@@ -87,91 +107,23 @@ function generateToken($length = 256){
     return sha1(uniqid(mt_rand(), true));
 }
 
-
-/**
- * Set the required session variables
- * @param integer @userid user generated id string
- * @param UserSchedule object $schedule
- */
-function initialize($userid,$schedule){
-	$_SESSION['init'] = "initialized";
-	$_SESSION['schedule'][$userid] = $schedule->toJSON();
-	$_SESSION['schedObj'][$userid] = serialize($schedule);
-	$_SESSION['userid'] = $userid;
-	$_SESSION['errorMessage'] = "";
-}
-
-/**
- * Function to save the user's schedule to the database
- * @param integer $version Last saved version of user's schedule in database
- * @param DBHelper $db
- * @return boolean $status of the save
- */
-function saveSchedule($version,$db){
-	//SAVE SCHEDULE TO DATABASE
-	$userid = $_SESSION['userid'];
-	$serializedschedule = $_SESSION['schedObj'][$userid];
-	$status = $db->saveSchedule($version+1,$userid,$serializedschedule);
-	return $status;
-}
-
-/**
- * Processing POST requests
- */
-function doPost(){
-	//INITIALIZE SCHEDULE
-	$init = $_SESSION['init'];
-	if (strcmp($init,"initialized") != 0){
-		//Initialize user schedule object & set relevant $_SESSION variables
-		$userschedule = new UserSchedule(generateToken());
-		initialize($userschedule->getUserId(),$userschedule);
-	}
-	$action = get_post_var("action");
-	//SHARE LAST SAVED VERSION IN DATABASE
-	if ($action && strcasecmp($action,"Share") == 0){
-		//check if schedule exists
-		$db = new DBHelper();
-		$userid = $_SESSION['userid'];
-		$lastversion = $db->findLastSavedVersion($userid);
-		//return $lastversion . $userid;
-		if ($lastversion == 0){
-			$status = saveSchedule($lastversion,$db);
-			if (!$status){
-				$_SESSION['errorMessage'] = "Problem saving schedule.";
-				return "Problem saving schedule.";
-			}
-		}
-		//$resultingversion = $db->retrieveSchedule($lastversion+1,$_SESSION['userid']);
-		$shortName = $db->getShortName($lastversion,$_SESSION['userid']);
-		return $shortName;
-	}else{
-		return "-1";
-	}
-}
-
-/**
- * processing GET requests
- */
-function doGet(){
-	$schedDigest = get_get_var("schedule");
-	if ($schedDigest){
-		$db = new DBHelper();
-		//Get the user schedule object and return an unserialized version
-		$schedule = $db->getSingleSchedule($schedDigest);
-		return unserialize($schedule);
-	}
-}
-
 //ROUTE REQUEST
 $requestType = $_SERVER['REQUEST_METHOD'];
 if ($requestType === 'POST') {
-	$res = doPost();
+	$result['errorMessage'] = "Not yet implemented";
+    $session->errorMessage = $result['errorMessage'];
 	echo $res;
 }else if ($requestType === 'GET'){
-	$res = doGet();
+	$request = getGet('id');
+    if ($request){
+        
+    }else{
+        $result['errorMessage'] = "Missing proper parameter";
+        $session->errorMessage = $result['errorMessage'];
+    }
 	header("Location: http://apps.janeullah.com/coursepicker/share/");
-	//echo $res;
 }else{
-	echo "Unknown request type.";
+	$result['errorMessage'] = "Invalid request type";
+    $session->errorMessage = $result['errorMessage'];
 }
 ?>

@@ -147,6 +147,7 @@ $requestType = $_SERVER['REQUEST_METHOD'];
 if ($requestType === 'POST') {
     $action = getPost('action');
     if (strcmp($action, "getSections") == 0) {
+        $session->courseSectionsJSON = "{}";
         $semester = getPost('semesterSelected');
         $course = getPost('courseEntry');
         if (strlen(trim($semester)) > 0 && strlen(trim($course)) > 0) {
@@ -157,8 +158,7 @@ if ($requestType === 'POST') {
             }
             $semesterArray = explode("-", $semester);
             if (count($courseArray) == 2 && count($semesterArray) == 2) {
-                $session->semesterSelected = $semesterArray[0] . "-"
-                                            . $semesterArray[1];
+                $session->semesterSelected = $semesterArray[0] . "-" . $semesterArray[1];
                 $session->jsonURL = "assets/json/tp/tp-". $semesterArray[0] . "-" . $semesterArray[1] . ".json";
                 $db = new CourseHelper();
                 //$term,$coursePrefix,$courseNumber,$campus
@@ -169,22 +169,21 @@ if ($requestType === 'POST') {
                     $session->errorMessage = "";
                     // track an event
                     $mp->track("get sections", array("success" => $course));
+                    $result['errorMessage'] = "";
+                    $session->errorMessage = $result['errorMessage'];
                     echo $session->courseSectionsJSON;
                 } catch (Exception $e) {
                     $result['errorMessage'] = $e->getMessage();
-                    //$mp->track("get sections", array("error" => $result['errorMessage']));
                     $session->errorMessage = $e->getMessage();
                     echo json_encode($result);
                 }
             } else {
                 $result['errorMessage'] = "Please enter a course like this: CSCI-1302 or CSCI 1302";
-                //$mp->track("get sections", array("error" => $result['errorMessage']));
                 $session->errorMessage = $result['errorMessage'];
                 echo json_encode($result);
             }
         } else {
             $result['errorMessage'] = "Please refresh the page. Missing the data for the semester and campus";
-            //$mp->track("get sections", array("error" => $result['errorMessage']));
             $session->errorMessage = $result['errorMessage'];
             echo json_encode($result);
         }

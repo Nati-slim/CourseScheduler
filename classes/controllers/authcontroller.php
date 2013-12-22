@@ -122,8 +122,8 @@ function get_ip_address() {
 }
 
 function resetPasswordEmail($username,$email,$token,$ip){    
-    require_once '../../../../creds/mail.inc';
-    require_once '../../includes/phpmailer/PHPMailerAutoload.php';
+    require_once dirname(__FILE__) . '/../../../../creds/mail.inc';
+    require_once dirname(__FILE__) . '/../../includes/phpmailer/PHPMailerAutoload.php';
     
     $mail = new PHPMailer;
     $mail->isSMTP();            // Set mailer to use SMTP
