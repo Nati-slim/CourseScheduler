@@ -30,9 +30,12 @@ $(document).ready(function(){
  **/ 
 function drawSchedule(){
     try{
+        $('#userSchedule').empty();
         schedObj = JSON.parse(sched);
         Object.keys(schedObj).forEach(function(key){
-           parseSection(schedObj[key]); 
+            var section = schedObj[key];
+           parseSection(section); 
+           $('#userSchedule').append(generateDiv(section));
         });
     }catch(e){
         console.log(e);
@@ -406,3 +409,40 @@ var LabeledRect = fabric.util.createClass(fabric.Rect, {
     }
 });
 
+
+function getBuildingName(buildingNumber){
+    var result = buildingNumber;
+    try{
+        Object.keys(uga_buildings).forEach(function(key){
+            if (buildingNumber == key){
+                result =  uga_buildings[key];
+                throw true;
+            }
+        });
+    }catch(e){
+        if (e !== true){
+            console.log("Error enumerating through list of buildings");
+        }
+    }
+    return result;
+}
+        
+function generateDiv(section){
+    var classDiv = "<div id=\"schedule_" + section.callNumber + "\" class=\"individualSection\">";
+    classDiv += "<span class=\"heading\">";
+    classDiv += section.courseName + "</a></span>";
+    classDiv += "<span class=\"row1 right\">" + section.lecturer + "</span><span class=\"row1 left\">";
+	classDiv += "<a href=\"http://bulletin.uga.edu/Link.aspx?cid=" + section.coursePrefix + "" + section.courseNumber;
+    classDiv += "\" title=\"UGA Bulletin Listing for " + section.courseName + "\">";
+    classDiv += section.coursePrefix + "-" + section.courseNumber + "</a></span><br/>";
+    classDiv += "<span class=\"row2\">" +getBuildingName(section.buildingNumber) + " - Room #" +  section.roomNumber+"</span>";
+    classDiv += "<span class=\"meetingTimes\">";
+    var mtgs = section.meetings;
+    Object.keys(mtgs).forEach(function(key){
+        classDiv += "<span title=\"" +mtgs[key] + "\" ";
+        classDiv += "class=\"day\">" 
+        classDiv += key + "</span>";
+    });
+    classDiv += "</span></div>";
+    return classDiv;			
+}

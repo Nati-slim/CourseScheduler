@@ -87,7 +87,15 @@
                                 the activation link sent to the email address you provided during signup.</li>
                             </ol>
                         </p>
-                        
+                        <p>
+                            <strong>Sharing Schedules</strong>:
+                            <ol class="instructions">
+                                <li>This feature is only available for users who have signed up for the service.</li>
+                                <li>First, login to the service and create your schedule</li>
+                                <li>Then, visit the <a href="http://apps.janeullah.com/coursepicker/saveschedules.php" title="Save Your Schedules!">Save Schedules</a> page by clicking on your gravatar and selecting the appropriate link named "Save Schedules"</li>
+                                <li>After giving your schedule a name e.g. XXXXXX, you can share the schedule by appending the short name to the end of this url: http://apps.janeullah.com/coursepicker/share/id=<strong>XXXXXX</strong></li>
+                            </ol>
+                        </p>
 					</div>
 				</div><!-- /.modal-content -->
 		  </div><!-- /.modal-dialog -->

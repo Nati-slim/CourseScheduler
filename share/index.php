@@ -115,7 +115,81 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
 		<link href="../assets/css/bootstrap.min.css" rel="stylesheet">
 		<link href="../assets/css/picker.css" rel="stylesheet">
 		<link href="../assets/css/signin.css" rel="stylesheet">
+        <style type="text/css">
+            div.individualSection{
+                margin-top: 3px;
+                padding: 4px;
+                border: 2px solid #DCDCDC;
+                -moz-border-radius: 20px;
+                -webkit-border-radius: 20px;
+                -khtml-border-radius: 20px;
+                border-radius: 20px;
+            }
 
+            div.individualSection span.heading{
+                display: block;
+                border: 2px solid #004A61;
+                -moz-border-radius: 15px;
+                -webkit-border-radius: 15px;
+                -khtml-border-radius: 15px;
+                border-radius: 15px;
+                background-color: #004A61;
+                color: #F0F0F0;
+                text-transform: uppercase;
+                font-weight:bold;
+            }
+            
+            span.row1, span.row2{
+                font-weight:bold;
+                text-transform:uppercase;
+            }
+
+            span.row1.right{
+                float:left;
+            }
+
+            span.row1.left{
+                float:right;
+            }
+
+            span.row1.left a{
+                color: #004A61;
+            }
+
+            span.row2.right{
+                float:right;
+            }
+
+            span.row2.left{
+                float:left;
+            }
+
+            span.meetingTimes{
+                display:block;
+                width:100px;
+                height: 100%;
+                margin: 0 auto;
+            }
+            
+            span.day{
+                text-align:center;
+                padding:2px;	
+                margin:2px;
+                border: 2px solid #004A61;
+                -moz-border-radius: 20px;
+                -webkit-border-radius: 20px;
+                -khtml-border-radius: 20px;
+                border-radius: 20px;
+                letter-spacing:2px;
+                /*text-shadow: 1px 0 0 #000, -1px 0 0 #000, 0 1px 0 #000, 0 -1px 0 #000, 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;*/
+            }
+
+            span.day:hover{
+                background-color:#004A61;
+                color:#F0F0F0;
+                font-weight:bold;
+            }
+        </style>
 		<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 		<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
 		<!--[if lt IE 9]>
@@ -137,6 +211,45 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
             <script src="http://cdnjs.cloudflare.com/ajax/libs/fabric.js/1.4.0/fabric.min.js" type="text/javascript"></script>  
             <script src="../assets/js/share.js" type="text/javascript"></script>
             <script src="../assets/js/schedule.js" type="text/javascript"></script>
+            <!-- Pamela Fox's lscache library https://github.com/pamelafox/lscache-->
+            <script src="../assets/js/lscache.min.js" type="text/javascript"></script>
+            <!--http://stackoverflow.com/questions/2010892/storing-objects-in-html5-localstorage -->
+            <script type="text/javascript">
+
+                try{
+                    var uga_buildings = lscache.get('uga_buildings');
+                    if (uga_buildings){
+                        console.log("retrieved list of uga buildings from lscache.");
+                    }else{
+                        $.getJSON("../assets/json/uga_building_names.json", function(data){
+                            uga_buildings = data;
+                            lscache.set('uga_buildings', JSON.stringify(data),43200);
+                        })
+                        .done(function() {
+                            console.log( "second success" );
+                        })
+                        .fail(function() {
+                            console.log( "getJSON request failed. :( " );
+                            <?php 
+                                if (isset($session->uga_file)){
+                                    $session->uga_file = file_get_contents("../assets/json/uga_building_names.json");
+                                }
+                                echo "var uga_buildings = $.parseJSON(" . json_encode($session->uga_file) . ");"; 
+                            ?>
+                        }) 
+                    }
+                    //console.log(uga_buildings);
+                }catch(e){
+                    <?php 
+                        if (isset($session->uga_file)){
+                            $session->uga_file = file_get_contents("../assets/json/uga_building_names.json");
+                        }
+                        echo "var uga_buildings = $.parseJSON(" . json_encode($session->uga_file) . ");"; 
+                    ?>
+                    console.log("Error getting item from local storage.");
+                    console.log(e);
+                } 
+            </script>
         <?php } ?>
 		<script src="../assets/js/bootstrap.min.js" type="text/javascript"></script>	
 		<!--JS related to the signup/login functions -->
@@ -196,10 +309,20 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
                         <div class="panel-heading">
                           <h3 class="panel-title">Schedule Details</h3>
                         </div>
-                        <div class="panel-body">
+                        <div class="panel-body">                            
                             <strong>Last Saved</strong>: <?php echo $defaultSchedule->getDateAdded(); ?><br/>
                             <strong>Semester/Campus</strong>: <?php echo $semesters[$defaultSchedule->getSemester() . "-" . $defaultSchedule->getCampus()]; ?><br/>
+                            <strong>URL: </strong> <a id="link" href="http://apps.janeullah.com/coursepicker/share/id=<?php echo $defaultSchedule->getShortname(); ?>" title="Sharing Your Schedule">Link</a> [<a onclick="copyUrl();">Copy</a>]
+                            <script type="text/javascript">
+                                function copyUrl() {
+                                    window.prompt("Copy to clipboard: Ctrl+C or Cmd + C, Enter", $('#link').attr('href'));
+                                }
+                            </script>
                         </div>
+                    </div>
+                        
+                    <div id="userSchedule" class="sections">
+                        
                     </div>
                 </div>
 
