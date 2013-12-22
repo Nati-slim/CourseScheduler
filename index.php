@@ -21,7 +21,7 @@ if ($debug){
  * @param String $var key in $_POST variable
  * @return String $val value matching $_POST['key']
  */
-function get_post_var($var){
+function getPost($var){
 	$val = filter_var($_POST[$var],FILTER_SANITIZE_MAGIC_QUOTES);
 	return $val;
 }
@@ -54,7 +54,7 @@ $semesters['201305-GWIN'] = '(Gwinnett) Summer 2013';
 
 $requestType = $_SERVER['REQUEST_METHOD'];
 if ($requestType === 'POST') {
-	$semesterSelected = get_post_var('semesterSelection');
+	$semesterSelected = getPost('semesterSelection');
 	if (array_key_exists($semesterSelected, $semesters)) {		
 		$jsonURL =  "assets/json/tp/tp-" . $semesterSelected . ".json";
 		$errorMessage = "";
@@ -139,6 +139,7 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
 		<link href="assets/css/sections.css" rel="stylesheet">
 		<link href="assets/css/typeahead.js-bootstrap.css" rel="stylesheet">
 		<link href="assets/css/signin.css" rel="stylesheet">
+		<link href="assets/css/joyride-2.1.css" rel="stylesheet">
         <style type="text/css">
             .tt-courseShortname{
                 font-weight: bold
@@ -164,14 +165,8 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
 		<![endif]-->
 		<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 		<script src="https://code.jquery.com/jquery-1.10.2.min.js" type="text/javascript"></script>
-        <!--<script type="text/javascript">
-            var node = document.createElement('script');
-            node.type = 'text/javascript';
-            node.async = true;
-            node.src = 'assets/js/draggable.js';
-            $('.container').append(node);
-            // Now insert the node into the DOM, perhaps using insertBefore()
-        </script>-->
+        <!--http://jeffpickhardt.com/guiders/ -->
+		<script src="assets/js/jquery.joyride-2.1.js" type="text/javascript"></script>
 		<!-- Include all compiled plugins (below), or include individual files as needed -->
         <script src="http://cdnjs.cloudflare.com/ajax/libs/fabric.js/1.4.0/fabric.min.js" type="text/javascript"></script>  
 		<script src="assets/js/coursepicker.js" type="text/javascript"></script>
@@ -188,48 +183,62 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
 		<script src="assets/js/lscache.min.js" type="text/javascript"></script>
 		<!--http://stackoverflow.com/questions/2010892/storing-objects-in-html5-localstorage -->
         <script type="text/javascript">
-
-            try{
-                var uga_buildings = lscache.get('uga_buildings');
-                if (uga_buildings){
-                    console.log("retrieved list of uga buildings from lscache.");
-                }else{
-                    $.getJSON("assets/json/uga_building_names.json", function(data){
-                        uga_buildings = data;
-                        lscache.set('uga_buildings', JSON.stringify(data),43200);
-                    })
-                    .done(function() {
-                        console.log( "second success" );
-                    })
-                    .fail(function() {
-                        console.log( "getJSON request failed. :( " );
-                        <?php 
-                            if (isset($session->uga_file)){
-                                $session->uga_file = file_get_contents("assets/json/uga_building_names.json");
-                            }
-                            echo "var uga_buildings = $.parseJSON(" . json_encode($session->uga_file) . ");"; 
-                        ?>
-                    }) 
-                }
-                //console.log(uga_buildings);
-            }catch(e){
-                <?php 
-                    if (isset($session->uga_file)){
-                        $session->uga_file = file_get_contents("assets/json/uga_building_names.json");
+            $(function(){
+                try{
+                    var uga_buildings = lscache.get('uga_buildings');
+                    if (uga_buildings){
+                        console.log("retrieved list of uga buildings from lscache.");
+                    }else{
+                        $.getJSON("assets/json/uga_building_names.json", function(data){
+                            uga_buildings = data;
+                            lscache.set('uga_buildings', JSON.stringify(data),43200);
+                        })
+                        .done(function() {
+                            console.log( "second success" );
+                        })
+                        .fail(function() {
+                            console.log( "getJSON request failed. :( " );
+                            <?php 
+                                if (isset($session->uga_file)){
+                                    $session->uga_file = file_get_contents("assets/json/uga_building_names.json");
+                                }
+                                echo "var uga_buildings = $.parseJSON(" . json_encode($session->uga_file) . ");"; 
+                            ?>
+                        }) 
                     }
-                    echo "var uga_buildings = $.parseJSON(" . json_encode($session->uga_file) . ");"; 
+                    //console.log(uga_buildings);
+                }catch(e){
+                    <?php 
+                        if (isset($session->uga_file)){
+                            $session->uga_file = file_get_contents("assets/json/uga_building_names.json");
+                        }
+                        echo "var uga_buildings = $.parseJSON(" . json_encode($session->uga_file) . ");"; 
+                    ?>
+                    console.log("Error getting item from local storage.");
+                    console.log(e);
+                } 
+                var token = null;
+                <?php if (!$debug){
+                    echo "token = \"" . CP_PROD_MIXPANEL_API_KEY . "\";";
+                }else{
+                     echo "token = \"" . CP_PROD_MIXPANEL_TOKEN . "\";";
+                }
                 ?>
-                console.log("Error getting item from local storage.");
-                console.log(e);
-            } 
-            var token = null;
-            <?php if (!$debug){
-                echo "token = \"" . CP_PROD_MIXPANEL_API_KEY . "\";";
-            }else{
-                 echo "token = \"" . CP_PROD_MIXPANEL_TOKEN . "\";";
-            }
-            ?>
+            });
         </script>    
+        <script type="text/javascript">
+            $(function(){
+                $('#tourTrigger').on('click',function(){
+                    $("#chooseID").joyride({
+                        //options.
+                    });
+                });
+            });
+            
+            function startTour(){
+                $("#chooseID").joyride({ });
+            }
+        </script>
 	</head>
 	<body>
 		<div class="navbar navbar-fixed-top navbar-inverse" role="navigation">
@@ -252,6 +261,7 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
 							echo "<li><a id=\"downloadSchedule\" href=\"#pngModal\" data-toggle=\"modal\">Download Schedule</a></li>";
 						}
 						?>
+                        <li><a id="tourTrigger">Tour</a></li>
 					</ul>
 					<ul id="social" class="nav navbar-nav navbar-right">
 						<!-- If session exists and user is logged in-->
@@ -326,7 +336,7 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
 						<input id="jsonURL" name="jsonURL" type="hidden" value="<?php echo $jsonURL;?>" />
 						<input type="hidden" name="selectedSemester" id="selectedSemester" value="<?php echo $semesterSelected; ?>" />
                         <input class="form-control" type="text" id="courseEntry" name="courseEntry" placeholder="e.g. CSCI 1302" /><br/>
-                        <span rel="popover" data-placement="bottom" data-toggle="popover" data-trigger="hover" data-content="Start typing and select an option from the menu presented to trigger a submission. Otherwise, you will need to submit your entry using the button." id="manualEntry" class="input-group-addon">Go</span>					
+                        <span id="manualEntry" class="input-group-addon">Go</span>					
 					</div>
 
 					<div id="controlCheckboxes" style="display:none;" class="checkboxes">
@@ -480,6 +490,36 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
         </footer>
 
     </div><!--/.container-->
+    <!-- Joyride stuff -->
+    <!-- At the bottom of your page but inside of the body tag -->
+    <ol id="chooseID" class="joyride-list" style="display:none;" data-joyride>
+        <li data-id="infoMessage" data-text="Next" data-options="tip_location: right">
+            <p>Hello and welcome to the guided tour for <a href="http://apps.janeullah.com/coursepicker/" title="CoursePicker by Jane Ullah">CoursePicker</a>. 
+            A demo is available for <a href="http://www.youtube.com/watch?v=0hOVaZ6jWto" title="CoursePicker demo">viewing here.</a>
+            This space will display the name of the selected semester. You should only add courses from the same semester to one schedule.</p>
+        </li>
+        <li data-id="changeSemesterDiv" data-class="custom so-awesome" data-text="Next">
+            <h4>Change the default semester</h4>
+            <p>Click on the dropdown box to choose a semester to use. You should only add courses from the same semester to one schedule.
+            If you wish to create  a new schedule with a different semester, first switch to the new semester and then click "New Schedule.</p>
+        </li>
+        <li data-id="courseEntry" data-button="Next" data-options="tip_location:top;tip_animation:fade">
+            <h4>Search for courses</h4>
+            <p>Start typing any combination of the course prefix (e.g. ENGL), course number (e.g. 1101) or course name (e.g. ENGLISH COMP I) and 
+            select an option from the menu presented to trigger a submission. <br/><br/>To manually submit an entry, simply type your search and press
+            the "Go" button.</p>
+        </li>
+        <li data-id="manualEntry" data-button="Next" data-options="tip_location:top;tip_animation:fade">
+            <h4>Interacting with your schedule!</h4>
+            <p>Your added sections will be displayed on the canvas. After searching for sections from the earlier step, you will be able to add 
+            sections to the schedule on the right.<br/><br/> To remove sections, drag any of the boxes to the top left corner and you will be prompted to 
+            approve the removal.<br/><br/>Alternately, you can remove items from your schedule by clicking the "X" button on the display at the bottom.</p>
+        </li>
+        <li data-button="End">
+            <h4>Congratulations</h4>
+            <p>You can now start using the application like a pro!</p>
+        </li>
+    </ol>    
     <?php require_once("includes/dialogs.inc") ?>	
     <?php require_once("includes/analyticstracking.inc") ?>
   </body>
