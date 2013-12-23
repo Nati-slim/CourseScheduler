@@ -188,7 +188,19 @@ $ogdesc = "Plan your college schedule with ease using this course schedule appli
 										."</ul>"
 										."</li>";
 							echo $submenu;
-						}?>
+						} elseif (isset($session->oauth_object)){ 
+							$submenu = "<li class=\"dropdown gravatar\">";
+							$submenu .= "<a id=\"menuLi\" href=\"#\" class=\"dropdown-toggle\" data-toggle=\"dropdown\">";
+							$submenu .= "<img id=\"avatarImg\" class=\"gravatar\" src=\"http://apps.janeullah.com/coursepicker/assets/img/mm.png\" alt=\"Default image for " . $session->screen_name;
+							$submenu .= "\"  title=\"Avatar for " . $session->screen_name . "\"/><b class=\"caret\" style=\"float:right;\"></b></a>";
+							$submenu .= "<ul id=\"menuDropdown\" class=\"dropdown-menu\">"
+										. "<li id=\"welcome\">Welcome, " .  $session->screen_name. "</li>"
+										. "<li id=\"saveScheduleLi\"><a href=\"http://apps.janeullah.com/coursepicker/saveschedule.php\" title=\"Click to save your created schedules.\">Save Schedule</a></li>"
+										. "<li id=\"logoutLi\"><a href=\"#logout\" title=\"Click to log out!\" onclick=\"logout()\">Logout</a></li>"
+										."</ul>"
+										."</li>";
+							echo $submenu;
+                        } ?>
 					</ul>				  
 				</div><!-- /.nav-collapse -->
 			</div><!-- /.container -->

@@ -5,8 +5,11 @@ require_once dirname(__FILE__) . "/../models/User.php";
 
 class UserHelper{
 	private $authenticateuser;
+	private $checkuser;
 	private $adduser;
 	private $deleteuser;
+    private $resetrequest;
+    private $checkresettoken;
 	private $checkactivationtoken;
 	private $setverifiedstatus;
 	private $setmetadata;
@@ -28,9 +31,12 @@ class UserHelper{
 				//echo $this->dbconn->host_info . "\n";
 				$this->deleteuser = $this->dbconn->prepare("delete * from coursepicker_users where userid = ?");
 				$this->authenticateuser = $this->dbconn->prepare("select * from coursepicker_users where username = ?");
+                $this->checkuser = $this->dbconn->prepare("select * from coursepicker_users where username = ? and email = ?");
                 $this->checkactivationtoken = $this->dbconn->prepare("select * from coursepicker_users where activation_token = ?");
+                $this->checkresettoken = $this->dbconn->prepare("select count(*) from coursepicker_users_metadata where reset_token = ? and userid = ?");
                 $this->setverifiedstatus = $this->dbconn->prepare("update coursepicker_users set emailVerified = ? where username = ?"); 
 				$this->setmetadata = $this->dbconn->prepare("insert into coursepicker_users_metadata (id, userid, activation_token, activation_date, activation_ip, login_attempts, login_after, reset_token, reset_expiration_date, reset_request_ip, resend_activation_ip) values (DEFAULT,?,?,NOW(),?,DEFAULT,DEFAULT,DEFAULT,DEFAULT,DEFAULT,DEFAULT)");
+				$this->resetrequest = $this->dbconn->prepare("update coursepicker_users_metadata set reset_token = ?, reset_expiration_date = ?, reset_request_ip = ? where userid =?");
 				$this->adduser = $this->dbconn->prepare("insert into coursepicker_users (id,userid,firstname,lastname,username,email,emailVerified,password,registration_date,activation_token,registration_ip) values(DEFAULT,?,DEFAULT,DEFAULT,?,?,DEFAULT,?,NOW(),?,?)");
 				$this->truncatetable = $this->dbconn->prepare("truncate table coursepicker_users");
 				$this->errorMessage = "";
@@ -57,6 +63,18 @@ class UserHelper{
 		}
 	}
 	
+    /**
+     * Function to save the metadata about the user
+     * specifically: activation ip, user's id and their activation token
+     * 
+     * @param User $user User object
+     * @param String $token the activation token
+     * @param int $ip the ip the user activated their account from
+     * @param tinyint $verifiedstatus used for updating the user's verified status in the user's table
+     * 
+     * @return true (i.e. the id of the created record in the metadata table. False otherwise
+     * 
+     */ 
     function saveMetadata($user,$token, $ip,$verifiedstatus){
 		try{
 			if (!($this->setmetadata)){
@@ -94,6 +112,8 @@ class UserHelper{
      * 
      * @param string $token 
      * @param string $presentedEmail
+     * 
+     * @return User user object if found and null if not found.
      * 
      */ 
     public function findUserToBeActivated($token,$presentedEmail){
@@ -145,22 +165,31 @@ class UserHelper{
         return null;
     }
 
-
+    
+    /**
+     * Used to verify the existence of the user when attempting to reset
+     * a password or resend the confirmation email
+     * 
+     * @param String $username username
+     * 
+     * @return User user object if found and null if not found.
+     * 
+     */ 
 	function getUser($username){
 		try{
 			if (!($this->authenticateuser)){
-				$this->errorMessage = "Prepare for gethash failed: (" . $this->dbconn->errno . ") " . $this->dbconn->error;
+				$this->errorMessage = "Prepare for getuser failed: (" . $this->dbconn->errno . ") " . $this->dbconn->error;
 			}else if (!($this->authenticateuser->bind_param("s",$username))){
-				$this->errorMessage = "Binding parameters for gethash failed: (" . $this->authenticateuser->errno . ") " . $this->authenticateuser->error;
+				$this->errorMessage = "Binding parameters for getuser failed: (" . $this->authenticateuser->errno . ") " . $this->authenticateuser->error;
 			}else if (!($this->authenticateuser->execute())){
-				$this->errorMessage = "Execute failed for gethash : (" . $this->authenticateuser->errno . ") " . $this->authenticateuser->error;
+				$this->errorMessage = "Execute failed for getuser : (" . $this->authenticateuser->errno . ") " . $this->authenticateuser->error;
 			}else if (!(($stored = $this->authenticateuser->store_result())) && $this->dbconn->errno){
 				//switched from using fetch() to store_result() because of mysql error 2014 about commands being out of sync
 				//storeresult buffers the fetched data
 				$this->errorMessage = "Fetch failed (DB): (" . $this->dbconn->errno . ") " . $this->dbconn->error;
-				$this->errorMessage .= "Fetch for gethash failed (STMT): (" . $this->authenticateuser->errno . ") " . $this->authenticateuser->error;
+				$this->errorMessage .= "Fetch for getuser failed (STMT): (" . $this->authenticateuser->errno . ") " . $this->authenticateuser->error;
 			}else if (!($this->authenticateuser->bind_result($id,$userid,$firstname,$lastname,$name,$email,$emailVerified,$passhash,$registration_date,$activation_token,$registration_ip))){
-				$this->errorMessage = "Binding for gethash results failed: (" . $this->authenticateuser->errno . ") " . $this->authenticateuser->error;
+				$this->errorMessage = "Binding for getuser results failed: (" . $this->authenticateuser->errno . ") " . $this->authenticateuser->error;
 			}else{
 				if ($this->authenticateuser->fetch() && !($this->dbconn->errno)){
 					//$id,$userid,$username,$hash,$email,$date,$verified = 0,$firstname = "",$lastname = ""
@@ -176,8 +205,6 @@ class UserHelper{
 					$this->errorMessage = "Fetch failed (DB): (" . $this->dbconn->errno . ") " . $this->dbconn->error;
 					$this->errorMessage .= "Fetch failed (STMT): (" . $this->authenticateuser->errno . ") " . $this->authenticateuser->error;
 					$this->errorMessage .= "Db error.";
-				}else{
-					$this->errorMessage = "No user found.";
 				}
 			}
 			$this->authenticateuser->free_result();
@@ -187,10 +214,122 @@ class UserHelper{
 		return null;
 	}	
     
-   
-	/*
-	 * Add user to the database
-	 */ 
+    /**
+     * Used to verify the existence of the user when attempting to reset
+     * a password or resend the confirmation email
+     * 
+     * @param String $username username
+     * @param String $email    email address
+     * 
+     * @return User user object if found and null if not found.
+     * 
+     */ 
+	function checkUser($username,$email){
+		try{
+			if (!($this->checkuser)){
+				$this->errorMessage = "Prepare for checkuser failed: (" . $this->dbconn->errno . ") " . $this->dbconn->error;
+			}else if (!($this->checkuser->bind_param("ss",$username,$email))){
+				$this->errorMessage = "Binding parameters for checkuser failed: (" . $this->checkuser->errno . ") " . $this->checkuser->error;
+			}else if (!($this->checkuser->execute())){
+				$this->errorMessage = "Execute failed for checkuser : (" . $this->checkuser->errno . ") " . $this->checkuser->error;
+			}else if (!(($stored = $this->checkuser->store_result())) && $this->dbconn->errno){
+				//switched from using fetch() to store_result() because of mysql error 2014 about commands being out of sync
+				//storeresult buffers the fetched data
+				$this->errorMessage = "Fetch failed (DB): (" . $this->dbconn->errno . ") " . $this->dbconn->error;
+				$this->errorMessage .= "Fetch for gethash failed (STMT): (" . $this->checkuser->errno . ") " . $this->checkuser->error;
+			}else if (!($this->checkuser->bind_result($id,$userid,$firstname,$lastname,$name,$email,$emailVerified,$passhash,$registration_date,$activation_token,$registration_ip))){
+				$this->errorMessage = "Binding for checkuser results failed: (" . $this->checkuser->errno . ") " . $this->checkuser->error;
+			}else{
+				if ($this->checkuser->fetch() && !($this->dbconn->errno)){
+					//$id,$userid,$username,$hash,$email,$date,$verified = 0,$firstname = "",$lastname = ""
+					$user = new User($id,$userid,$name,$passhash,$email,$registration_date,$emailVerified,$firstname,$lastname);
+                    $user->setRegistrationDate($registration_date);
+                    $user->setRegistrationIP($registration_ip);
+					if ($user){
+						$this->errorMessage = "";
+						return $user;
+					}
+				}
+				if ($this->dbconn->errno){
+					$this->errorMessage = "Fetch failed (DB): (" . $this->dbconn->errno . ") " . $this->dbconn->error;
+					$this->errorMessage .= "Fetch failed (STMT): (" . $this->checkuser->errno . ") " . $this->checkuser->error;
+					$this->errorMessage .= "Db error.";
+				}
+			}
+			$this->checkuser->free_result();
+		}catch(Exception $e){
+			$this->errorMessage = $e->getMessage();
+		}
+		return null;
+	}	
+    
+    
+    public function logResetRequest($user,$token,$reset_ip,$reset_expiration){
+		try{
+			if (!($this->resetrequest)){
+				$this->errorMessage =  "Prepare failed for resetrequest: (" . $this->dbconn->errno . ") " . $this->dbconn->error;
+			}else if (!($this->resetrequest->bind_param("ssdd",$token,$reset_expiration,$reset_ip,$user->getId()))){
+				$this->errorMessage =  "Binding parameters failed for resetrequest: (" . $this->resetrequest->errno . ") " . $this->resetrequest->error;
+			}else if (!($value = $this->resetrequest->execute())){
+				$this->errorMessage =  "Execute failed for resetrequest: (" . $this->resetrequest->errno . ") " . $this->resetrequest->error;
+			}else{
+				$this->errorMessage = "";
+				return true;
+			}
+		}catch(Exception $e){
+			$this->errorMessage = $e->getMessage();
+		}
+		return false;
+    }
+    
+    //checkResetToken($user,$reset_token);
+    public function validateToken($user,$reset_token){
+        $result = -1;
+		try{
+			if (!($this->checkresettoken)){
+				$this->errorMessage = "Prepare for checkresettoken failed: (" . $this->dbconn->errno . ") " . $this->dbconn->error;
+			}else if (!($this->checkresettoken->bind_param("sd",$reset_token,$user->getId()))){
+				$this->errorMessage = "Binding parameters for checkresettoken failed: (" . $this->checkresettoken->errno . ") " . $this->checkresettoken->error;
+			}else if (!($this->checkresettoken->execute())){
+				$this->errorMessage = "Execute failed for checkresettoken : (" . $this->checkresettoken->errno . ") " . $this->checkresettoken->error;
+			}else if (!(($stored = $this->checkresettoken->store_result())) && $this->dbconn->errno){
+				//switched from using fetch() to store_result() because of mysql error 2014 about commands being out of sync
+				//storeresult buffers the fetched data
+				$this->errorMessage = "Fetch failed (DB): (" . $this->dbconn->errno . ") " . $this->dbconn->error;
+				$this->errorMessage .= "Fetch for checkresettoken failed (STMT): (" . $this->checkresettoken->errno . ") " . $this->checkresettoken->error;
+			}else if (!($this->checkresettoken->bind_result($count))){
+				$this->errorMessage = "Binding for checkresettoken results failed: (" . $this->checkresettoken->errno . ") " . $this->checkresettoken->error;
+			}else{
+				if ($this->checkresettoken->fetch() && !($this->dbconn->errno)){
+					$result = $count;
+				}
+				if ($this->dbconn->errno){
+					$this->errorMessage = "Fetch failed (DB): (" . $this->dbconn->errno . ") " . $this->dbconn->error;
+					$this->errorMessage .= "Fetch failed (STMT): (" . $this->checkresettoken->errno . ") " . $this->checkresettoken->error;
+					$this->errorMessage .= "Db error.";
+				}
+			}
+			$this->checkresettoken->free_result();
+		}catch(Exception $e){
+			$this->errorMessage = $e->getMessage();
+		}
+		return $result;
+    }
+    
+    
+	/**
+     * Function to add a user to the database
+     * 
+     * @param String $userid alphanumeric string 32 bits in length
+     * @param String $username alphanumeric string 8  - 50 chars in length
+     * @param String $email  user's email address
+     * @param String $password really the hash of the user's password
+     * @param String $token Activation token
+     * @param int    $ip ip the user signed up for the service from 
+     * 
+     * @return int the id of the newly created record in the Users table
+     * 
+     */ 
 	function addUser($userid,$username,$email,$password,$token,$ip){
 		try{
 			if (!($this->adduser)){

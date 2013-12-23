@@ -273,6 +273,7 @@ var selectOptions;
 			}catch(e){
 				if (e !== true){
 					console.log("Error enumerating through list of buildings");
+                    console.log(e);
 				}
 			}
 			return result;

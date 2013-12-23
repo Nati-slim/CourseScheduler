@@ -124,7 +124,7 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
 			<?php
 				try{
 					echo "var sched = '". $sched . "';";
-                    echo "var tempSched = '". $sched . "';";
+                    echo "var uga_buildings = {};";
 					echo "var sListings = '". $sectionListingsJSON . "';";
 				}catch(Exception $e){
 					echo "console.log(\"Problem getting schedule.\");";
@@ -165,27 +165,11 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
 		<![endif]-->
 		<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 		<script src="https://code.jquery.com/jquery-1.10.2.min.js" type="text/javascript"></script>
-        <!--http://jeffpickhardt.com/guiders/ -->
-		<script src="assets/js/jquery.joyride-2.1.js" type="text/javascript"></script>
-		<!-- Include all compiled plugins (below), or include individual files as needed -->
-        <script src="http://cdnjs.cloudflare.com/ajax/libs/fabric.js/1.4.0/fabric.min.js" type="text/javascript"></script>  
-		<script src="assets/js/coursepicker.js" type="text/javascript"></script>
-		<script src="assets/js/bootstrap.min.js" type="text/javascript"></script>	
-		<script src="assets/js/hogan.min.js" type="text/javascript"></script>
-
-		<!--JS handling saving, sharing, downloading schedules -->
-		<script src="assets/js/schedule.js" type="text/javascript"></script>
-		<!--JS related to the dynamic addition of the course navigation elements -->
-		<script src="assets/js/drawings.js" type="text/javascript"></script>
-		<!--JS related to the signup/login functions -->
-		<script src="assets/js/register.js" type="text/javascript"></script>
-        <!-- Pamela Fox's lscache library https://github.com/pamelafox/lscache-->
-		<script src="assets/js/lscache.min.js" type="text/javascript"></script>
 		<!--http://stackoverflow.com/questions/2010892/storing-objects-in-html5-localstorage -->
         <script type="text/javascript">
             $(function(){
                 try{
-                    var uga_buildings = lscache.get('uga_buildings');
+                    uga_buildings = lscache.get('uga_buildings');
                     if (uga_buildings){
                         console.log("retrieved list of uga buildings from lscache.");
                     }else{
@@ -202,30 +186,40 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
                                 if (isset($session->uga_file)){
                                     $session->uga_file = file_get_contents("assets/json/uga_building_names.json");
                                 }
-                                echo "var uga_buildings = $.parseJSON(" . json_encode($session->uga_file) . ");"; 
+                                echo "uga_buildings = $.parseJSON(" . json_encode($session->uga_file) . ");"; 
                             ?>
                         }) 
                     }
-                    //console.log(uga_buildings);
                 }catch(e){
                     <?php 
                         if (isset($session->uga_file)){
                             $session->uga_file = file_get_contents("assets/json/uga_building_names.json");
                         }
-                        echo "var uga_buildings = $.parseJSON(" . json_encode($session->uga_file) . ");"; 
+                        echo "uga_buildings = $.parseJSON(" . json_encode($session->uga_file) . ");"; 
                     ?>
                     console.log("Error getting item from local storage.");
                     console.log(e);
                 } 
-                var token = null;
-                <?php if (!$debug){
-                    echo "token = \"" . CP_PROD_MIXPANEL_API_KEY . "\";";
-                }else{
-                     echo "token = \"" . CP_PROD_MIXPANEL_TOKEN . "\";";
-                }
-                ?>
             });
-        </script>    
+        </script>         
+        
+        <!--http://jeffpickhardt.com/guiders/ -->
+		<script src="assets/js/jquery.joyride-2.1.js" type="text/javascript"></script>
+		<!-- Include all compiled plugins (below), or include individual files as needed -->
+        <script src="http://cdnjs.cloudflare.com/ajax/libs/fabric.js/1.4.0/fabric.min.js" type="text/javascript"></script>  
+		<script src="assets/js/coursepicker.js" type="text/javascript"></script>
+		<script src="assets/js/bootstrap.min.js" type="text/javascript"></script>	
+		<script src="assets/js/hogan.min.js" type="text/javascript"></script>
+
+		<!--JS handling saving, sharing, downloading schedules -->
+		<script src="assets/js/schedule.js" type="text/javascript"></script>
+		<!--JS related to the dynamic addition of the course navigation elements -->
+		<script src="assets/js/drawings.js" type="text/javascript"></script>
+		<!--JS related to the signup/login functions -->
+		<script src="assets/js/register.js" type="text/javascript"></script>
+        <!-- Pamela Fox's lscache library https://github.com/pamelafox/lscache-->
+		<script src="assets/js/lscache.min.js" type="text/javascript"></script>
+   
         <script type="text/javascript">
             $(function(){
                 $('#tourTrigger').on('click',function(){
@@ -277,7 +271,19 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
 										."</ul>"
 										."</li>";
 							echo $submenu;
-						} else {
+						} elseif (isset($session->oauth_object)){ 
+							$submenu = "<li class=\"dropdown gravatar\">";
+							$submenu .= "<a id=\"menuLi\" href=\"#\" class=\"dropdown-toggle\" data-toggle=\"dropdown\">";
+							$submenu .= "<img id=\"avatarImg\" class=\"gravatar\" src=\"http://apps.janeullah.com/coursepicker/assets/img/mm.png\" alt=\"Default image for " . $session->screen_name;
+							$submenu .= "\"  title=\"Avatar for " . $session->screen_name . "\"/><b class=\"caret\" style=\"float:right;\"></b></a>";
+							$submenu .= "<ul id=\"menuDropdown\" class=\"dropdown-menu\">"
+										. "<li id=\"welcome\">Welcome, " .  $session->screen_name. "</li>"
+										. "<li id=\"saveScheduleLi\"><a href=\"http://apps.janeullah.com/coursepicker/saveschedule.php\" title=\"Click to save your created schedules.\">Save Schedule</a></li>"
+										. "<li id=\"logoutLi\"><a href=\"#logout\" title=\"Click to log out!\" onclick=\"logout()\">Logout</a></li>"
+										."</ul>"
+										."</li>";
+							echo $submenu;
+                        } else {
 							echo "<li id=\"signupLi\"><a id=\"signup\" data-toggle=\"modal\" href=\"#signupModal\">Sign Up</a></li>";						
 							echo "<li id=\"loginLi\"><a id=\"login\" data-toggle=\"modal\" href=\"#loginModal\">Log In</a></li>";
 						} ?>

@@ -110,21 +110,58 @@
 						<h4 class="modal-title" id="loginModalLabel">Log In!</h4>
 					</div>
 					<div class="modal-body">
-						<div class="alert alert-danger" id="loginError" style="display:none"></div>
-						<div class="alert alert-success" id="loginSuccess" style="display:none"></div>
-						<form id="loginForm" name="loginForm" class="form-signin" role="form" method="post" action="classes/controllers/usercontroller.php"  >
-							<div class="form-group">
-								<label for="loginUsername">Username</label>
-								<input type="text" class="form-control" id="loginUsername" name="loginUsername" placeholder="Enter username" required>
-							</div>
-							<div class="form-group">
-								<label for="loginPassword">Password</label>
-								<input type="password" class="form-control" id="loginPassword" name="loginPassword" placeholder="Password" required>
-							</div>
-							<input type="hidden" id="action" name="action" value="login" />
-							<button type="submit" class="btn btn-primary">Submit</button>
-							<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-						</form>
+                        <ul class="nav nav-tabs">
+                            <li><a href="#regularlogin" data-toggle="tab">Login</a></li>
+                            <li><a href="#forgotPassword" data-toggle="tab">Forgot Password</a></li>
+                            <li><a href="#twitterLogin" data-toggle="tab">Login with Twitter</a></li>
+                        </ul>
+                        
+                        <div class="tab-content">
+                            <div class="tab-pane fade in active" id="regularlogin">
+                                <div class="alert alert-danger" id="loginError" style="display:none"></div>
+                                <div class="alert alert-success" id="loginSuccess" style="display:none"></div>
+                                <form id="loginForm" name="loginForm" class="form-signin" role="form" method="post" action="classes/controllers/usercontroller.php"  >
+                                    <div class="form-group">
+                                        <label for="loginUsername">Username</label>
+                                        <input type="text" class="form-control" id="loginUsername" name="loginUsername" placeholder="Enter username" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="loginPassword">Password</label>
+                                        <input type="password" class="form-control" id="loginPassword" name="loginPassword" placeholder="Password" required>
+                                    </div>
+                                    <input type="hidden" id="action" name="action" value="login" />
+                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                </form>
+                            </div>
+                            <div class="tab-pane fade" id="twitterLogin">
+                                <div class="form-group">
+                                    <a href="http://apps.janeullah.com/coursepicker/auth/index.php" title="Sign in with Twitter to expose enhanced featuers of CoursePicker.!"><img alt="Sign in with Twitter" src="http://apps.janeullah.com/coursepicker/assets/img/signin-twitter.png" style="border:0;" width="158" height="28" /></a>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="forgotPassword">
+                                <div class="alert alert-danger" id="forgotPwdError" style="display:none"></div>
+                                <div class="alert alert-success" id="forgotPwdSuccess" style="display:none"></div>
+                                <form id="forgotPwdForm" name="forgotPwdForm" class="form-signin" role="form" method="post" action="classes/controllers/authcontroller.php"  >
+                                    <div class="form-group">
+                                        <label for="forgotPwdUsername">Username</label>
+                                        <input type="text" class="form-control" id="forgotPwdUsername" name="forgotPwdUsername" placeholder="Username" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="forgotPwdEmail">Email</label>
+                                        <input type="email" class="form-control" id="forgotPwdEmail" name="forgotPwdEmail" placeholder="Email" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <img id="captcha" src="http://apps.janeullah.com/coursepicker/includes/securimage/securimage_show.php" alt="CAPTCHA Image" />
+                                        <input type="text" name="captcha_code" size="10" maxlength="6" />
+                                        <a href="#" onclick="document.getElementById('captcha').src = 'http://apps.janeullah.com/coursepicker/includes/securimage/securimage_show.php?' + Math.random(); return false">[ Different Image ]</a>
+                                    </div>
+                                     <input type="hidden" id="action" name="action" value="forgotPassword" />
+                                    <button type="submit" id="forgotPwdBtn" class="btn btn-primary">Submit</button>
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                </form>
+                            </div>
+                        </div>
 					</div>
 				</div><!-- /.modal-content -->
 		  </div><!-- /.modal-dialog -->

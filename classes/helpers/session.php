@@ -5,12 +5,14 @@ define('KEY','cp_sess_' . HASH);
 
 //http://www.cs.wcupa.edu/~rkline/php/sessions.html
 class Session {
+    private $session_name;
 
     function __construct(){
         session_save_path(dirname($_SERVER['DOCUMENT_ROOT']) . '/sessions/coursepicker');
         session_set_cookie_params(86400,"/","janeullah.com",false,true);
         session_name('CoursePicker');
-        session_start();        
+        session_start(); 
+        $this->session_name = 'CoursePicker';       
     }
     
     //__set: $_SESSION[KEY]['var'] = 17
@@ -45,5 +47,9 @@ class Session {
     
     public function unsetAll() {
         unset($_SESSION[KEY]);
+    }
+    
+    public function getSessionName(){
+        return $this->session_name;
     }
 }

@@ -2,8 +2,8 @@
 require_once dirname(__FILE__) . '/../../creds/coursepicker_debug.inc';
 require_once dirname(__FILE__) . '/classes/helpers/UserHelper.php';  
 require_once dirname(__FILE__) . '/../../creds/dhpath.inc';
-
-session_start();
+require_once 'classes/helpers/session.php';
+$session = new Session();
          
 $result = array();
 $validToken = "";
@@ -42,12 +42,12 @@ function __autoload($class_name)
  * 
  */ 
 function isValidToken($token){
-    global $validToken;
+    global $session, $validToken;
     if (strlen($token) != 32){        
         return 'Code a: Invalid token';
     }
     if (ctype_alnum($token)) {
-        $_SESSION['validToken'] = $token;
+        $session->validToken = $token;
         $validToken = $token;
         return 'OK';
     }else{
@@ -223,6 +223,9 @@ $shortdesc = "A course scheuling app for the University of Georgia Computer Scie
                         </form>   
                     <?php } else { ?>  
                         <p id="errorMessage" class="alert alert-danger"><?php echo $result['errorMessage']; ?></p>
+                        <p>
+                            If you got here by accident, return to the homepage and get back to <a href="http://apps.janeullah.com/coursepicker/" title="Create your perfect class schedule.">crafting your perfect schedule</a>!
+                        </p>
                     <?php } ?>
                 </div>
             </div>

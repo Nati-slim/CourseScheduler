@@ -98,41 +98,34 @@ function fail($pub, $pvt = '')
     return $msg;
 }
 
+
 /**
-  * Retrieves the best guess of the client's actual IP address.
-  * Takes into account numerous HTTP proxy headers due to variations
-  * in how different ISPs handle IP addresses in headers between hops.
-  */
-function get_ip_address() {
-    // check for shared internet/ISP IP
-    if (!empty($_SERVER['HTTP_CLIENT_IP']) && validate_ip($_SERVER['HTTP_CLIENT_IP'])){
-        return $_SERVER['HTTP_CLIENT_IP'];
-    }
-    // check for IPs passing through proxies
-    if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-        // check if multiple ips exist in var
-        $iplist = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
-        foreach ($iplist as $ip) {
-            if (validate_ip($ip)){
-                return $ip;
+ * http://stackoverflow.com/questions/1634782/what-is-the-most-accurate-way-to-retrieve-a-users-correct-ip-address-in-php
+ */ 
+function get_ip_address(){
+    foreach (array('HTTP_CLIENT_IP', 'HTTP_X_FORWARDED_FOR', 'HTTP_X_FORWARDED', 'HTTP_X_CLUSTER_CLIENT_IP', 'HTTP_FORWARDED_FOR', 'HTTP_FORWARDED', 'REMOTE_ADDR') as $key){
+        if (array_key_exists($key, $_SERVER) === true){
+            foreach (explode(',', $_SERVER[$key]) as $ip){
+                $ip = trim($ip); // just to be safe
+
+                if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) !== false){
+                    return $ip;
+                }
             }
         }
     }
+}
 
-    if (!empty($_SERVER['HTTP_X_FORWARDED']) && validate_ip($_SERVER['HTTP_X_FORWARDED'])){
-        return $_SERVER['HTTP_X_FORWARDED'];
+public function validate_ip($ip)
+{
+    if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) === false)
+    {
+        return false;
     }
-    if (!empty($_SERVER['HTTP_X_CLUSTER_CLIENT_IP']) && validate_ip($_SERVER['HTTP_X_CLUSTER_CLIENT_IP'])){
-        return $_SERVER['HTTP_X_CLUSTER_CLIENT_IP'];
-    }
-    if (!empty($_SERVER['HTTP_FORWARDED_FOR']) && validate_ip($_SERVER['HTTP_FORWARDED_FOR'])){
-        return $_SERVER['HTTP_FORWARDED_FOR'];
-    }
-    if (!empty($_SERVER['HTTP_FORWARDED']) && validate_ip($_SERVER['HTTP_FORWARDED'])){
-        return $_SERVER['HTTP_FORWARDED'];
-    }
-    // return unreliable ip since all else failed
-    return $_SERVER['REMOTE_ADDR'];
+
+    self::$ip = sprintf('%u', ip2long($ip)); // you seem to want this
+
+    return true;
 }
 
 /**

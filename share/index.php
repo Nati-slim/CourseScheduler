@@ -318,6 +318,8 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
                                     window.prompt("Copy to clipboard: Ctrl+C or Cmd + C, Enter", $('#link').attr('href'));
                                 }
                             </script>
+                            <a href="https://twitter.com/share" class="twitter-share-button" data-via="janetalkstech" data-size="large" data-related="coursepicker" data-hashtags="coursepicker">Tweet</a>
+                            <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
                         </div>
                     </div>
                         

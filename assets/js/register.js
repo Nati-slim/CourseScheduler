@@ -101,4 +101,44 @@ $(function(){
 		});
 		return false;
 	});	
+    
+    //handle password resets
+    $('#forgotPwdForm').submit(function(e){
+		e.preventDefault();
+		$.ajax({
+			type: "POST",
+			url: 'http://apps.janeullah.com/coursepicker/classes/controllers/authcontroller.php',
+			data: $(this).serialize(),
+			dataType: "json"
+		})
+		.done(function(msg){
+			$('body').css('cursor', 'auto');
+			console.log(msg);
+			if (msg.errorMessage.length > 0){
+				$('#forgotPwdError').empty();
+				$('#forgotPwdError').append(msg.errorMessage).show();
+				$('#forgotPwdSuccess').hide();
+				setTimeout(function(){
+					$('#forgotPwdError').empty().hide("slow",function(){});
+				}, 20000);
+			}else{
+				$('#forgotPwdError').empty().hide();
+				$('#forgotPwdForm').hide('slow', function(){ 
+					$('#forgotPwdForm').hide(); 
+				});
+				$('#forgotPwdSuccess').empty().append("A URL to reset your password has been sent to your email address on file. Please click the link and follow the instructions.").show();				
+				setTimeout(function(){
+					location.reload();
+                }, 20000);
+				console.log("Successfully logged in.");
+			}
+		})
+		.fail(function(msg){
+			$('body').css('cursor', 'auto');
+			$('#forgotPwdError').empty().append(msg.responseText).show();
+			$('#forgotPwdSuccess').empty().hide();
+			console.log(msg.responseText);
+		});
+        return false;
+    });
 });
