@@ -184,6 +184,7 @@ $ogdesc = "Plan your college schedule with ease using this course schedule appli
 							$submenu .= "<ul id=\"menuDropdown\" class=\"dropdown-menu\">"
 										. "<li id=\"welcome\">Welcome, " .  $session->username. "</li>"
 										. "<li id=\"saveScheduleLi\"><a href=\"http://apps.janeullah.com/coursepicker/saveschedule.php\" title=\"Click to save your created schedules.\">Save Schedule</a></li>"
+										. "<li id=\"tweetScheduli\"><a data-toggle=\"modal\" href=\"#tweetModal\" title=\"Click to save your created schedules.\">Tweet Schedule</a></li>"
 										. "<li id=\"logoutLi\"><a href=\"#logout\" onclick=\"logout()\">Logout</a></li>"
 										."</ul>"
 										."</li>";
@@ -240,8 +241,7 @@ $ogdesc = "Plan your college schedule with ease using this course schedule appli
                             ?>
                             
                             <!-- For now, prevent user from changing the short name. instead display what they have already-->
-                            <?php                                
-                                if ($currentSchedule->isSaved()) { ?>
+                            <?php if ($currentSchedule->isSaved()) { ?>
                                     <div class="form-group">
                                         <input type="text" class="form-control" id="savedShortName" name="savedShortName" 
                                         value="<?php echo $currentSchedule->getShortName(); ?>">

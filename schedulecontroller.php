@@ -244,7 +244,7 @@ function saveSchedule($userid,$user,$defaultSchedule,$scheduleID,$shortName1,$sh
                     $msg['errorMessage'] = "";
                     $msg['shortName'] = $shortName1;
                 }else{
-                    $msg['errorMessage'] = fail("Failed to save schedule to database. Please try a different name as the one you chose is most likely already in use.",$scheduleHelper->errorMessage);
+                    $msg['errorMessage'] = fail("Failed to save schedule to database.",$scheduleHelper->errorMessage);
                 }
             }else{                    
                 //get the matching schedule object from the user object

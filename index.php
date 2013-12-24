@@ -249,12 +249,9 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
 				<div class="collapse navbar-collapse">
 					<ul class="nav navbar-nav">
 						<li class="active"><a href="./">Home</a></li>
-						<li><a href="#aboutModal" data-toggle="modal" id="about">About</a></li>
-						<li><a href="#howtoModal" data-toggle="modal" id="howto">How To</a></li>
-						<?php if (isset($session->userid)){ 
-							echo "<li><a id=\"downloadSchedule\" href=\"#pngModal\" data-toggle=\"modal\">Download Schedule</a></li>";
-						}
-						?>
+						<li><a href="#aboutModal" data-toggle="modal" id="about" title="Learn about the creator of Course Picker.">About</a></li>
+						<li><a href="#howtoModal" data-toggle="modal" id="howto" title="Learn the basics of using Course Picker.">How To</a></li>
+                        <li><a id="downloadSchedule" href="#pngModal" data-toggle="modal" title="Add at least 1 section to your schedule to use this feature.">Download Schedule</a></li>
                         <li><a style="cursor:pointer;" id="tourTrigger" title="Click to start a guided tour of CoursePicker">Tour</a></li>
 					</ul>
 					<ul id="social" class="nav navbar-nav navbar-right">

@@ -27,13 +27,25 @@
                         <p id="tweetSuccess" class="alert alert-success" style="display:none;"></p>
                         <p>By clicking the "Tweet this" button, you are authorizing <a href="http://apps.janeullah.com/coursepicker/" title="CoursePicker">CoursePicker</a> to post a status update to your twitter
                         account with the attached schedule image <a href="<?php echo $session->imgUrl; ?>" title="Your Class Schedule">here</a>.</p>
-                        <form id="tweetForm" name="tweetForm" class="form-signin" role="form" action="http://apps.janeullah.com/coursepicker/auth/tweetphoto.php" method="post" style="margin-left:4px;">
-                            <div class="form-group">
-                                <label for="status">Tweet Text</label>
-                                <textarea type="text" name="status" rows="2" cols="70">Check out my <?php echo $semesters[$semesterSelected]; ?> class schedule created using @coursepicker http://bit.ly/coursepicker #uga.</textarea>
-                            </div>
-                            <input type="submit" class="btn btn-primary" value="Tweet This" />
-                        </form>
+                        <?php if (isset($currentSchedule) && $currentSchedule->isSaved()) { ?>
+                            <form id="tweetForm" name="tweetForm" class="form-signin" role="form" action="http://apps.janeullah.com/coursepicker/auth/tweetphoto.php" method="post" style="margin-left:4px;">
+                                <div class="form-group">
+                                    <label for="status">Tweet Text</label>
+                                    <textarea type="text" name="status" rows="3" cols="80">Check out my <?php echo $semesters[$semesterSelected]; ?> class schedule [http://apps.janeullah.com/coursepicker/share/id=<?php echo $currentSchedule->getShortName();?>] from @coursepicker #uga.</textarea>
+                                    <input type="hidden" id="action" name="action" value="tweetSchedule" />
+                                </div>
+                                <input type="submit" class="btn btn-primary" value="Tweet This" />
+                            </form>
+                        <?php } else { ?>
+                            <form id="tweetForm" name="tweetForm" class="form-signin" role="form" action="http://apps.janeullah.com/coursepicker/auth/tweetphoto.php" method="post" style="margin-left:4px;">
+                                <div class="form-group">
+                                    <label for="status">Tweet Text</label>
+                                    <textarea type="text" name="status" rows="2" cols="70">Check out my <?php echo $semesters[$semesterSelected]; ?> class schedule created using @coursepicker http://bit.ly/coursepicker #uga.</textarea>
+                                    <input type="hidden" id="action" name="action" value="tweetPng" />
+                                </div>
+                                <input type="submit" class="btn btn-primary" value="Tweet This" />
+                            </form>
+                        <?php } ?>
 					</div>
 				</div><!-- /.modal-content -->
 		  </div><!-- /.modal-dialog -->

@@ -228,7 +228,7 @@ var selectOptions;
 			$('#collapseColumn').attr("title","Expand this column");
 			$('#sectionsFound').hide("slow",function(){});
 		}
-		
+        
 		/* Add a single section*/
 		function addSection(callNumber){
 			console.log("call number: " + callNumber);

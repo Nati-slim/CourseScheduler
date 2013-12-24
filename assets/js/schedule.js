@@ -27,20 +27,20 @@ $(function(){
 			$('body').css('cursor', 'auto');
 			console.log(msg);
             if (msg.errorMessage.length == 0){
-                $('#saveScheduleError').empty().hide();
-                $('#saveScheduleSuccess').empty().append("Switched schedules!.").show(); 
+                $('#saveScheduleError').html("").hide();
+                $('#saveScheduleSuccess').html("").append("Switched schedules!.").show(); 
                 setTimeout(function(){
                     location.reload();
                 }, 1000);
             }else{
-                $('#saveScheduleSuccess').empty().hide();
-                $('#saveScheduleError').empty().append(msg.errorMessage).show();
+                $('#saveScheduleSuccess').html("").hide();
+                $('#saveScheduleError').html("").append(msg.errorMessage).show();
             }
 		})
 		.fail(function(msg){
 			$('body').css('cursor', 'auto');
-            $('#saveScheduleSuccess').empty().hide();
-            $('#saveScheduleError').empty().append(msg.responseText).show();
+            $('#saveScheduleSuccess').html("").hide();
+            $('#saveScheduleError').html("").append(msg.responseText).show();
 			console.log(msg.responseText);
 		});	
 	});
@@ -92,8 +92,8 @@ $(function(){
         var shortName1 = $('#shortName1').val();
         var shortName2 = $('#shortName2').val();
         if (itemSelected == 0){
-            $('#saveScheduleError').empty().append("Please select a schedule to save!").show();
-            $('#saveScheduleSuccess').empty().hide();
+            $('#saveScheduleError').html("").append("Please select a schedule to save!").show();
+            $('#saveScheduleSuccess').html("").hide();
         }else if (shortName1 === shortName2){            
             ga('send', 'Schedule save', 'User clicked', 'shortName', shortName1);
             $('body').css('cursor', 'wait');
@@ -106,26 +106,26 @@ $(function(){
             .done(function(msg){
                 $('body').css('cursor', 'auto');
                 if (msg.errorMessage.length == 0){
-                    $('#saveScheduleError').empty().hide();
-                    $('#saveScheduleSuccess').empty().append("Successfully saved <strong>" + msg.shortName + "</strong> to database.").
+                    $('#saveScheduleError').html("").hide();
+                    $('#saveScheduleSuccess').html("").append("Successfully saved <strong>" + msg.shortName + "</strong> to database.").
                     show();setTimeout(function(){
                         location.reload();
                     }, 1000);
                 }else{
-                    $('#saveScheduleError').empty().append(msg.errorMessage).show();
-                    $('#saveScheduleSuccess').empty().hide();
+                    $('#saveScheduleError').html("").append(msg.errorMessage).show();
+                    $('#saveScheduleSuccess').html("").hide();
                 }
                 console.log(msg);
             })
             .fail(function(msg){
                 $('body').css('cursor', 'auto');
                 $('#saveScheduleError').append(msg.responseText).show();
-                $('#saveScheduleSuccess').empty().hide();
+                $('#saveScheduleSuccess').html("").hide();
                 console.log(msg.responseText);
             });	
         }else{
-            $('#saveScheduleError').empty().append("Both short name fields must match!").show();
-            $('#saveScheduleSuccess').empty().hide();
+            $('#saveScheduleError').html("").append("Both short name fields must match!").show();
+            $('#saveScheduleSuccess').html("").hide();
         }
 	});
     
@@ -148,70 +148,70 @@ function updateSchedule(){
         if (msg.errorMessage.length == 0){
             $('#saveScheduleError').empty().hide();
             console.log(msg);
-            $('#saveScheduleSuccess').empty().append("Successfully saved <strong>" + msg.shortName + "</strong> to database.").
+            $('#saveScheduleSuccess').html("").append("Successfully saved <strong>" + msg.shortName + "</strong> to database.").
             show();setTimeout(function(){
                 location.reload();
             }, 5000);
         }else{
-            $('#saveScheduleError').empty().append(msg.errorMessage).show();
-            $('#saveScheduleSuccess').empty().hide();
+            $('#saveScheduleError').html("").append(msg.errorMessage).show();
+            $('#saveScheduleSuccess').html("").hide();
         }
         console.log(msg);
     })
     .fail(function(msg){
         $('body').css('cursor', 'auto');
         $('#saveScheduleError').append(msg.responseText).show();
-        $('#saveScheduleSuccess').empty().hide();
+        $('#saveScheduleSuccess').html("").hide();
         console.log(msg.responseText);
     });	
     return false;
 }
 
 function grabImage(){
-    var imgUrl = "" + getDataUrl();
-    var imgToken = "";
-    var index = imgUrl.indexOf(",");
-    if (index > 0){
-        //console.log("Index: " + index);
-        //Grabbing the base64 part only
-        imgUrl = imgUrl.substring(index+1);
-            
-        ga('send', 'Schedule png download', 'User clicked', 'imgurl', imgUrl);
-        //console.log("New imgurl: " + imgUrl);
-        $('body').css('cursor', 'wait');
-        $.ajax({
-            type: "POST",
-            url: 'http://apps.janeullah.com/coursepicker/classes/controllers/schedulecontroller.php',
-            data: { action : "downloadSchedule", dataUrl : imgUrl}
-        })
-        .done(function(msg){
-            $('body').css('cursor', 'auto');
-            console.log(msg);
-            var msgObj = JSON.parse(msg);
-            imgToken = msgObj.imgToken;
-            if (msgObj.imgToken.length > 0){
-                //Should be a url to http://apps.janeullah.com/coursepicker/assets/schedules/schedule_autogenid.png
-                var imgUrl = "http://apps.janeullah.com/coursepicker/assets/schedules/schedule_" + msgObj.imgToken + ".png";
-                //console.log(imgUrl);
-                $('#canvasImage').empty();
-                $('#canvasImage').append("Click <a href=\"" + imgUrl + "\" title=\"Click to view image or right-click to save link as.\">this link</a> to load your schedule as a .png file or right-click <a href=\"" + imgUrl + "\" title=\"Click to view image or right-click to save link as.\">the link</a> and choose \"Save Link As\".");
-                //$('#canvasImage').append("<br/><a href=\"http://apps.janeullah.com/coursepicker/auth/index.php\" title=\"Tweet this schedule\"><img alt=\"Sign in with Twitter\" src=\"http://apps.janeullah.com/coursepicker/assets/img/signin-twitter.png\" style=\"border:0;\" width=\"158\" height=\"28\" /></a>");
-                $('#errorMessage').empty().hide();
-            }else{
-                $('#canvasImage').empty().append("<p class=\"alert-danger\">Unable to save .png file: " + msgObj.errorMessage + "</p>").show();
-            }
-        })
-        .fail(function(msg){
-            $('body').css('cursor', 'auto');
-            $('#canvasImage').empty().append("<p class=\"alert-danger\">Error getting png file.</p>").show();
-            console.log(msg + "Error getting png file.");
-        });	
+    if (sched.length > 2){
+        var imgUrl = "" + getDataUrl();
+        var imgToken = "";
+        var index = imgUrl.indexOf(",");
+        if (index > 0){
+            //console.log("Index: " + index);
+            //Grabbing the base64 part only
+            imgUrl = imgUrl.substring(index+1);
+                
+            ga('send', 'Schedule png download', 'User clicked', 'imgurl', imgUrl);
+            $('body').css('cursor', 'wait');
+            $.ajax({
+                type: "POST",
+                url: 'http://apps.janeullah.com/coursepicker/classes/controllers/schedulecontroller.php',
+                data: { action : "downloadSchedule", dataUrl : imgUrl}
+            })
+            .done(function(msg){
+                $('body').css('cursor', 'auto');
+                console.log(msg);
+                var msgObj = JSON.parse(msg);
+                imgToken = msgObj.imgToken;
+                if (msgObj.imgToken.length > 0){
+                    //Should be a url to http://apps.janeullah.com/coursepicker/assets/schedules/schedule_autogenid.png
+                    var imgUrl = "http://apps.janeullah.com/coursepicker/assets/schedules/schedule_" + msgObj.imgToken + ".png";
+                    $('#canvasImage').html("").append("Click <a href=\"" + imgUrl + "\" title=\"Click to view image or right-click to save link as.\">this link</a> to load your schedule as a .png file or right-click <a href=\"" + imgUrl + "\" title=\"Click to view image or right-click to save link as.\">the link</a> and choose \"Save Link As\".");
+                    $('#errorMessage').html("").hide();
+                }else{
+                    $('#canvasImage').html("").append("<p class=\"alert-danger\">Unable to save .png file: " + msgObj.errorMessage + "</p>").show();
+                }
+            })
+            .fail(function(msg){
+                $('body').css('cursor', 'auto');
+                $('#canvasImage').html("").append("<p class=\"alert-danger\">Error getting png file.</p>").show();
+                console.log(msg + "Error getting png file.");
+            });	
+        }else{
+            console.log("Index not found");
+            $('#canvasImage').html("").append("Invalid image data url.").show();
+            console.log("Invalid image data url.");
+        }
+        return imgToken;
     }else{
-        console.log("Index not found");
-        $('#errorMessage').empty().append("Invalid image data url.").show();
-        console.log("Invalid image data url.");
+        $('#canvasImage').html("").append("<p class=\"alert-danger\">Please add at least 1 section to your schedule before using this feature.</p>");
     }
-    return imgToken;
 }
 
 
