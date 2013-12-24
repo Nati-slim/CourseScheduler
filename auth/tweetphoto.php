@@ -100,7 +100,7 @@ if ($requestType === 'POST') {
 
     $image = file_get_contents($session->imgUrl);
     $params = array(
-        'media[]' => "@{$image}",
+        'media[]' => $image,
         'status'  => getPost('status')
     );    
 

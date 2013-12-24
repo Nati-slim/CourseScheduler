@@ -158,9 +158,9 @@ function access_token($tmhOAuth) {
     )));
 
     if ($code == 200) {
-        $session->twitter_oauth_token = $_SESSION['oauth']['oauth_token'];
-        $session->twitter_oauth_token_secret = $_SESSION['oauth']['oauth_token_secret'];
         $oauth_creds = $tmhOAuth->extract_params($tmhOAuth->response['response']);
+        $session->twitter_oauth_token = $oauth_creds['oauth_token'];
+        $session->twitter_oauth_token_secret = $oauth_creds['oauth_token_secret'];
         $results['oauth_creds'] = $oauth_creds;
         $results['errorMessage'] = "";
     }else{
