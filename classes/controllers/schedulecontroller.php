@@ -351,18 +351,16 @@ if ($requestType === 'POST') {
                             $result['term'] = $arrayVal[0];
                             $result['currentProgram']=  $arrayVal[1];
                             $result['errorMessage'] = "This schedule is bound to the " . $semesters[$userschedule->getSemester()."-".$userschedule->getCampus()] . " semester. Only add courses from the " . $semesters[$userschedule->getSemester()."-".$userschedule->getCampus()] . " catalog.";
-                            $session->errorMessage = $result['errorMessage'];
+                            echo json_encode($result);
                         }elseif (strcmp($section->getStatus(), "Available") == 0) {
                             //print_r($userschedule);
                             $status = $userschedule->addSection($section);
                             if (!$status) {
                                 $result['errorMessage'] = $userschedule->getErrorMessage();
-                                $session->errorMessage = $userschedule->getErrorMessage();
-                                //echo json_encode($result);
+                                echo json_encode($result);
                             } else {
                                 $session->errorMessage = "";
                                 $session->userid = $userschedule->getUserId();
-                                $session->infoMessage = "Section " . $callNum. " (". $section->getCoursePrefix()."-".$section->getCourseNumber().") added!";
                                 $session->schedule = $userschedule->to_json();
                                 $session->scheduleObj = serialize($userschedule);
                                 // track an event
@@ -387,43 +385,41 @@ if ($requestType === 'POST') {
                                 } catch (Exception $e) {
                                     $result['errorMessage'] = fail("Error updating the internal User object",$e->getMessage());
                                 }
-
-                                $session->errorMessage = $result['errorMessage'];
-                                //echo $userschedule->to_json();
+                                $result['errorMessage'] = "";
+                                $result['infoMessage'] = "Section " . $callNum. " (". $section->getCoursePrefix()."-".$section->getCourseNumber().") added!";
+                                $result['userschedule'] = $userschedule->to_json();
+                                echo json_encode($result);
                             }
                         } else {
                             $result['callNumber'] = $callNum;
                             $result['term'] = $arrayVal[0];
                             $result['currentProgram']=  $arrayVal[1];
                             $result['errorMessage'] = "Section is not Available";
-                            $session->errorMessage = $result['errorMessage'];
-                            //echo json_encode($result);
+                            echo json_encode($result);
                         }
                     } else {
                         $result['callNumber'] = $callNum;
                         $result['term'] = $arrayVal[0];
                         $result['currentProgram'] =  $arrayVal[1];
                         $result['errorMessage'] = fail("Invalid section chosen.",$db->errorMessage);
-                        $session->errorMessage = $result['errorMessage'];
-                        //echo json_encode($result);
+                        echo json_encode($result);
                     }
                 } catch (Exception $e) {
                     $result['callNumber'] = $callNum;
                     $result['term'] = $arrayVal[0];
                     $result['currentProgram'] =  $arrayVal[1];
                     $result['errorMessage'] = fail("Error instantiating a helper object",$e->getMessage());
-                    $session->errorMessage = $result['errorMessage'];
-                    //echo json_encode($result);
+                    echo json_encode($result);
                 }
             } else {
                 $result['errorMessage'] = "Invalid number of parameters found in selected semester.";
-                $session->errorMessage = $result['errorMessage'];
+                echo json_encode($result);
             }
         } else {
             $result['errorMessage'] = "Please choose a semester before adding a section.";
-            $session->errorMessage = $result['errorMessage'];
+            echo json_encode($result);
         }
-        header("Location: http://apps.janeullah.com/coursepicker/");
+        //header("Location: http://apps.janeullah.com/coursepicker/");
     } elseif (strcmp($action, "removeSection") == 0) {
         $callNum = getPost("sectionToBeRemoved");
         $userid = $session->userid;

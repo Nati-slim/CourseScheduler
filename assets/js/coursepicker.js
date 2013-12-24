@@ -23,7 +23,7 @@ $(document).ready(function(){
     CELL_WIDTH = CANVAS_WIDTH/daysOfWeek.length;
     CELL_HEIGHT = CANVAS_HEIGHT/timesOfDay.length;
 	drawTable();
-    getSchedule();
+    drawSchedule();
     ctx.renderAll();
     onMove();
 });
@@ -32,7 +32,23 @@ $(document).ready(function(){
  * Function which grabs the schedule object
  * and converts to JSON object
  **/ 
-function getSchedule(){
+function drawSchedule(){
+    try{
+        schedObj = JSON.parse(sched);
+        Object.keys(schedObj).forEach(function(key){
+           parseSection(schedObj[key]); 
+        });
+    }catch(e){
+        console.log(e);
+        console.log("Couldn't parse sections");
+    }
+}
+
+/**
+ * Function which grabs the schedule object
+ * and converts to JSON object
+ **/ 
+function redrawSchedule(sched){
     try{
         schedObj = JSON.parse(sched);
         Object.keys(schedObj).forEach(function(key){

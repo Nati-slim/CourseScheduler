@@ -45,11 +45,10 @@ var selectOptions;
 							classDiv += "<span title=\"" +mtgs[key] + "\" ";
 							classDiv += "class=\"day\">" 
 							classDiv += key + "</span>";
-							//+ " : " + mtgs[key] + "<br/>";
 						});
 						classDiv += "</span></div>";						
 						$('#userSchedule').append(classDiv);
-						//console.log(section);
+						
 					}); //object keys
 					var removeAll = "<input title=\"This creates a new schedule.\" class=\"form-control rounded-corners\" onclick=\"removeAll()\" name=\"removeAllButton\" id=\"removeAllButton\" type=\"submit\" value=\"New Schedule\" />";
 					$('#userSchedule').append(removeAll);
@@ -139,12 +138,16 @@ var selectOptions;
             })
             .done(function(msg){
                 $('body').css('cursor', 'auto');
+                $('#errorMessage').empty().hide();
+                $('#message').empty().append("Filtered sections.").show();
                 //console.log(msg);
                 sListings = msg;
                 populateSections(msg);
             })
             .fail(function(msg){
                 $('body').css('cursor', 'auto');
+                $('#errorMessage').empty().append(msg.responseText).show();
+                $('#message').empty().hide();
                 console.log(msg.responseText);
             });
 		}
@@ -224,10 +227,36 @@ var selectOptions;
 		
 		/* Add a single section*/
 		function addSection(callNumber){
-			var formName = "#addSectionForm_" + callNumber;
-			//console.log(formName);
+			console.log("call number: " + callNumber);
             ga('send', 'Add Section', 'User clicked', 'addSection', callNumber);
-			$(formName).submit();
+			$.ajax({
+                type: "POST",
+                url: 'http://apps.janeullah.com/coursepicker/classes/controllers/schedulecontroller.php',
+                data: { action : "addSection", addSectionCallNumber : callNumber},
+                dataType: "json"
+            })
+            .done(function(msg){
+                $('body').css('cursor', 'auto');
+                //errorMessage will be empty if no problems
+                if (msg.errorMessage.length > 0){
+                    console.log(msg.errorMessage);
+                    $('#errorMessage').html("").append(msg.errorMessage).show();
+                    $('#message').html("").hide();
+                }else{
+                    console.log("Added section");
+                    $('#errorMessage').html("").hide();
+                    $('#message').html("").append(msg.infoMessage).show();
+                    sched = msg.userschedule; 
+                    redrawSchedule(sched);               
+                    ctx.renderAll();
+                }
+            })
+            .fail(function(msg){
+                $('body').css('cursor', 'auto');
+                $('#errorMessage').html("").append(msg.responseText).show();
+                $('#message').html("").hide();
+                console.log(msg.responseText);
+            });
 		}
 
 		/*
@@ -293,10 +322,7 @@ var selectOptions;
             msg += "</span>";
             
 			if (section.status === 'Available'){
-				msg += "<form name=\"addSectionForm_" + section.callNumber + "\" id=\"addSectionForm_" + section.callNumber + "\" method=\"post\" action=\"classes/controllers/schedulecontroller.php\">";
-				msg += "<input type=\"hidden\" id=\"action\" name=\"action\" value=\"addSection\"/>";
-				msg += "<input type=\"hidden\" id=\"addSectionCallNumber_" + section.callNumber  + "\" name=\"addSectionCallNumber\" value=\"" + section.callNumber + "\"/>";
-				msg += "<span title=\"Add this section to your schedule!\" onclick=\"addSection(" + section.callNumber + ")\" class=\"glyphicon glyphicon-plus pull-right plus-sign\"></span></form>";
+				msg += "<span title=\"Add " + section.coursePrefix + "-" + section.courseNumber + " to your schedule!\" onclick=\"addSection(" + section.callNumber + ")\" class=\"glyphicon glyphicon-plus pull-right plus-sign\"></span>";
 			}
             msg += "</div>";
             return msg;

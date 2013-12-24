@@ -300,17 +300,9 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
 					<p id="infoMessage" class="alert alert-info">
 						<?php echo $semesters[$semesterSelected]; ?>
 					</p>
-					<div class="sidebar" id="messages">
-						<?php if (strlen($errorMessage) > 0) { 
-							echo "<script type=\"text/javascript\"> $('#errorMessage').show();";
-                            echo "setTimeout(function(){ $('#errorMessage').hide('slow',function(){}); },10000);</script>";	
-						?>
-                        <p id="errorMessage" class="alert alert-danger"><?php echo $errorMessage;?></p>
-						<?php  }else if (strlen($errorMessage) == 0){	
-							echo "<script type=\"text/javascript\"> $('#errorMessage').hide(); </script>";
-						?>
-							
-						<?php } ?>
+					<div class="sidebar" id="messages">                        
+                        <p id="errorMessage" class="alert alert-danger" style="display:none;"></p>
+                        <p id="message" class="alert alert-success" style="display:none;"></p>
 					</div>			
 				
 					<div class="sidebar" id="changeSemesterDiv">
@@ -378,9 +370,6 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
 								].join(''),                                                                 
 								engine: Hogan                
 							}).on('typeahead:selected',function(obj,datum){
-								//console.log(obj);
-								//console.log(datum.value);
-                                
 								var semSelected = $('#selectedSemester').val();
 								var courseValue  = datum.value;
                                 if (semSelected == ""){
@@ -402,15 +391,12 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
                                     .done(function(msg){
                                         //returns a parsed json object
                                         $('body').css('cursor', 'auto');
-                                        //console.log(msg);
-                                        $('#messages').empty();
-                                        $('#errorMessage').empty().hide();
                                         sListings = msg;
                                         populateSections(msg);
                                     })
                                     .fail(function(msg){
                                         $('body').css('cursor', 'auto');
-                                        $('#messages').empty().append("<p class=\"alert alert-danger\">" + msg.responseText+ "</p>").show();
+                                        $('#errorMessage').html("").append(msg.responseText).show();
                                         setTimeout(function(){ 
                                             $('#messages').hide("slow",function(){}); 
                                         }, 4000);  
@@ -458,21 +444,19 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
                                     $('body').css('cursor', 'auto');
                                     console.log(msg);
                                     if (msg.length == 0){
-                                        $('#messages').empty().append("<p class=\"alert alert-info\">No sections found.</p>").show();
+                                        $('#messages').html("").append("No sections found.").show();
                                     }else{
-                                        $('#messages').empty();
-                                        $('#errorMessage').empty().hide();
                                         sListings = msg;
                                         populateSections(msg);
                                     }
                                 })
                                 .fail(function(msg){
                                     $('body').css('cursor', 'auto');
-                                    $('#messages').empty().append(msg.responseText).show();
+                                    $('#messages').html("").append(msg.responseText).show();
                                     setTimeout(function(){ 
                                         $('#messages').hide("slow",function(){}); 
                                     }, 4000);
-                                    console.log("<p class=\"alert alert-danger\">" + msg.responseText+ "</p>");
+                                    console.log(msg.responseText);
                                 });
                             }
                         }
