@@ -13,6 +13,14 @@ var selectOptions;
 			
 			//Add schedule
 			try{
+                displaySchedule();
+			}catch(e){
+				console.log(e);
+			}
+			
+		});
+		
+        function displaySchedule(){
 				//console.log(sched);
 				//Gets converted to JSON object
 				schedule = $.parseJSON(sched);
@@ -55,12 +63,8 @@ var selectOptions;
 					$('#userSchedule').show();
 					addMouseOverEffects();
 				}
-			}catch(e){
-				console.log(e);
-			}
-			
-		});
-		
+        }
+        
 		/* Function called when user clicks the Remove All Button*/
 		function removeAll(){
 			$('#removeAllSectionInfo').show();
@@ -247,7 +251,8 @@ var selectOptions;
                     $('#errorMessage').html("").hide();
                     $('#message').html("").append(msg.infoMessage).show();
                     sched = msg.userschedule; 
-                    redrawSchedule(sched);               
+                    redrawSchedule(sched); 
+                    displaySchedule();              
                     ctx.renderAll();
                 }
             })
@@ -275,11 +280,32 @@ var selectOptions;
 	        })
 			.done(function(msg){
 				$('body').css('cursor', 'auto');
-				var schedSectionID = "#schedule_" + callNumber;
-				$(schedSectionID).hide('slow', function(){ 
-					$(schedSectionID).remove(); 
-				});
-				setTimeout(function () { location.reload(true); }, 1000);
+                if (msg.errorMessage.length == 0){
+                    $('#errorMessage').html("").hide();
+                    $('#message').html("").append(msg.infoMessage).show();
+                    var schedSectionID = "#schedule_" + callNumber;
+                    $(schedSectionID).hide('slow', function(){ 
+                        $(schedSectionID).remove(); 
+                    });
+                    if (msg.userschedule === '[]'){                       
+                        console.log("empty schedule");
+                        //remove all objects from canvas
+                        sched = "{}"; 
+                        ctx.clear();
+                        drawTable();
+                        drawSchedule();
+                    }else{
+                        sched = msg.userschedule;
+                        ctx.clear();
+                        drawTable();
+                        redrawSchedule(sched);
+                    }
+                    $('#intro').html("");       
+                }else{                    
+                    $('#errorMessage').html("").append(msg.errorMessage).show();
+                    $('#message').html("").hide();
+                    console.log(msg.errorMessage);
+                }
   			})
   			.fail(function(msg){
 				console.log("Error: " + msg.responseTextvalue);

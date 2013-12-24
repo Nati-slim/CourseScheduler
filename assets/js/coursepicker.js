@@ -48,9 +48,9 @@ function drawSchedule(){
  * Function which grabs the schedule object
  * and converts to JSON object
  **/ 
-function redrawSchedule(sched){
+function redrawSchedule(schedule){
     try{
-        schedObj = JSON.parse(sched);
+        schedObj = JSON.parse(schedule);
         Object.keys(schedObj).forEach(function(key){
            parseSection(schedObj[key]); 
         });

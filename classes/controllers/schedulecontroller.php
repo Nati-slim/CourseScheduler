@@ -419,7 +419,6 @@ if ($requestType === 'POST') {
             $result['errorMessage'] = "Please choose a semester before adding a section.";
             echo json_encode($result);
         }
-        //header("Location: http://apps.janeullah.com/coursepicker/");
     } elseif (strcmp($action, "removeSection") == 0) {
         $callNum = getPost("sectionToBeRemoved");
         $userid = $session->userid;
@@ -433,8 +432,7 @@ if ($requestType === 'POST') {
                     echo json_encode($result);
                 } else {
                     $session->errorMessage = "";
-                    $session->userid = $userschedule->getUserId();;
-                    $session->infoMessage = "Section " . $callNum . " deleted!";
+                    $session->userid = $userschedule->getUserId();
                     $session->schedule = $userschedule->to_json();
                     $session->scheduleObj = serialize($userschedule);
                     
@@ -459,7 +457,11 @@ if ($requestType === 'POST') {
                         }
                     }
                     $mp->track("remove section", array("success" => $callNum));
-                    echo $userschedule->to_json();
+                    $result['errorMessage'] = "";
+                    $result['infoMessage'] = "Section " . $callNum . " deleted!";
+                    $result['userschedule'] = $userschedule->to_json();
+                    echo json_encode($result);
+                    //echo $userschedule->to_json();
                 }
             } else {
                 $result['callNumber'] = $callNum;
