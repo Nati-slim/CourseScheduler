@@ -451,13 +451,10 @@ var LabeledRect = fabric.util.createClass(fabric.Rect, {
 function onMove(){
     ctx.on('object:moving', function(e) {
         var activeObject = e.target;
-       
-        //console.log(activeObject.get('left'), activeObject.get('top'));
         var left = activeObject.get('left');
         var top = activeObject.get('top');
         if (left <= 17 && top <= 21){
-            console.log(activeObject);
-            
+            console.log(activeObject);            
             var callNum = activeObject.get('callNumber');
             console.log("callNumber: " + callNum);
             if (window.confirm("Are you sure you want to delete this section from your schedule?")) { 

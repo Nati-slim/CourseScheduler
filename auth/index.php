@@ -5,6 +5,7 @@ require_once dirname(__FILE__) . '/../../../creds/coursepicker_debug.inc';
 require_once dirname(__FILE__) . '/../classes/helpers/session.php';
 
 $result = array();
+$tmhOAuth = new tmhOAuth();
 $session = new Session();
 $debug = DEBUGSTATUS;
 //Set up debug stuff
@@ -91,27 +92,32 @@ function uri_params() {
 
 
 function request_token($tmhOAuth) {
+    global $session;
     $results = array();
     $code = $tmhOAuth->apponly_request(array(
         'without_bearer' => true,
         'method' => 'POST',
         'url' => $tmhOAuth->url('oauth/request_token', ''),
         'params' => array(
-          'oauth_callback' => php_self(false),
+            'oauth_callback' => php_self(false),
         ),
     ));
 
     if ($code != 200) {
-        $results['errorMessage'] = fail("There was an error communicating with Twitter.",$tmhOAuth->response['response']);
+        $results['errorMessage'] = fail("There was an error communicating with Twitter.",$tmhOAuth->response['raw']);
+        unset($_SESSION['oauth']);
         return $results;
     }
 
     // store the params into the session so they are there when we come back after the redirect
+    
     $_SESSION['oauth'] = $tmhOAuth->extract_params($tmhOAuth->response['response']);
-
+    $session->twitter_oauth = $_SESSION['oauth'];
+ 
     // check the callback has been confirmed
     if ($_SESSION['oauth']['oauth_callback_confirmed'] !== 'true') {
         $results['errorMessage'] =  fail('The callback was not confirmed by Twitter so we cannot continue.');
+        unset($_SESSION['oauth']);
     } else {
         $url = $tmhOAuth->url('oauth/authorize', '') . "?oauth_token={$_SESSION['oauth']['oauth_token']}";
         $resultS['errorMessage'] = "";
@@ -121,17 +127,20 @@ function request_token($tmhOAuth) {
 }
 
 function access_token($tmhOAuth) {
+    global $session;
     $results = array();
     $params = uri_params();
     if ($params['oauth_token'] !== $_SESSION['oauth']['oauth_token']) {
         $results['errorMessage'] = fail('The oauth token you started with doesn\'t match the one you\'ve been redirected with. do you have multiple tabs open?');
-        $session->unsetAll();
+        unset($_SESSION['oauth']);
+        //$session->unsetAll();
         return $results;
     }
 
     if (!isset($params['oauth_verifier'])) {
-        $results['errorMessage'] = fail('The oauth verifier is missing so we cannot continue. did you deny the appliction access?');
-        $session->unsetAll();
+        $results['errorMessage'] = fail('The oauth verifier is missing so we cannot continue. did you deny the application access?');
+        unset($_SESSION['oauth']);
+        //$session->unsetAll();
         return $results;
     }
 
@@ -149,6 +158,8 @@ function access_token($tmhOAuth) {
     )));
 
     if ($code == 200) {
+        $session->twitter_oauth_token = $_SESSION['oauth']['oauth_token'];
+        $session->twitter_oauth_token_secret = $_SESSION['oauth']['oauth_token_secret'];
         $oauth_creds = $tmhOAuth->extract_params($tmhOAuth->response['response']);
         $results['oauth_creds'] = $oauth_creds;
         $results['errorMessage'] = "";
@@ -158,6 +169,9 @@ function access_token($tmhOAuth) {
     
     return $results;
 }
+
+
+
 
 function getProfileImage($screen_name,$tmhOAuth){
     $results = array();
@@ -181,7 +195,7 @@ function getProfileImage($screen_name,$tmhOAuth){
 }
 
 
-$tmhOAuth = new tmhOAuth();
+
 //print_r($tmhOAuth);
 $params = uri_params();
 $session->request_success = false;

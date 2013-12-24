@@ -14,6 +14,31 @@
 		  </div><!-- /.modal-dialog -->
 	</div><!-- /.modal -->
 	
+	<!-- Tweet Schedule Modal -->
+	<div class="modal fade" id="tweetModal" tabindex="-1" role="dialog" aria-labelledby="tweetModalLabel" aria-hidden="true">
+		  <div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title" id="tweetModalLabel">Tweet This Schedule!</h4>
+					</div>
+					<div class="modal-body" id="tweetSchedule">
+                        <p id="tweetError" class="alert alert-danger" style="display:none;"></p>
+                        <p id="tweetSuccess" class="alert alert-success" style="display:none;"></p>
+                        <p>By clicking the "Tweet this" button, you are authorizing <a href="http://apps.janeullah.com/coursepicker/" title="CoursePicker">CoursePicker</a> to post a status update to your twitter
+                        account with the attached schedule image <a href="<?php echo $session->imgUrl; ?>" title="Your Class Schedule">here</a>.</p>
+                        <form id="tweetForm" name="tweetForm" class="form-signin" role="form" action="http://apps.janeullah.com/coursepicker/auth/tweetphoto.php" method="post" style="margin-left:4px;">
+                            <div class="form-group">
+                                <label for="status">Tweet Text</label>
+                                <textarea type="text" name="status" rows="2" cols="60">Check out my <?php echo $semesters[$semesterSelected]; ?> class schedule created using @coursepicker #coursepicker #uga.</textarea>
+                            </div>
+                            <input type="submit" class="btn btn-primary" value="Tweet This" />
+                        </form>
+					</div>
+				</div><!-- /.modal-content -->
+		  </div><!-- /.modal-dialog -->
+	</div><!-- /.modal -->    
+    
 	<!-- About Modal -->
 	<div class="modal fade" id="aboutModal" tabindex="-1" role="dialog" aria-labelledby="aboutModalLabel" aria-hidden="true">
 		  <div class="modal-dialog">

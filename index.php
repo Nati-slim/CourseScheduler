@@ -278,7 +278,7 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
 							$submenu .= "\"  title=\"Avatar for " . $session->screen_name . "\"/><b class=\"caret\" style=\"float:right;\"></b></a>";
 							$submenu .= "<ul id=\"menuDropdown\" class=\"dropdown-menu\">"
 										. "<li id=\"welcome\">Welcome, " .  $session->screen_name. "</li>"
-										. "<li id=\"saveScheduleLi\"><a href=\"http://apps.janeullah.com/coursepicker/saveschedule.php\" title=\"Click to save your created schedules.\">Save Schedule</a></li>"
+										. "<li id=\"tweetScheduli\"><a data-toggle=\"modal\" href=\"#tweetModal\" title=\"Click to save your created schedules.\">Tweet Schedule</a></li>"
 										. "<li id=\"logoutLi\"><a href=\"#logout\" title=\"Click to log out!\" onclick=\"logout()\">Logout</a></li>"
 										."</ul>"
 										."</li>";
@@ -302,7 +302,7 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
 					</p>
 					<div class="sidebar" id="messages">                        
                         <p id="errorMessage" class="alert alert-danger" style="display:none;"></p>
-                        <p id="message" class="alert alert-success" style="display:none;"></p>
+                        <p id="message" class="alert alert-info" style="display:none;"></p>
 					</div>			
 				
 					<div class="sidebar" id="changeSemesterDiv">

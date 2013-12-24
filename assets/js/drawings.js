@@ -300,7 +300,7 @@ var selectOptions;
                         drawTable();
                         redrawSchedule(sched);
                     }
-                    $('#intro').html("");       
+                    $('#userSchedule .intro').html("");       
                 }else{                    
                     $('#errorMessage').html("").append(msg.errorMessage).show();
                     $('#message').html("").hide();

@@ -40,10 +40,10 @@ class tmhOAuth {
         'user_agent'                 => '',
         'host'                       => 'api.twitter.com',
 
-        'consumer_key'               => CONSUMER_SECRET,
-        'consumer_secret'            => CONSUMER_KEY,
-        'token'                      => ACCESS_TOKEN,
-        'secret'                     => ACCESS_SECRET,
+        'consumer_key'               => CP_CONSUMER_KEY,
+        'consumer_secret'            => CP_CONSUMER_SECRET,
+        'token'                      => '',
+        'secret'                     => '',
 
         // OAuth2 bearer token. This should already be URL encoded
         'bearer'                     => '',

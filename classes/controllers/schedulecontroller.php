@@ -536,6 +536,8 @@ if ($requestType === 'POST') {
                     if (file_put_contents($imgFile, $imgData)) {
                         //$imgFile = substr($imgFile,16);
                         $userschedule->addImageID($token);
+                        $session->imgUrl = "http://apps.janeullah.com/coursepicker/assets/schedules/schedule_" . $token . ".png";
+                        $session->imgToken = $token;
                         $result['imgToken'] = $token;
                         $result['errorMessage'] = "";
                         $session->errorMessage = "";
