@@ -385,7 +385,7 @@ if ($requestType === 'POST') {
                                         //Do nothing. Only means user hasn't logged in yet.
                                     }
                                 } catch (Exception $e) {
-                                    $result['errorMessage'] = $e->getMessage();
+                                    $result['errorMessage'] = fail("Error updating the internal User object",$e->getMessage());
                                 }
 
                                 $session->errorMessage = $result['errorMessage'];
@@ -403,7 +403,7 @@ if ($requestType === 'POST') {
                         $result['callNumber'] = $callNum;
                         $result['term'] = $arrayVal[0];
                         $result['currentProgram'] =  $arrayVal[1];
-                        $result['errorMessage'] = "Invalid section chosen.";
+                        $result['errorMessage'] = fail("Invalid section chosen.",$db->errorMessage);
                         $session->errorMessage = $result['errorMessage'];
                         //echo json_encode($result);
                     }
@@ -411,7 +411,7 @@ if ($requestType === 'POST') {
                     $result['callNumber'] = $callNum;
                     $result['term'] = $arrayVal[0];
                     $result['currentProgram'] =  $arrayVal[1];
-                    $result['errorMessage'] = $e->getMessage();
+                    $result['errorMessage'] = fail("Error instantiating a helper object",$e->getMessage());
                     $session->errorMessage = $result['errorMessage'];
                     //echo json_encode($result);
                 }

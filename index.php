@@ -255,7 +255,7 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
 							echo "<li><a id=\"downloadSchedule\" href=\"#pngModal\" data-toggle=\"modal\">Download Schedule</a></li>";
 						}
 						?>
-                        <li><a id="tourTrigger">Tour</a></li>
+                        <li><a style="cursor:pointer;" id="tourTrigger" title="Click to start a guided tour of CoursePicker">Tour</a></li>
 					</ul>
 					<ul id="social" class="nav navbar-nav navbar-right">
 						<!-- If session exists and user is logged in-->

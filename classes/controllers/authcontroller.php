@@ -319,7 +319,7 @@ if ($requestType === 'POST') {
                                         echo json_encode($result); 
                                     }
                                 }else{
-                                    $result['errorMessage'] = $db->errorMessage;
+                                    $result['errorMessage'] = fail("Error logging your reset request. Apologies for that; Please send an email to welcome@janeullah.com for help.",$db->errorMessage);
                                     echo json_encode($result);
                                 }
                             }else{
@@ -359,15 +359,19 @@ if ($requestType === 'POST') {
                     //create entries in user_metadata and set expiration date for the reset token
                     $db = new UserHelper();
                     $user = $db->checkUser($username,$email);
-                    if ($user){
+                    if ($user && $user instanceof User){
                         if ($user->isVerified()){
                             $res = $db->validateToken($user,$reset_token);
-                            if ($res > 0){
+                            if ($res){
                                 $session->resetRequestValidated = true;
+                                $session->requestingUser = serialize($user);
                                 $result['errorMessage'] = "";
                                 echo json_encode($result);  
                             }else{
-                                $result['errorMessage'] = "This token is either invalid or has expired. Please request another reset token and remember to use it within 24 hours.";
+                                $result['errorMessage'] = fail("This token is either invalid or has expired. Please request another reset token and remember to use it within 24 hours.",$db->errorMessage);
+                                $result['infoMessage'] = $db->infoMessage . "--" . $res;
+                                $result['username'] = $username;
+                                $result['token'] = $reset_token;
                                 echo json_encode($result);  
                             }
                         }else{

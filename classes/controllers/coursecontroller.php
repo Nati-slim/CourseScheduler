@@ -160,9 +160,10 @@ if ($requestType === 'POST') {
             if (count($courseArray) == 2 && count($semesterArray) == 2) {
                 $session->semesterSelected = $semesterArray[0] . "-" . $semesterArray[1];
                 $session->jsonURL = "assets/json/tp/tp-". $semesterArray[0] . "-" . $semesterArray[1] . ".json";
-                $db = new CourseHelper();
+                
                 //$term,$coursePrefix,$courseNumber,$campus
                 try {
+                    $db = new CourseHelper();
                     $courseSections = $db->getSections($semesterArray[0], $courseArray[0], $courseArray[1], $semesterArray[1]);
                     $session->courseSections = $courseSections;
                     $session->courseSectionsJSON = getSectionJSON($courseSections);
@@ -173,7 +174,7 @@ if ($requestType === 'POST') {
                     $session->errorMessage = $result['errorMessage'];
                     echo $session->courseSectionsJSON;
                 } catch (Exception $e) {
-                    $result['errorMessage'] = $e->getMessage();
+                    $result['errorMessage'] = fail("Error retrieving sections from the database",$e->getMessage());
                     $session->errorMessage = $e->getMessage();
                     echo json_encode($result);
                 }
@@ -191,11 +192,6 @@ if ($requestType === 'POST') {
         $available = getPost('available');
         $full = getPost('full');
         $cancelled = getPost('cancelled');
-        /*$m = getPost('m');
-        $t = getPost('t');
-        $w = getPost('w');
-        $r = getPost('r');
-        $f = getPost('f');*/
         if (isset($session->courseSections)) {
             //Course sections will contain ALL the filters don't modify
             //use the JSONified version for results to the page
@@ -205,11 +201,6 @@ if ($requestType === 'POST') {
                 $status = $section->getStatus();
                 $filterOnAvailability = (($status == "Available" && $available == "true") || ($status == "Full" && $full == "true") || ($status == "Cancelled" && $cancelled == "true"));
                 if ($filterOnAvailability) {
-                    /*$meetings = $section->getMeetings();
-                    $filterOnDay = ($m == "true" && array_key_exists("M",$meetings)) or ($t == "true" && array_key_exists("T",$meetings)) or ($w == "true" && array_key_exists("W",$meetings)) or ($r == "true" && array_key_exists("R",$meetings)) or ($f == "true" && array_key_exists("F",$meetings));
-                    if ($filterOnDay){
-                        $filteredSections[$section->getCallNumber()] = $section;
-                    }*/
                     $filteredSections[$section->getCallNumber()] = $section;
                 }
             }
@@ -220,13 +211,11 @@ if ($requestType === 'POST') {
             echo $session->courseSectionJSON;
         } else {
             $result['errorMessage'] = "Please select a course first.";
-            //$mp->track("filter sections", array("error" => $result['errorMessage']));
             $session->errorMessage = $result['errorMessage'];
             echo json_encode($result);
         }
     } else {
         $result['errorMessage'] = "No action found.";
-        //$mp->track("filter sections", array("error" => $result['errorMessage']));
         $session->errorMessage = $result['errorMessage'];
         echo json_encode($result);
     }

@@ -130,18 +130,22 @@ $shortdesc = "A course scheuling app for the University of Georgia Computer Scie
 		<script src="assets/js/bootstrap.min.js" type="text/javascript"></script>	
         <script type="text/javascript">
             $(function(){
+                /**
+                *Confirm user is authorized to change pwd
+                *
+                */
                 $('#confirmCredentialsForm').submit(function(e){
                     e.preventDefault();
                     var username = $('#username').val();
                     var email = $('#email').val();
                     if (username == ""){
-                        $('#confirmCredentialsError').empty();
-                        $('#confirmCredentialsError').append("Username field cannot be empty.").show();
-                        $('#confirmCredentialsSuccess').empty().hide();
+                        $('#errorMessage').empty();
+                        $('#errorMessage').append("Username field cannot be empty.").show();
+                        $('#successMessage').empty().hide();
                     }else if (email == ""){
-                        $('#confirmCredentialsError').empty();
-                        $('#confirmCredentialsError').append("Email field cannot be empty.").show();
-                        $('#confirmCredentialsSuccess').empty().hide();
+                        $('#errorMessage').empty();
+                        $('#errorMessage').append("Email field cannot be empty.").show();
+                        $('#successMessage').empty().hide();
                     }else{
                         $.ajax({
                             type: "POST",
@@ -154,26 +158,73 @@ $shortdesc = "A course scheuling app for the University of Georgia Computer Scie
                             console.log(msg);
                             //> 0 means an error
                             if (msg.errorMessage.length > 0){
-                                $('#confirmCredentialsError').empty();
-                                $('#confirmCredentialsError').append(msg.errorMessage).show();
-                                $('#confirmCredentialsSuccess').hide();
+                                $('#errorMessage').empty();
+                                $('#errorMessage').append(msg.errorMessage).show();
+                                $('#successMessage').hide();
                                 setTimeout(function(){
-                                    $('#confirmCredentialsError').empty().hide("slow",function(){});
+                                    $('#errorMessage').empty().hide("slow",function(){});
                                 }, 20000);
                             }else{
-                                $('#confirmCredentialsError').empty().hide();
-                                $('#confirmCredentialsSuccess').hide();
+                                $('#errorMessage').empty().hide();
+                                $('#successMessage').hide();
                                 $('#confirmCredentialsForm').hide('slow', function(){ });	
                                 $('#resetPasswordForm').show('slow', function(){ });	
                             }
                         })
                         .fail(function(msg){
                             $('body').css('cursor', 'auto');
-                            $('#confirmCredentialsError').empty().append(msg.responseText).show();
-                            $('#confirmCredentialsSuccess').empty().hide();
+                            $('#errorMessage').empty().append(msg.responseText).show();
+                            $('#successMessage').empty().hide();
                             console.log(msg.responseText);
                         });
                     } 
+                    return false;
+                });
+                
+                /**
+                Collect new password                
+                */
+                $('#resetPasswordForm').submit(function(e){
+                    e.preventDefault();
+                    var pass1 = $('#password1').val();
+                    var pass2 = $('#password2').val();
+                    if (pass1 === pass2){
+                        $.ajax({
+                            type: "POST",
+                            url: 'http://apps.janeullah.com/coursepicker/classes/controllers/usercontroller.php',
+                            data: $(this).serialize(),
+                            dataType: "json"
+                        })
+                        .done(function(msg){
+                            $('body').css('cursor', 'auto');
+                            console.log(msg);
+                            //> 0 means an error
+                            if (msg.errorMessage.length > 0){
+                                $('#errorMessage').empty();
+                                $('#errorMessage').append(msg.errorMessage).show();
+                                $('#successMessage').hide();
+                                setTimeout(function(){
+                                    $('#errorMessage').empty().hide("slow",function(){});
+                                }, 20000);
+                            }else{
+                                $('#errorMessage').empty().hide();
+                                $('#successMessage').empty().append("You have successfully reset your password. You will now be redirected to the homepage to login.").show();
+                                setTimeout(function(){                           
+                                    window.location = 'http://apps.janeullah.com/coursepicker/';
+                                }, 5000);
+                            }
+                        })
+                        .fail(function(msg){
+                            $('body').css('cursor', 'auto');
+                            $('#errorMessage').empty().append(msg.responseText).show();
+                            $('#successMessage').empty().hide();
+                            console.log(msg.responseText);
+                        });
+                    }else{
+                         $('#errorMessage').empty().append("Both password fields must match.");
+                         $('#successMessage').empty().hide();
+                         console.log(msg.responseText);
+                    }
                     return false;
                 });
             });
@@ -206,8 +257,8 @@ $shortdesc = "A course scheuling app for the University of Georgia Computer Scie
                 <div class="col-xs-12 col-md-8" id="confirmEmailDiv">     
                     
                     <?php  if ($isValidToken) { ?>
-                        <div class="alert alert-danger" id="confirmCredentialsError" style="display:none"></div>
-                        <div class="alert alert-success" id="confirmCredentialsSuccess" style="display:none"></div>
+                        <div class="alert alert-danger" id="errorMessage" style="display:none"></div>
+                        <div class="alert alert-success" id="successMessage" style="display:none"></div>
                         <form id="confirmCredentialsForm" name="confirmCredentialsForm" class="form-signin" role="form" method="post" action="classes/controllers/authcontroller.php">							
                             <div class="form-group">
                                 <label for="username">Confirm Username</label>
@@ -221,23 +272,24 @@ $shortdesc = "A course scheuling app for the University of Georgia Computer Scie
                             <input type="hidden" id="action" name="action" value="resetPassword" />
                             <button type="submit" class="btn btn-primary">Submit</button>
                             <button type="button" class="btn btn-default">Clear</button> 
-                        </form> 
+                        </form>                         
                         
-                        
+
+                        <form style="display:none;" id="resetPasswordForm" name="resetPasswordForm" class="form-signin" role="form" method="post" action="classes/controllers/authcontroller.php"  >
+                            <div class="form-group">
+                                <label for="password1">Password</label>
+                                <input type="password" class="form-control" id="password1" name="password1" placeholder="Password" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="password2">Re-Enter Password</label>
+                                <input type="password" class="form-control" id="password2" name="password2" placeholder="Re-Enter Password" required>
+                            </div>
+                            <input type="hidden" id="action" name="action" value="resetPassword" />
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        </form>  
+                            
                         <?php if (isset($session->resetRequestValidated) && $session->resetRequestValidated){ ?>
-                            <form id="resetPasswordForm" name="resetPasswordForm" class="form-signin" role="form" method="post" action="classes/controllers/authcontroller.php"  >
-                                <div class="form-group">
-                                    <label for="password1">Password</label>
-                                    <input type="password" class="form-control" id="password1" name="password1" placeholder="Username" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="password2">Re-Enter Password</label>
-                                    <input type="password" class="form-control" id="password2" name="password2" placeholder="Email" required>
-                                </div>
-                                <input type="hidden" id="action" name="action" value="resetPassword" />
-                                <button type="submit" class="btn btn-primary">Submit</button>
-                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                            </form>  
                         <?php } ?>  
                     <?php } else { ?>  
                         <p id="errorMessage" class="alert alert-danger"><?php echo $result['errorMessage']; ?>.</p>

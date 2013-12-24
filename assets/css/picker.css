@@ -15,8 +15,8 @@
 
 #manualEntry{
     font-weight: bold;
-    border: 2px solid #428BCA;
-    background-color: #428BCA;
+    border: 2px solid #00628B;
+    background-color: #00628B;
     color: white;
     width:4px;
     -moz-border-radius: 8px;
@@ -56,7 +56,7 @@ span.intro{
 .notification{
 	font-size:18px;
 	color:#F0F0F0;
-	background-color:#428BCA;
+	background-color:#00628B;
 }
 
 #imgUrlInfo{
@@ -114,13 +114,17 @@ ul.dropdown-menu li{
     font-size: 140%;
     font-weight: bold;
     color: white;
-    background-color: #004A61;
+    background-color: #00628B;
 }
 
 #semesterSelection,#selectedSchedule{
-    background-color:#f0f0f0;
-    color:#004A61;
+    background-color:#f3f3f3;
+    color:#00628B;
     font-size:130%;
+}
+
+#filterListings{
+    background-color:#00628B;
 }
 
 /*https://developer.mozilla.org/en-US/docs/Web/Guide/CSS/Using_CSS_transitions*/

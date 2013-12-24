@@ -116,7 +116,7 @@ function get_ip_address(){
     }
 }
 
-public function validate_ip($ip)
+function validate_ip($ip)
 {
     if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) === false)
     {
@@ -475,6 +475,46 @@ if ($requestType === 'POST') {
         $session->unsetAll();
         $result['errorMessage'] = "";
         echo json_encode($result);
+    } elseif (strcmp($action, "resetPassword") == 0){
+        $pass1 = getPost("password1");
+        $pass2 = getPost("password2");
+        if ($pass1 === $pass2){
+            //Check that user has passed the token validation and authentication step
+            if (isset($session->resetRequestValidated) && $session->resetRequestValidated){
+                $pwdCheck = pwdcheck($pass1);
+                if ($pwdCheck === 'OK') {
+                    $hash = $hasher->HashPassword($password1);
+                    if (strlen($hash) < 20) {
+                        $result['errorMessage'] = fail('Failed to hash new password', $hash);
+                    } else {
+                        unset($hasher);
+                        $db = new UserHelper();
+                        $user = unserialize($session->requestingUser);
+                        $res = $db->updatePassword($user,$pass1);
+                        if ($res){
+                            $expire = $db->expireResetToken($user,$session->validToken);
+                            if ($expire){
+                                $result['errorMessage'] = "";
+                                //Invalidate set tokens
+                                unset($session->resetRequestValidated);
+                                unset($session->validToken);
+                            }else{                                
+                                $result['errorMessage'] = fail("Error expiring reset token.",$db->errorMessage);
+                            }
+                        }else{
+                            $result['errorMessage'] = fail("Error updating the password. Please send an email to welcome@janeullah.com",$db->errorMessage);
+                        }
+                    }
+                }else{
+                    $result['errorMessage'] = $pwdCheck;
+                }
+            }else{
+                $result['errorMessage'] = "Reset request not validated. Please click the link and begin the process again.";
+            }
+        }else{
+            $result['errorMessage'] = "Both passwords must match."; 
+        }  
+        echo json_encode($result);          
     } else {
         $result['errorMessage'] = "Invalid action.";
         $session->errorMessage = $result['errorMessage'];

@@ -5,6 +5,9 @@ require_once dirname(__FILE__) . "/../models/User.php";
 
 class UserHelper{
 	private $authenticateuser;
+    private $updatepassword;
+    private $checktokenexpiration;
+    private $expireresettoken;
 	private $checkuser;
 	private $adduser;
 	private $deleteuser;
@@ -15,6 +18,7 @@ class UserHelper{
 	private $setmetadata;
 	private $truncatetable;
     private $dbconn;
+    public  $infoMessage;
 	public $errorMessage;
 
 	/**
@@ -30,11 +34,13 @@ class UserHelper{
 			}else{
 				//echo $this->dbconn->host_info . "\n";
 				$this->deleteuser = $this->dbconn->prepare("delete * from coursepicker_users where userid = ?");
-				$this->authenticateuser = $this->dbconn->prepare("select * from coursepicker_users where username = ?");
+				$this->expireresettoken = $this->dbconn->prepare("update coursepicker_users_metadata set reset_expiration_date = NOW() where userid = ? and reset_token = ?");
+                $this->authenticateuser = $this->dbconn->prepare("select * from coursepicker_users where username = ?");
                 $this->checkuser = $this->dbconn->prepare("select * from coursepicker_users where username = ? and email = ?");
                 $this->checkactivationtoken = $this->dbconn->prepare("select * from coursepicker_users where activation_token = ?");
-                $this->checkresettoken = $this->dbconn->prepare("select count(*) from coursepicker_users_metadata where reset_token = ? and userid = ?");
+                $this->checkresettoken = $this->dbconn->prepare("select * from coursepicker_users_metadata where reset_token = ? and userid = ?");
                 $this->setverifiedstatus = $this->dbconn->prepare("update coursepicker_users set emailVerified = ? where username = ?"); 
+				$this->updatepassword = $this->dbconn->prepare("update coursepicker_users set password = ? where id = ?"); 
 				$this->setmetadata = $this->dbconn->prepare("insert into coursepicker_users_metadata (id, userid, activation_token, activation_date, activation_ip, login_attempts, login_after, reset_token, reset_expiration_date, reset_request_ip, resend_activation_ip) values (DEFAULT,?,?,NOW(),?,DEFAULT,DEFAULT,DEFAULT,DEFAULT,DEFAULT,DEFAULT)");
 				$this->resetrequest = $this->dbconn->prepare("update coursepicker_users_metadata set reset_token = ?, reset_expiration_date = ?, reset_request_ip = ? where userid =?");
 				$this->adduser = $this->dbconn->prepare("insert into coursepicker_users (id,userid,firstname,lastname,username,email,emailVerified,password,registration_date,activation_token,registration_ip) values(DEFAULT,?,DEFAULT,DEFAULT,?,?,DEFAULT,?,NOW(),?,?)");
@@ -236,7 +242,7 @@ class UserHelper{
 				//switched from using fetch() to store_result() because of mysql error 2014 about commands being out of sync
 				//storeresult buffers the fetched data
 				$this->errorMessage = "Fetch failed (DB): (" . $this->dbconn->errno . ") " . $this->dbconn->error;
-				$this->errorMessage .= "Fetch for gethash failed (STMT): (" . $this->checkuser->errno . ") " . $this->checkuser->error;
+				$this->errorMessage .= "Fetch for checkUser failed (STMT): (" . $this->checkuser->errno . ") " . $this->checkuser->error;
 			}else if (!($this->checkuser->bind_result($id,$userid,$firstname,$lastname,$name,$email,$emailVerified,$passhash,$registration_date,$activation_token,$registration_ip))){
 				$this->errorMessage = "Binding for checkuser results failed: (" . $this->checkuser->errno . ") " . $this->checkuser->error;
 			}else{
@@ -263,7 +269,10 @@ class UserHelper{
 		return null;
 	}	
     
-    
+    /**
+     * Track token, ip and date for the reset request
+     * 
+     */ 
     public function logResetRequest($user,$token,$reset_ip,$reset_expiration){
 		try{
 			if (!($this->resetrequest)){
@@ -282,9 +291,34 @@ class UserHelper{
 		return false;
     }
     
-    //checkResetToken($user,$reset_token);
+    /**
+     * Expire reset token after its use
+     * 
+     */ 
+    public function expireResetToken($user,$token){
+		try{
+			if (!($this->expireresettoken)){
+				$this->errorMessage =  "Prepare failed for updatepassword: (" . $this->dbconn->errno . ") " . $this->dbconn->error;
+			}else if (!($this->expireresettoken->bind_param("ds",$user->getId(),$token))){
+				$this->errorMessage =  "Binding parameters failed for expireResetToken: (" . $this->expireresettoken->errno . ") " . $this->expireresettoken->error;
+			}else if (!($value = $this->expireresettoken->execute())){
+				$this->errorMessage =  "Execute failed for expireResetToken: (" . $this->expireresettoken->errno . ") " . $this->expireresettoken->error;
+			}else{
+				$this->errorMessage = "";
+				return true;
+			}
+		}catch(Exception $e){
+			$this->errorMessage = $e->getMessage();
+		}
+		return false;
+    }
+    
+    /**
+     * 
+     * 
+     */ 
     public function validateToken($user,$reset_token){
-        $result = -1;
+        $result = false;
 		try{
 			if (!($this->checkresettoken)){
 				$this->errorMessage = "Prepare for checkresettoken failed: (" . $this->dbconn->errno . ") " . $this->dbconn->error;
@@ -297,11 +331,15 @@ class UserHelper{
 				//storeresult buffers the fetched data
 				$this->errorMessage = "Fetch failed (DB): (" . $this->dbconn->errno . ") " . $this->dbconn->error;
 				$this->errorMessage .= "Fetch for checkresettoken failed (STMT): (" . $this->checkresettoken->errno . ") " . $this->checkresettoken->error;
-			}else if (!($this->checkresettoken->bind_result($count))){
+			}else if (!($this->checkresettoken->bind_result($id,$userid,$activation_token,$activation_date,$activation_ip,$login_attempts,$login_after,$reset_token,$reset_expiration_date,$reset_request_ip,$resend_activation_ip))){
 				$this->errorMessage = "Binding for checkresettoken results failed: (" . $this->checkresettoken->errno . ") " . $this->checkresettoken->error;
 			}else{
 				if ($this->checkresettoken->fetch() && !($this->dbconn->errno)){
-					$result = $count;
+                    //check if expiration date is still valid
+                    $today = new DateTime(null, new DateTimeZone('America/New_York'));//date('Y-m-d H:i:s');
+                    $expdate = DateTime::createFromFormat('Y-m-d H:i:s',$reset_expiration_date);
+					$result = ($today < $expdate);
+                    //$this->infoMessage = $expdate . "-" . $today . " " . $reset_expiration_date;
 				}
 				if ($this->dbconn->errno){
 					$this->errorMessage = "Fetch failed (DB): (" . $this->dbconn->errno . ") " . $this->dbconn->error;
@@ -316,6 +354,36 @@ class UserHelper{
 		return $result;
     }
     
+    private function checkTokenExpiration($token){
+        
+    }
+  
+    /**
+     * Update the password hash of the user
+     * 
+     * @param User $user user to update
+     * @param String $hash the hashed password
+     * 
+     * @return boolean true if update succeeded; false otherwise.
+     * 
+     */ 
+  	function updatePassword($user,$hash){
+		try{
+			if (!($this->updatepassword)){
+				$this->errorMessage =  "Prepare failed for updatepassword: (" . $this->dbconn->errno . ") " . $this->dbconn->error;
+			}else if (!($this->updatepassword->bind_param("sd",$hash,$user->getId()))){
+				$this->errorMessage =  "Binding parameters failed for updatepassword: (" . $this->updatepassword->errno . ") " . $this->updatepassword->error;
+			}else if (!($value = $this->updatepassword->execute())){
+				$this->errorMessage =  "Execute failed for addUser: (" . $this->updatepassword->errno . ") " . $this->updatepassword->error;
+			}else{
+				$this->errorMessage = "";
+				return true;
+			}
+		}catch(Exception $e){
+			$this->errorMessage = $e->getMessage();
+		}
+		return false;
+	}  
     
 	/**
      * Function to add a user to the database
