@@ -58,114 +58,51 @@ function getPost($var)
     return $val;
 }
 
-function verifyCredentials($tmhOAuth){
-    global $session;
-    $results = array();
-    $code = $tmhOAuth->user_request(array(
-        'url' => $tmhOAuth->url('1.1/account/verify_credentials')
-    ));
-
-    if ($code == 200){
-        $data = json_decode($tmhOAuth->response['response'], true);
-
-        if (isset($data['status'])) {
-            $code = $tmhOAuth->user_request(array(
-                'url' => $tmhOAuth->url('1.1/statuses/oembed'),
-                'params' => array(
-                'id' => $data['status']['id_str']
-                )
-            ));
-
-            if ($code == 200){
-                $tweet = json_decode($tmhOAuth->response['response'], true);
-                $results['tweets'] = $tweet;
-            }
-        }
-        $results['name'] = $data['screen_name'];
-        $results['html'] = $tweet['html'];
-    }else{
-        $results['errorMessage'] = $tmhOAuth->response['error'];
-    }
-    return $results;
-}
-
-
 $requestType = $_SERVER['REQUEST_METHOD'];
 if ($requestType === 'POST') {
-    //verify credential
     $tmhOAuth->reconfigure(array_merge($tmhOAuth->config, array(
         'token'  => $session->twitter_oauth_token,
         'secret' => $session->twitter_oauth_token_secret,
     )));
 
-    $image = file_get_contents($session->imgUrl);
-    $params = array(
-        'media[]' => $image,
-        'status'  => getPost('status')
-    );    
+    try{
+        $image = @file_get_contents($session->imgUrl);
+        if ($image === false){
+            $result['errorMessage'] = 'Please add at least 1 section to your schedule and click the "Download Schedule" link first to create a snapshot of your schedule. Then, click "Tweet Schedule"';
+            echo json_encode($result);
+        }else{
+            $params = array(
+                'media[]' => $image,
+                'status'  => getPost('status')
+            );    
 
-        
-    $code = $tmhOAuth->user_request(array(
-        'method' => 'POST',
-        'url' => $tmhOAuth->url("1.1/statuses/update_with_media"),
-        'params' => $params,
-         'multipart' => true
-        ));
+                
+            $code = $tmhOAuth->user_request(array(
+                'method' => 'POST',
+                'url' => $tmhOAuth->url("1.1/statuses/update_with_media"),
+                'params' => $params,
+                 'multipart' => true
+                ));
 
-    if ($code == 200){
-        $result['errorMessage'] = "";
-        $data = json_decode($tmhOAuth->response['response'], true);
-        $result['message'] = 'You just <a href="https://twitter.com/';
-        $result['message'] .= htmlspecialchars($data['user']['screen_name']);
-        $result['message'] .= '/statuses/';
-        $result['message'] .= htmlspecialchars($data['id_str']);
-        $result['message'] .= '">tweeted</a>';
-        $result['data'] = $data;
-    }else{        
-        $result['errorMessage'] = $tmhOAuth->response['error'];//replace with 'error'
-        $result['raw'] = $tmhOAuth->response['raw'];
-    }
-    $result['code'] = $code;
-    $result['token'] = $session->twitter_oauth_token;
-    $result['secret'] = $session->twitter_oauth_token_secret;
-    /*$val = verifyCredentials($tmhOAuth);
-    if ($val['code'] == 200){ 
-        $image = file_get_contents($session->imgUrl);
-        $params = array(
-            'media[]' => "@{$image}",
-            'status'  => getPost('status')
-        );    
-
-        
-        $code = $tmhOAuth->user_request(array(
-            'method' => 'POST',
-            'url' => $tmhOAuth->url("1.1/statuses/update_with_media"),
-            'params' => $params,
-             true,
-             true
-        ));
-
-        if ($code == 200){
-            $result['errorMessage'] = "";
-            $data = json_decode($tmhOAuth->response['response'], true);
-            $result['message'] = 'You just <a href="https://twitter.com/';
-            $result['message'] .= htmlspecialchars($data['user']['screen_name']);
-            $result['message'] .= '/statuses/';
-            $result['message'] .= htmlspecialchars($data['id_str']);
-            $result['message'] .= '">tweeted</a>';
-            $result['data'] = $data;
-        }else{        
-            $result['errorMessage'] = $tmhOAuth->response['error'];//replace with 'error'
-            $result['raw'] = $tmhOAuth->response['raw'];
+            if ($code == 200){
+                $result['errorMessage'] = "";
+                $data = json_decode($tmhOAuth->response['response'], true);
+                $result['message'] = 'You just <a href="https://twitter.com/';
+                $result['message'] .= htmlspecialchars($data['user']['screen_name']);
+                $result['message'] .= '/statuses/';
+                $result['message'] .= htmlspecialchars($data['id_str']);
+                $result['message'] .= '">tweeted</a>. Thank you for sharing and continue using <a href="http://apps.janeullah.com/coursepicker/" title="Course Picker UGA Class Scheduling">CoursePicker</a>!';
+                $result['data'] = $data;
+            }else{        
+                $result['errorMessage'] = fail("Unable to tweet this schedule",$tmhOAuth->response['error']);
+            }
+            $result['code'] = $code;
+            echo json_encode($result);
         }
-        $result['code'] = $code;
-        $result['token'] = $session->twitter_oauth_token;
-        $result['secret'] = $session->twitter_oauth_token_secret;
-    }else{
-        $result['code'] = $va['code'];
-        $result['errorMessage'] = $val['raw'];
-    }*/
-    echo json_encode($result);
+    }catch(Exception $e){
+        $result['errorMessage'] = fail('Please click the "Download Schedule" link first to create a snapshot of your schedule. Then, click "Tweet Schedule"',$e->getMessage());
+         echo json_encode($result);
+    }
 }else{
     $result['errorMessage'] = "Invalid server request.";
     echo json_encode($result);

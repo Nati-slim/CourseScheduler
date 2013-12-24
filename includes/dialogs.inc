@@ -30,7 +30,7 @@
                         <form id="tweetForm" name="tweetForm" class="form-signin" role="form" action="http://apps.janeullah.com/coursepicker/auth/tweetphoto.php" method="post" style="margin-left:4px;">
                             <div class="form-group">
                                 <label for="status">Tweet Text</label>
-                                <textarea type="text" name="status" rows="2" cols="60">Check out my <?php echo $semesters[$semesterSelected]; ?> class schedule created using @coursepicker #coursepicker #uga.</textarea>
+                                <textarea type="text" name="status" rows="2" cols="70">Check out my <?php echo $semesters[$semesterSelected]; ?> class schedule created using @coursepicker http://bit.ly/coursepicker #uga.</textarea>
                             </div>
                             <input type="submit" class="btn btn-primary" value="Tweet This" />
                         </form>
@@ -51,7 +51,7 @@
 						<p>
                             <strong>What</strong>:
 							<ol id="what">
-                                <li>This is a labor of love by <a href="http://janeullah.com" title="Jane Ullah!">Jane Ullah</a>. :) </li>
+                                <li>This is a labor of love by <a href="http://janeullah.com" title="Jane Ullah!">Jane Ullah</a>: <a href="http://uga.edu" title="Go DAWGS!">UGA student</a>, pet-mom and <a href="http://janetalkscode.com" title="Jane Talks Code">technophile</a>.:) </li>
                                 <li>Other projects: <a href="http://dawgtransit.com" title="DawgTransit - Get around UGA's campus with ease.">DawgTransit</a>, <a href="http://apps.janeullah.com/dawgspeak" title="UGA SLanguage Dictionary">DawgSpeak</a>, and <a href="https://play.google.com/store/apps/details?id=org.janeullah.android.healthrecords" title="Restaurant Health Inspection Records">Restaurant Health Inspection Records app</a> on Google Play.</li>
                                 <li>I write at <a href="http://janetalkscode.com" title="Jane Talks Code!">Jane Talks Code</a> and tweet <a href="https://twitter.com/janetalkstech" title="@janetalkstech on Twitter">@janetalkstech</a>.</li>
                                 <li>The source code for this web application is hosted <a href="https://github.com/janoulle/CourseScheduler" title="CoursePicker Source Code">on Github</a>.<br/><span xmlns:dct="http://purl.org/dc/terms/" property="dct:title">CoursePicker</span> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>.</li>

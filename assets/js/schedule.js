@@ -63,7 +63,7 @@ $(function(){
                     $('#tweetSuccess').html("").append(msg.message).show();
                 }else{
                     $('#tweetSuccess').html("").hide();
-                    $('#tweetError').html("").append(msg.raw).show();
+                    $('#tweetError').html("").append(msg.errorMessage).show();
                 }
             }else{
                 $('#tweetError').html("").append(msg.errorMessage).show();
@@ -75,7 +75,7 @@ $(function(){
         })
         .always(function(msg){
             setTimeout(function(){
-				$('#tweetError').html("").hide('slow',function(){});
+				$('#tweetError').html("").hide();
                 $('#tweetSuccess').html("").hide('slow',function(){});
             }, 20000);	 
         });

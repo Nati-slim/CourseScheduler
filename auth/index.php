@@ -171,32 +171,6 @@ function access_token($tmhOAuth) {
 }
 
 
-
-
-function getProfileImage($screen_name,$tmhOAuth){
-    $results = array();
-    $code = $tmhOAuth->apponly_request(array(
-        'url' => $tmhOAuth->url('1.1/users/lookup.json'),
-        'params' => array(
-        'screen_name' => $screen_name
-        )
-    ));
-    
-    if ($code != 200) {
-        $results['errorMessage'] = fail("There was an error communicating with Twitter.",$tmhOAuth->response['response']);
-        return $results;
-    }
-
-    //Get data
-    $user = $tmhOAuth->extract_params($tmhOAuth->response['response']);
-    $session->twitter_user = $user;
-    $results['user'] = $user;   
-    return $results;
-}
-
-
-
-//print_r($tmhOAuth);
 $params = uri_params();
 $session->request_success = false;
 $session->access_success = false;
@@ -221,12 +195,6 @@ if (!isset($params['oauth_token'])) {
         $session->screen_name = $res['oauth_creds']['screen_name'];
         $session->accessMessage = 'Congratulations! ' . $session->screen_name;
         $session->access_success = true;
-        //update tmhoauth object
-        /*$tmhOAuth->reconfigure(array_merge($tmhOAuth->config, array(
-            'token'  => $res['oauth_creds']['oauth_token'],
-            'secret' => $res['oauth_creds']['oauth_token_secret'],
-        )));
-        $res = getProfileImage($session->screen_name,$tmhOAuth);*/
     }else{
         $session->access_errorMessage = $res['errorMessage'];
     }
