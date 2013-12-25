@@ -39,10 +39,10 @@ $debug = DEBUGSTATUS;
 // get the Mixpanel class instance, replace with your
 // load production token
 if (!$debug){
-    $mp = Mixpanel::getInstance(CP_PROD_MIXPANEL_API_KEY);
+    $mp = Mixpanel::getInstance(CP_PROD_MIXPANEL_TOKEN);
 }else{
     //load dev token
-    $mp = Mixpanel::getInstance(CP_DEV_MIXPANEL_API_KEY);
+    $mp = Mixpanel::getInstance(CP_DEV_MIXPANEL_TOKEN);
 }
 
 $semesters = array();

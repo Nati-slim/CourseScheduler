@@ -4,6 +4,7 @@ require_once dirname(__FILE__) . '/../../creds/coursepicker_debug.inc';
 require_once dirname(__FILE__) . '/../../creds/mixpanel_coursepicker.inc';
 require_once dirname(__FILE__) . '/../../creds/dhpath.inc';
 $session = new Session();
+$errorMessage = $session->errorMessage;
 $controller = "classes/controllers/controller.php";
 $errorMessage = $session->errorMessage;
 
@@ -249,41 +250,42 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
 				<div class="collapse navbar-collapse">
 					<ul class="nav navbar-nav">
 						<li class="active"><a href="./">Home</a></li>
-						<li><a href="#aboutModal" data-toggle="modal" id="about" title="Learn about the creator of Course Picker.">About</a></li>
-						<li><a href="#howtoModal" data-toggle="modal" id="howto" title="Learn the basics of using Course Picker.">How To</a></li>
-                        <li><a id="downloadSchedule" href="#pngModal" data-toggle="modal" title="Add at least 1 section to your schedule to use this feature.">Download Schedule</a></li>
+						<li><a href="./about.php" id="about" title="Learn about Course Picker.">About</a></li>
+						<li><a href="./howto.php" id="howto" title="Learn the basics of using Course Picker.">How To</a></li>
+                        <li><a id="downloadSchedule" href="#pngModal" data-toggle="modal" title="Add at least 1 section to your schedule to use this feature.">Download</a></li>
                         <li><a style="cursor:pointer;" id="tourTrigger" title="Click to start a guided tour of CoursePicker">Tour</a></li>
 					</ul>
 					<ul id="social" class="nav navbar-nav navbar-right">
-						<!-- If session exists and user is logged in-->
-						<?php if (isset($session->loggedIn) && $session->loggedIn){ 
-							$submenu = "<li class=\"dropdown gravatar\">";
-							$submenu .= "<a id=\"menuLi\" href=\"#\" class=\"dropdown-toggle\" data-toggle=\"dropdown\">";
-							$submenu .= "<img id=\"gravatarImg\" class=\"gravatar\" src=\"" . $session->gravatar_url . "\" alt=\"Gravatar image for " . $session->username;
-							$submenu .= "\"  title=\"Gravatar image for " . $session->username . "\"/><b class=\"caret\" style=\"float:right;\"></b></a>";
-							$submenu .= "<ul id=\"menuDropdown\" class=\"dropdown-menu\">"
-										. "<li id=\"welcome\">Welcome, " .  $session->username. "</li>"
-										. "<li id=\"saveScheduleLi\"><a href=\"http://apps.janeullah.com/coursepicker/saveschedule.php\" title=\"Click to save your created schedules.\">Save Schedule</a></li>"
-										. "<li id=\"logoutLi\"><a href=\"#logout\" title=\"Click to log out!\" onclick=\"logout()\">Logout</a></li>"
-										."</ul>"
-										."</li>";
-							echo $submenu;
-						} elseif (isset($session->oauth_object)){ 
-							$submenu = "<li class=\"dropdown gravatar\">";
-							$submenu .= "<a id=\"menuLi\" href=\"#\" class=\"dropdown-toggle\" data-toggle=\"dropdown\">";
-							$submenu .= "<img id=\"avatarImg\" class=\"gravatar\" src=\"http://apps.janeullah.com/coursepicker/assets/img/mm.png\" alt=\"Default image for " . $session->screen_name;
-							$submenu .= "\"  title=\"Avatar for " . $session->screen_name . "\"/><b class=\"caret\" style=\"float:right;\"></b></a>";
-							$submenu .= "<ul id=\"menuDropdown\" class=\"dropdown-menu\">"
-										. "<li id=\"welcome\">Welcome, " .  $session->screen_name. "</li>"
-										. "<li id=\"tweetScheduli\"><a data-toggle=\"modal\" href=\"#tweetModal\" title=\"Click to save your created schedules.\">Tweet Schedule</a></li>"
-										. "<li id=\"logoutLi\"><a href=\"#logout\" title=\"Click to log out!\" onclick=\"logout()\">Logout</a></li>"
-										."</ul>"
-										."</li>";
-							echo $submenu;
-                        } else {
-							echo "<li id=\"signupLi\"><a id=\"signup\" data-toggle=\"modal\" href=\"#signupModal\">Sign Up</a></li>";						
-							echo "<li id=\"loginLi\"><a id=\"login\" data-toggle=\"modal\" href=\"#loginModal\">Log In</a></li>";
-						} ?>
+						<?php if (isset($session->loggedIn) && $session->loggedIn){ ?>
+                            <!-- If session exists and user is logged in-->
+							<li class="dropdown gravatar">
+                                <a id="menuLi" href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                    <img id="gravatarImg" class="gravatar" src="<?php echo $session->gravatar_url; ?>" alt="Gravatar image for <?php echo $session->username; ?>"/>
+                                    <b class="caret" style="float:right;"></b>
+                                </a>
+                                <ul id="menuDropdown" class="dropdown-menu">
+                                    <li id="welcome">Welcome,  <?php echo $session->screen_name; ?></li>
+                                    <li id="saveScheduleLi"><a href="./saveschedule.php" title="Click to save your created schedules.">Save Schedule</a></li>
+									<li id="tweetScheduli"><a data-toggle="modal" href="#tweetModal" title="Click to tweet a link to this schedule. Please save the schedule first otherwise you will simply be tweeting a png of the schedule in which case you should click the \"Download Schedule\" link first.">Tweet Schedule</a></li>
+									<li id="logoutLi"><a href="#logout" title="Click to log out!" onclick="logout()">Logout</a></li>
+								</ul>
+							</li>
+						<?php } elseif (isset($session->oauth_object)){ ?>
+                            <!-- If user only signs in with twitter-->
+							<li class="dropdown gravatar">
+                                <a id="menuLi" href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                    <img id="avatarImg" class="gravatar" src="./assets/img/mm.png" alt="Default image for <?php echo $session->screen_name; ?>"  title="Avatar for <?php echo $session->screen_name; ?>"/>
+                                    <b class="caret" style="float:right;"></b></a>
+                                <ul id="menuDropdown" class="dropdown-menu">
+                                    <li id="welcome">Welcome, <?php echo $session->screen_name; ?></li>
+                                    <li id="tweetScheduli"><a data-toggle="modal" href="#tweetModal" title="Click to save your created schedules.">Tweet Schedule</a></li>"
+                                    <li id="logoutLi"><a href="#logout" title="Click to log out!" onclick="logout()">Logout</a></li>"
+                                </ul>
+                            </li>
+                        <?php } else { ?>
+                            <li id="signupLi"><a id="signup" data-toggle="modal" href="#signupModal">Sign Up</a></li>						
+                            <li id="loginLi"><a id="login" data-toggle="modal" href="#loginModal">Log In</a></li>
+                        <?php } ?>
 						
 					</ul>				  
 				</div><!-- /.nav-collapse -->

@@ -270,11 +270,9 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
 				<div class="collapse navbar-collapse">
 					<ul class="nav navbar-nav">
 						<li class="active"><a href="./">Home</a></li>
-						<li><a href="#aboutModal" data-toggle="modal" id="about">About</a></li>
-						<li><a href="#howtoModal" data-toggle="modal" id="howto">How To</a></li>
-                        <?php if ($defaultSchedule && $defaultSchedule instanceOf UserSchedule) { ?> 	
-                            <li><a href="#pngModal" data-toggle="modal" id="downloadSchedule" >Download Schedule</a></li>
-                        <?php } ?>
+						<li><a href="../about.php" id="about" title="Learn about Course Picker.">About</a></li>
+						<li><a href="../howto.php" id="howto" title="Learn the basics of using Course Picker.">How To</a></li>
+                        <li><a id="downloadSchedule" href="#pngModal" data-toggle="modal" title="Add at least 1 section to your schedule to use this feature.">Download</a></li>
                     </ul>
 					<ul id="social" class="nav navbar-nav navbar-right">
 						<!-- If session exists and user is logged in-->
@@ -318,8 +316,6 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
                                     window.prompt("Copy to clipboard: Ctrl+C or Cmd + C, Enter", $('#link').attr('href'));
                                 }
                             </script>
-                            <a href="https://twitter.com/share" class="twitter-share-button" data-via="janetalkstech" data-size="large" data-related="coursepicker" data-hashtags="coursepicker">Tweet</a>
-                            <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
                         </div>
                     </div>
                         

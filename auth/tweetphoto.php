@@ -141,8 +141,8 @@ if ($requestType === 'POST') {
             $result['code'] = $code;
         }else{
             $result['errorMessage'] = "Tweet body cannot be empty.";
-            echo json_encode($result);
         }
+        echo json_encode($result);
     }else{
         $result['errorMessage'] = "Invalid action requested.";
         echo json_encode($result);

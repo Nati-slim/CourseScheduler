@@ -38,10 +38,10 @@ $debug = DEBUGSTATUS;
 // get the Mixpanel class instance, replace with your
 // load production token
 if (!$debug){
-    $mp = Mixpanel::getInstance(CP_PROD_MIXPANEL_API_KEY);
+    $mp = Mixpanel::getInstance(CP_PROD_MIXPANEL_TOKEN);
 }else{
     //load dev token
-    $mp = Mixpanel::getInstance(CP_DEV_MIXPANEL_API_KEY);
+    $mp = Mixpanel::getInstance(CP_DEV_MIXPANEL_TOKEN);
 }
 
 //Set up debug stuff
@@ -452,7 +452,7 @@ if ($requestType === 'POST') {
                             //set this last in case the user schedule object was found and added
                             $session->loggedInUser = serialize($user);
                             $session->userid = $user->getUserid();
-                            $mp->track("user login", array("userid" => $user->getUserid()));
+                            $mp->track("user login", array("userid" => $user->getUsername()));
                             echo json_encode($result);
                         } else {
                             $result['errorMessage'] = "Invalid credentials.";

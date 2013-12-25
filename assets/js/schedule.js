@@ -45,7 +45,7 @@ $(function(){
 		});	
 	});
     
-    //Tweeting schedule
+    //Tweeting PNG schedule
     $('#tweetForm').submit(function(e){
         e.preventDefault();
         ga('send', 'Tweet schedule', 'User authenticated');
@@ -81,7 +81,46 @@ $(function(){
         });
         return false;
     });
-    
+
+    //Tweeting link schedule
+    $('#tweetNoPngForm').submit(function(e){
+        e.preventDefault();
+        ga('send', 'Tweet schedule link', 'User authenticated');
+        $.ajax({
+            type: "POST",
+            url: 'http://apps.janeullah.com/coursepicker/auth/tweetphoto.php',
+            data: $(this).serialize(),
+            dataType: "json"
+        })
+        .done(function(msg){
+            console.log(msg);
+            if (msg.errorMessage.length == 0){
+                if (msg.code == 200){
+                    $('#tweetError').html("").hide();
+                    $('#tweetSuccess').html("").append(msg.message).show();
+                }else{
+                    $('#tweetSuccess').html("").hide();
+                    $('#tweetError').html("").append(msg.errorMessage).show();
+                }
+            }else{
+                $('#tweetError').html("").append(msg.errorMessage).show();
+                $('#tweetSuccess').html("").hide();                
+            }
+        })
+        .fail(function(msg){
+            console.log("failed");
+            console.log(msg);
+            console.log(msg.responseText);
+        })
+        .always(function(msg){
+            setTimeout(function(){
+				$('#tweetError').html("").hide();
+                $('#tweetSuccess').html("").hide('slow',function(){});
+            }, 10000);	 
+        });
+        return false;
+    });
+        
     /**
      * Saving the schedule
      * 

@@ -2,8 +2,8 @@
 require_once 'classes/helpers/session.php';
 $session = new Session();
 $errorMessage = $session->errorMessage;
-$title = "Course Picker - Learn How To Use";
-$shortdesc = "A course scheuling app for the University of Georgia Computer Science students";
+$title = "Course Picker - About";
+$shortdesc = "Learn how to use Course Picker, a web application for planning the perfect class schedule.";
 ?>
 
 <!DOCTYPE html>
@@ -97,51 +97,37 @@ $shortdesc = "A course scheuling app for the University of Georgia Computer Scie
             <div class="row" style="margin-top:25px;">
                 <div class="col-md-3" id="leftdiv">
                     <ul class="nav">
-                        <li class="active"><a href="#terminology">Terminology</a></li>
-                        <li><a href="#adding">Adding Classes</a></li>
-                        <li><a href="#saving">Saving Schedules</a></li>
-                        <li><a href="#sharing">Sharing Schedules</a></li>
+                        <li class="active"><a href="#about">About</a></li>
+                        <li><a href="#credits">Credits</a></li>
+                        <li><a href="#legal">Legal</a></li>
                     </ul>
                 </div>
                 <div class="col-md-8" id="displayhowto">  
-                    <h4 id="terminology">Terminology</h4> 
+                    <h4 id="about">About</h4> 
+                        <p>
+							<ol class="instructions">
+                                <li>This is a labor of love by <a href="http://janeullah.com" title="Jane Ullah!">Jane Ullah</a>: <a href="http://uga.edu" title="Go DAWGS!">UGA student</a>, pet-mom and <a href="http://janetalkscode.com" title="Jane Talks Code">technophile</a>.:) </li>
+                                <li>Other projects: <a href="http://dawgtransit.com" title="DawgTransit - Get around UGA's campus with ease.">DawgTransit</a>, <a href="http://apps.janeullah.com/dawgspeak" title="UGA SLanguage Dictionary">DawgSpeak</a>, and <a href="https://play.google.com/store/apps/details?id=org.janeullah.android.healthrecords" title="Restaurant Health Inspection Records">Restaurant Health Inspection Records app</a> on Google Play.</li>
+                                <li>I write at <a href="http://janetalkscode.com" title="Jane Talks Code!">Jane Talks Code</a> and tweet <a href="https://twitter.com/janetalkstech" title="@janetalkstech on Twitter">@janetalkstech</a>.</li>
+                                <li>The source code for this web application is hosted <a href="https://github.com/janoulle/CourseScheduler" title="CoursePicker Source Code">on Github</a>.<br/><span xmlns:dct="http://purl.org/dc/terms/" property="dct:title">CoursePicker</span> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>.</li>
+                            </ol>     
+                        </p>
+                    <h4 id="credits">Credits</h4>
                         <p>
                             <ol class="instructions">
-                                <li><strong>course prefix</strong>: This is the 4 or 5 letter abbreviation of the course e.g. MATH for Mathematics, CSCI for Computer Science, ENGL for English, etc.</li>
-                                <li><strong>course number</strong>: This is the number that comes after the course prefix e.g. CSCI <strong>1302</strong> or ENGL <strong>1101</strong></li>
-                                <li><strong>course name</strong>: This is the "official" course name. For instance, ENGL 1101 is officially called "ENGLISH COMP I".</li>
-                                <li><strong>call number</strong>: This is the number uniquely identifying the section of the course. A course has many sections and a section can have many different meeting times.</li>
+                                <li>I'm using <a href="https://mixpanel.com/free/" title="Mixpanel">Mixpanel</a>, <a href="http://www.google.com/analytics/" title="Google Analytics">Google Analytics</a> and <a href="http://statcounter.com/" title="Statcounter">Statcounter</a> for event tracking and analytics. <a href="https://mixpanel.com/f/partner"><img src="//cdn.mxpnl.com/site_media/images/partner/badge_light.png" alt="Mobile Analytics" style="width:114px;height:36px;" width="114" height="36"/></a></li>
+                                <li><a href="http://www.openwall.com/phpass/" title="Portable PHP password hashing framework">Portable PHP password hashing framework</a> or phpass was used for hashing the passwords and I made extensive use of the functions listed on the OpenWall article about <a href="http://www.openwall.com/articles/PHP-Users-Passwords" title="managing a PHP application's users and passwords">managing a PHP application's users and passwords</a>.</li>
+                                <li><a href="https://github.com/PHPMailer/PHPMailer" title="PHPMailer">PHP Mailer</a> was used to handle the task of sending emails to users that sign up for the Course Picker site. Eventually, I'd like this task to be outsourced to Mailchimp.</li>
+                                <li><a href="https://www.google.com/recaptcha" title="reCAPTCHA by Google">reCAPTCHA</a> is an "anti-bot service that helps digitize books". I used it in preventing automated submissions of the signup form.</li>
+                                <li><a href="http://simplehtmldom.sourceforge.net/" title="PHP Simple HTML DOM Parser">PHP Simple HTML DOM Parser</a> is another awesome tool that I use a lot for scraping web pages to extract useful information. For parsing HTML with Java, I use <a href="http://jsoup.org/" title="Java HTML Parser">JSoup</a> and I highly recommend that as well.</li>
                             </ol>
                         </p>
-                    <h4 id="adding">Adding Classes</h4>
+                    <h4 id="legal">Legal</h4>
                         <p>
                             <ol class="instructions">
-                                <li>Search for a course by any combination of the <strong>course prefix</strong>, <strong>course number</strong> or <strong>course name</strong>. 
-                                Please don't be alarmed if you only type the course prefix and receive results that don't match the course prefix exactly. 
-                                This is because the course prefix you are searching for is also in the course name of some of the results that were returned to you.</li>
-                                <li>If you choose to search by couse prefix only, I recommend entering the term and having a space after the word. 
-                                If that doesn't work, add a number after the space e.g. ENGL 11 or HIST 22 to bring up more specific results.</li>
-                                <li>If you know the exact course prefix and course number, please type it out and choose the dropdown selection. </strong>THIS IS IMPORTANT FOR THE FORM TO WORK.</strong></li>
-                                <li>Choose from the autocomplete menu or manually enter the course you desire in this manner as long as you separate the course prefix from the course number by a dash or space</li>
-                                <li>Select a section from the list and your choice will be automatically submitted.</li>                                       
-                            </ol>
-                        </p>
-                    <h4 id="saving">Saving Schedules</h4>
-                        <p>
-                            <ol class="instructions">
-                                <li>This feature is available only to users that have signed up for the site.</li>
-                                <li>You can sign up for the service at any point during schedule creation.</li>
-                                <li>After signing up, you will be able to save your schedule to the database right away but you will need to confirm and activate your account by clicking
-                                the activation link sent to the email address you provided during signup.</li>
-                            </ol>
-                        </p>
-                    <h4 id="sharing">Sharing Schedules</h4>
-                        <p>
-                            <ol class="instructions">
-                                <li>This feature is only available for users who have signed up for the service.</li>
-                                <li>First, login to the service and create your schedule</li>
-                                <li>Then, visit the <a href="http://apps.janeullah.com/coursepicker/saveschedules.php" title="Save Your Schedules!">Save Schedules</a> page by clicking on your gravatar and selecting the appropriate link named "Save Schedules"</li>
-                                <li>After giving your schedule a name e.g. XXXXXX, you can share the schedule by appending the short name to the end of this url: http://apps.janeullah.com/coursepicker/share/id=<strong>XXXXXX</strong></li>
+                                <li><span xmlns:dct="http://purl.org/dc/terms/" property="dct:title">CoursePicker</span> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>.</li>
+                                <li>I use several libraries and your use of those libraries is subject to the terms of their respective owners.</li>
+                                <li>The app pulls data from <a href="https://apps.reg.uga.edu/reporting/staticReports">UGA Registrar Reporting System. Any issues regarding the course contents or semester offerings should be directed to there.</li>
                             </ol>
                         </p>
                 </div>

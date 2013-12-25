@@ -29,10 +29,10 @@ if (!$debug) {
 // get the Mixpanel class instance, replace with your
 // load production token
 if (!$debug){
-    $mp = Mixpanel::getInstance(CP_PROD_MIXPANEL_API_KEY);
+    $mp = Mixpanel::getInstance(CP_PROD_MIXPANEL_TOKEN);
 }else{
     //load dev token
-    $mp = Mixpanel::getInstance(CP_DEV_MIXPANEL_API_KEY);
+    $mp = Mixpanel::getInstance(CP_DEV_MIXPANEL_TOKEN);
 }
 
 
@@ -312,6 +312,7 @@ if ($requestType === 'POST') {
                                 if ($res){
                                     $res = resetPasswordEmail($user->getUsername(),$user->getEmail(),$token,$reset_ip,$reset_expiration);
                                     if (strlen($res) == 0){
+                                        $mp->track("user forgot password", array("success" => $email));
                                         $result['errorMessage'] = "";
                                         echo json_encode($result); 
                                     }else{  
@@ -366,6 +367,7 @@ if ($requestType === 'POST') {
                                 $session->resetRequestValidated = true;
                                 $session->requestingUser = serialize($user);
                                 $result['errorMessage'] = "";
+                                $mp->track("user reset password", array("success" => $email));
                                 echo json_encode($result);  
                             }else{
                                 $result['errorMessage'] = fail("This token is either invalid or has expired. Please request another reset token and remember to use it within 24 hours.",$db->errorMessage);

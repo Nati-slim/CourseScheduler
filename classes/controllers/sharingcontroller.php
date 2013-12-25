@@ -26,10 +26,10 @@ if (!$debug) {
 // get the Mixpanel class instance, replace with your
 // load production token
 if (!$debug){
-    $mp = Mixpanel::getInstance(CP_PROD_MIXPANEL_API_KEY);
+    $mp = Mixpanel::getInstance(CP_PROD_MIXPANEL_TOKEN);
 }else{
     //load dev token
-    $mp = Mixpanel::getInstance(CP_DEV_MIXPANEL_API_KEY);
+    $mp = Mixpanel::getInstance(CP_DEV_MIXPANEL_TOKEN);
 }
 
 
@@ -147,6 +147,7 @@ if ($requestType === 'POST') {
                     $session->errorMessage = $result['errorMessage'];
                     $session->scheduleObject = serialize($scheduleObj);
                     $session->scheduleJSON = $scheduleObj->to_json();
+                    $mp->track("user viewing schedule", array("shortname" => $shortName));
                 }else{
                     $result['errorMessage'] = "Failed to properly deserialize schedule object.";
                     $session->errorMessage = $result['errorMessage'];
