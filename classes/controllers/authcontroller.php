@@ -197,8 +197,9 @@ function resetPasswordEmail($username,$email,$token,$ip,$reset_expiration){
     $mail->WordWrap = 50; 
         
     $mail->Subject = CP_RESET_SUBJECT;
+    $date = new DateTime(null, new DateTimeZone('America/New_York'));
     $body = '<div style="background-color:#F0F0F0;color:#004A61;font-size:20px;">Password reset request for <a href="http://bit.ly/coursepicker" title="UGA Course Picker by Jane Ullah">Course Picker</a>.</div>';
-    $body .= '<div style="display:block;">This request occurred on ' . date('l jS \of F Y h:i:s A');
+    $body .= '<div style="display:block;">This request occurred on ' . $date->format('l jS \of F Y h:i:s A');
     $body .= ' from the IP Address ('.$ip.').</div>';
     $body .= '<div style="display:block;">Please reset your password by <a href="http://apps.janeullah.com/coursepicker/reset.php?token=' . $token. '" title="Click to reset your password.">clicking this link.</a></div>';
     $body .= '<div style="display:block;font-weight:bold;">This reset token will remain active for 24 hours. So please reset your password as soon as you can within this timeframe.</div>';

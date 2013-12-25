@@ -260,8 +260,54 @@ function generateToken($length = 20)
     return sha1(uniqid(mt_rand(), true));
 }
 
-function sendVerificationEmail($user){
+/**
+ * Sends an email to the user to confirming the password change.
+ * 
+ * @param String $username username
+ * @param String $email User's email
+ * @param int    $reset_ip the ip originating the request
+ * 
+ * @return '' if OK and not otherwise.
+ * 
+ */ 
+function sendPasswordChangeEmail($username,$email,$reset_ip){    
+    require_once dirname(__FILE__) . '/../../../../creds/mail.inc';
+    require_once dirname(__FILE__) . '/../../includes/phpmailer/PHPMailerAutoload.php';
     
+    $mail = new PHPMailer;
+    $mail->isSMTP();                    // Set mailer to use SMTP
+    $mail->Host = CP_SMTP_SERVER;       // Specify main and backup server
+    $mail->SMTPAuth = true;             // Enable SMTP authentication
+    $mail->Username = CP_EMAIL;         // SMTP username
+    $mail->Password = CP_MAIL_SECRET;   // SMTP password
+    $mail->SMTPSecure = 'tls';          // Enable encryption, 'ssl' also accepted
+
+    $mail->From = CP_REPLYTO;
+    $mail->FromName = CP_NAME;
+    $mail->addAddress($email, $username);  // Add a recipient
+    $mail->addReplyTo(CP_REPLYTO, CP_NAME);
+    // Set word wrap to 50 characters
+    $mail->WordWrap = 50; 
+        
+    $mail->Subject = CP_RESET_CONF_SUBJECT;
+    $date = new DateTime(null, new DateTimeZone('America/New_York'));
+    $body = '<div style="background-color:#F0F0F0;color:#004A61;font-size:20px;">Password Reset Successful for <a href="http://bit.ly/coursepicker" title="UGA Course Picker by Jane Ullah">Course Picker</a>.</div>';
+    $body .= '<div style="display:block;">Your password was succesfully changed on ' . $date->format('l jS \of F Y h:i:s A');
+    $body .= ' from the IP Address ('.$ip.').</div>';
+    $body .= '<div style="display:block;">If this reset request did not come from you, please reach out to welcome@janeullah.com immediately.</div>';
+    $mail->Body = $body; 
+    $plaintext = "Your password was successfully reset for your account at Course Picker [http://apps.janeullah.com/coursepicker/]";
+    $plaintext .= 'This change happened on ' . $date->format('l jS \of F Y h:i:s A') . ' from the IP address ' . $ip;
+    $plaintext .= "If this reset request did not come from you, please reach out to welcome@janeullah.com immediately.";
+    $mail->AltBody = $plaintext;
+
+    if(!$mail->send()) {
+       $msg = 'Message could not be sent.';
+       $msg .= 'Mailer Error: ' . $mail->ErrorInfo;
+       return $msg;
+    }
+
+    return '';
 }
 
 function sendWelcomeEmail($username,$email,$token,$ip){    
@@ -495,6 +541,10 @@ if ($requestType === 'POST') {
                             $expire = $db->expireResetToken($user,$session->validToken);
                             if ($expire){
                                 $result['errorMessage'] = "";
+                                $res = sendPasswordChangeEmail($user->getUsername(),$user->getEmail(),get_ip_address());
+                                if ($res !== ''){
+                                    $result['errorMessage'] = "Your password was changed but a notification email did not get sent out: " . $res;
+                                }
                                 //Invalidate set tokens
                                 unset($session->resetRequestValidated);
                                 unset($session->validToken);
