@@ -115,6 +115,12 @@ span.day{
 	/*text-shadow: 1px 0 0 #000, -1px 0 0 #000, 0 1px 0 #000, 0 -1px 0 #000, 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;*/
 }
 
+span.day:hover{
+	background-color:#004A61;
+	color:#F0F0F0;
+	font-weight:bold;
+}
+
 .hover{
 	background-color:#004A61;
 	color:#F0F0F0;
@@ -174,28 +180,27 @@ span.sectionDay:hover{
     behavior: url(http://apps.janeullah.com/assets/css/border-radius.htc);
 }
 
+    /* http://stackoverflow.com/questions/6008324/fade-effect-on-link-hover
+     * First we need to help some browsers along for this to work.
+     * Just because a vendor prefix is there, doesn't mean it will
+     * work in a browser made by that vendor either, it's just for
+     * future-proofing purposes I guess. */
 #removeAllButton{
 	text-align:center;
 	width:50%;
 	font-weight:bold;
 	margin: 0 auto;
 	margin-top: 4px;
-    /* http://stackoverflow.com/questions/6008324/fade-effect-on-link-hover
-     * First we need to help some browsers along for this to work.
-     * Just because a vendor prefix is there, doesn't mean it will
-     * work in a browser made by that vendor either, it's just for
-     * future-proofing purposes I guess. */
-      -o-transition:.5s;
-      -ms-transition:.5s;
-      -moz-transition:.5s;
-      -webkit-transition:.5s;
-      /* ...and now for the proper property */
-      transition:.5s;      
+    -o-transition:2s;
+    -ms-transition:2s;
+    -moz-transition:2s;
+    -webkit-transition:2s;
+    transition:2s;      
 }
 
 #removeAllButton:hover{	
     border: none;
-    background:#004A61;
+    background:#00628B;
     color: #F0F0F0;
     box-shadow: 0px 3px 1px #777;
 }

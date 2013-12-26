@@ -30,7 +30,7 @@ Object.size = function(obj) {
 function displaySchedule(){
 	//console.log(sched);
 	//Gets converted to JSON object
-	schedule = $.parseJSON(sched);
+	schedule = JSON.parse(sched);
 	var size = Object.size(schedule);
 	if (size > 0){
 		//var data = "data-content=\"Popup with option trigger\" rel=\"popover\" data-placement=\"right\" data-original-title=\"Title\" data-trigger=\"hover\"";
@@ -66,7 +66,6 @@ function displaySchedule(){
 		var removeAll = "<input title=\"This creates a new schedule.\" class=\"form-control rounded-corners\" onclick=\"removeAll()\" name=\"removeAllButton\" id=\"removeAllButton\" type=\"submit\" value=\"New Schedule\" />";
 		$('#userSchedule').append(removeAll);
 		$('#userSchedule').show();
-		addMouseOverEffects();
 	}
 }
         
@@ -99,26 +98,11 @@ function removeAll(){
 	});
 }
 
+
 /* 
-* Mouseover effect for user hovering over the days
-* 
+* force localStorage removal of cached JSON object
+* when user changes campuses
 * */
-function addMouseOverEffects(){
-	$('.day').bind('mouseover',function(e){
-		$(this).addClass('hover');
-	});	
-					
-	$('.day').bind('mouseout',function(e){
-		$(this).removeClass('hover');
-	});	
-}
-
-
-
-		/* 
-		 * force localStorage removal of cached JSON object
-		 * when user changes campuses
-		 * */
 function clearLocalStorage() {
 	localStorage.clear();
     return false;

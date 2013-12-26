@@ -1,20 +1,21 @@
-function logout(){
+function logout() {
 	$.ajax({
-		type: "POST",
-		url: 'http://apps.janeullah.com/coursepicker/classes/controllers/usercontroller.php',
-		data: {action:"logout"},
-		dataType: "json"
-	})
-	.done(function(msg){
+		type : "POST",
+		url : 'http://apps.janeullah.com/coursepicker/classes/controllers/usercontroller.php',
+		data : {
+			action : "logout"
+		},
+		dataType : "json"
+	}).done(function(msg) {
 		alert("Successfully logged out!");
-		setTimeout(function(){
-				location.reload();
-        }, 1000);		
-	})
-	.fail(function(msg){
+		setTimeout(function() {
+			location.reload();
+		}, 1000);
+	}).fail(function(msg) {
 		alert(msg.responseText);
 	});
 }
+
 
 $(function(){
 	//handle signups 

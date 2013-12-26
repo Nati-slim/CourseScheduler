@@ -79,8 +79,8 @@ $shortdesc = "Learn how to use Course Picker, a web application for planning the
                                     <b class="caret" style="float:right;"></b></a>
                                 <ul id="menuDropdown" class="dropdown-menu">
                                     <li id="welcome">Welcome, <?php echo $session->screen_name; ?></li>
-                                    <li id="tweetScheduli"><a data-toggle="modal" href="#tweetModal" title="Click to save your created schedules.">Tweet Schedule</a></li>"
-                                    <li id="logoutLi"><a href="#logout" title="Click to log out!" onclick="logout()">Logout</a></li>"
+                                    <li id="tweetScheduli"><a data-toggle="modal" href="#tweetModal" title="Click to save your created schedules.">Tweet Schedule</a></li>
+                                    <li id="logoutLi"><a href="#logout" title="Click to log out!" onclick="logout()">Logout</a></li>
                                 </ul>
                             </li>
                         <?php } else { ?>
