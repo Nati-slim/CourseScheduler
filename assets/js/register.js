@@ -19,7 +19,7 @@ function logout(){
 $(function(){
 	//handle signups 
 	$('#signupForm').submit(function(e){
-        ga('send', 'Signup', 'User submitted', 'username', $('#username').val());
+        ga('send', 'event', 'User signup', 'username', $('#username').val());
 		e.preventDefault();
 		$.ajax({
 			type: "POST",
@@ -63,7 +63,7 @@ $(function(){
 	
 	//Handle logins
 	$('#loginForm').submit(function(e){
-        ga('send', 'Login', 'User submitted', 'username', $('#username').val());
+        ga('send', 'event', 'User login', 'username', $('#loginUsername').val());
 		e.preventDefault();
 		$.ajax({
 			type: "POST",
@@ -104,6 +104,7 @@ $(function(){
     
     //handle password resets
     $('#forgotPwdForm').submit(function(e){
+    	ga('send','event','User forgotpassword','username',$('#forgotPwdUsername').val());
 		e.preventDefault();
 		$.ajax({
 			type: "POST",

@@ -15,7 +15,7 @@ $(function(){
 	$('#selectedSchedule').change(function(){
         var scheduleSelectedID = $('#selectedSchedule').val();
         var optionText = $('option[value="'+scheduleSelectedID+'"]').text();
-        ga('send', 'Schedule change', 'User clicked', 'scheduleID', scheduleSelectedID);
+        ga('send', 'event', 'Schedule change', 'scheduleID', scheduleSelectedID);
 		$('body').css('cursor', 'wait');
 		$.ajax({
 			type: "POST",
@@ -48,7 +48,7 @@ $(function(){
     //Tweeting PNG schedule
     $('#tweetForm').submit(function(e){
         e.preventDefault();
-        ga('send', 'Tweet schedule', 'User authenticated');
+        ga('send', 'event','User tweeted png', 'username',$('#status').val());
         $.ajax({
             type: "POST",
             url: 'http://apps.janeullah.com/coursepicker/auth/tweetphoto.php',
@@ -85,7 +85,7 @@ $(function(){
     //Tweeting link schedule
     $('#tweetNoPngForm').submit(function(e){
         e.preventDefault();
-        ga('send', 'Tweet schedule link', 'User authenticated');
+        ga('send', 'event','User tweeted link', 'username',$('#status').val());
         $.ajax({
             type: "POST",
             url: 'http://apps.janeullah.com/coursepicker/auth/tweetphoto.php',
@@ -134,7 +134,7 @@ $(function(){
             $('#saveScheduleError').html("").append("Please select a schedule to save!").show();
             $('#saveScheduleSuccess').html("").hide();
         }else if (shortName1 === shortName2){            
-            ga('send', 'Schedule save', 'User clicked', 'shortName', shortName1);
+            ga('send', 'event', 'Schedule save', 'shortName', shortName1);
             $('body').css('cursor', 'wait');
             $.ajax({
                 type: "POST",
@@ -174,7 +174,7 @@ $(function(){
 function updateSchedule(){
     var shortName = $('#savedShortName').val();
     var selectedScheduleID = $('#scheduleID').val();
-    ga('send', 'Schedule update', 'User clicked', 'shortName', shortName);
+    ga('send', 'event', 'Schedule update', 'shortName', shortName);
     $('body').css('cursor', 'wait');
     $.ajax({
         type: "POST",
@@ -216,7 +216,7 @@ function grabImage(){
             //Grabbing the base64 part only
             imgUrl = imgUrl.substring(index+1);
                 
-            ga('send', 'Schedule png download', 'User clicked', 'imgurl', imgUrl);
+            ga('send', 'event', 'Schedule png download', 'imgurl', imgUrl);
             $('body').css('cursor', 'wait');
             $.ajax({
                 type: "POST",

@@ -14,7 +14,7 @@ var schedObj, colorCounter = 0;
 var meetings = [];
 
 /**
- * 
+ * Code in here is run everytime on page load
  * 
  */ 
 $(document).ready(function(){
@@ -406,7 +406,9 @@ function drawTable(){
 
 /**
  * Custom Rectangle object for drawing meetings
- * 
+ * Removes need for a separate text label and allows
+ * me to stash important information in case I need to do fanciers
+ * things
  */ 
 var LabeledRect = fabric.util.createClass(fabric.Rect, {
 
@@ -460,7 +462,7 @@ function onMove(){
             if (window.confirm("Are you sure you want to delete this section from your schedule?")) { 
                 $.ajax({
                     type: "POST",
-                    url: 'classes/controllers/schedulecontroller.php',
+                    url: 'http://apps.janeullah.com/coursepicker/classes/controllers/schedulecontroller.php',
                     data: { action : "removeSection", sectionToBeRemoved : callNum},
                     dataType: "json"
                 })

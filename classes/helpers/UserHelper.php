@@ -34,7 +34,7 @@ class UserHelper{
 			}else{
 				//echo $this->dbconn->host_info . "\n";
 				$this->deleteuser = $this->dbconn->prepare("delete * from coursepicker_users where userid = ?");
-				$this->expireresettoken = $this->dbconn->prepare("update coursepicker_users_metadata set reset_expiration_date = NOW() where userid = ? and reset_token = ?");
+				$this->expireresettoken = $this->dbconn->prepare("update coursepicker_users_metadata set reset_expiration_date = ? where userid = ? and reset_token = ?");
                 $this->authenticateuser = $this->dbconn->prepare("select * from coursepicker_users where username = ?");
                 $this->checkuser = $this->dbconn->prepare("select * from coursepicker_users where username = ? and email = ?");
                 $this->checkactivationtoken = $this->dbconn->prepare("select * from coursepicker_users where activation_token = ?");
@@ -295,11 +295,11 @@ class UserHelper{
      * Expire reset token after its use
      * 
      */ 
-    public function expireResetToken($user,$token){
+    public function expireResetToken($user,$token, $expiration_date){
 		try{
 			if (!($this->expireresettoken)){
 				$this->errorMessage =  "Prepare failed for updatepassword: (" . $this->dbconn->errno . ") " . $this->dbconn->error;
-			}else if (!($this->expireresettoken->bind_param("ds",$user->getId(),$token))){
+			}else if (!($this->expireresettoken->bind_param("sds",$expiration_date,$user->getId(),$token))){
 				$this->errorMessage =  "Binding parameters failed for expireResetToken: (" . $this->expireresettoken->errno . ") " . $this->expireresettoken->error;
 			}else if (!($value = $this->expireresettoken->execute())){
 				$this->errorMessage =  "Execute failed for expireResetToken: (" . $this->expireresettoken->errno . ") " . $this->expireresettoken->error;

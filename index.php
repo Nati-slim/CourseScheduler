@@ -6,7 +6,6 @@ require_once dirname(__FILE__) . '/../../creds/dhpath.inc';
 $session = new Session();
 $errorMessage = $session->errorMessage;
 $controller = "classes/controllers/controller.php";
-$errorMessage = $session->errorMessage;
 
 $debug = DEBUGSTATUS;
 if ($debug){
@@ -294,7 +293,7 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
 
     <div class="container">
     	<div class="row" style="margin-top:25px;">
-		    <div class="col-xs-6 col-sm-6 col-md-3" id="leftdiv">
+		    <div class="col-xs-5 col-sm-3 col-md-3" id="leftdiv">
 				<div class="row">
 					<p id="infoMessage" class="alert alert-info">
 						<?php echo $semesters[$semesterSelected]; ?>
@@ -463,7 +462,7 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
 				</div><!--/sidebar-->
 			</div>
 
-			<div class="col-xs-12 col-md-9 drop" id="canvasDiv">
+			<div class="col-xs-6 col-sm-6 col-md-9 drop" id="canvasDiv">
     	  		<canvas id="scheduleCanvas" width="780" height="750">
 				</canvas>
 			</div>

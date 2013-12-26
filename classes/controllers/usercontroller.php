@@ -293,7 +293,7 @@ function sendPasswordChangeEmail($username,$email,$reset_ip){
     $date = new DateTime(null, new DateTimeZone('America/New_York'));
     $body = '<div style="background-color:#F0F0F0;color:#004A61;font-size:20px;">Password Reset Successful for <a href="http://bit.ly/coursepicker" title="UGA Course Picker by Jane Ullah">Course Picker</a>.</div>';
     $body .= '<div style="display:block;">Your password was succesfully changed on ' . $date->format('l jS \of F Y h:i:s A');
-    $body .= ' from the IP Address ('.$ip.').</div>';
+    $body .= ' from the IP Address ('.$reset_ip.').</div>';
     $body .= '<div style="display:block;">If this reset request did not come from you, please reach out to welcome@janeullah.com immediately.</div>';
     $mail->Body = $body; 
     $plaintext = "Your password was successfully reset for your account at Course Picker [http://apps.janeullah.com/coursepicker/]";
@@ -529,16 +529,17 @@ if ($requestType === 'POST') {
             if (isset($session->resetRequestValidated) && $session->resetRequestValidated){
                 $pwdCheck = pwdcheck($pass1);
                 if ($pwdCheck === 'OK') {
-                    $hash = $hasher->HashPassword($password1);
+                    $hash = $hasher->HashPassword($pass1);
                     if (strlen($hash) < 20) {
                         $result['errorMessage'] = fail('Failed to hash new password', $hash);
                     } else {
                         unset($hasher);
                         $db = new UserHelper();
                         $user = unserialize($session->requestingUser);
-                        $res = $db->updatePassword($user,$pass1);
+                        $res = $db->updatePassword($user,$hash);
                         if ($res){
-                            $expire = $db->expireResetToken($user,$session->validToken);
+                        	$date = new DateTime(null, new DateTimeZone('America/New_York'));
+                            $expire = $db->expireResetToken($user,$session->validToken,$date->format('Y-m-d H:i:s'));
                             if ($expire){
                                 $result['errorMessage'] = "";
                                 $res = sendPasswordChangeEmail($user->getUsername(),$user->getEmail(),get_ip_address());
