@@ -220,15 +220,7 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
         <!-- Pamela Fox's lscache library https://github.com/pamelafox/lscache-->
 		<script src="assets/js/lscache.min.js" type="text/javascript"></script>
    
-        <script type="text/javascript">
-            $(function(){
-                $('#tourTrigger').on('click',function(){
-                    $("#chooseID").joyride({
-                        //options.
-                    });
-                });
-            });
-            
+        <script type="text/javascript">            
             function startTour(){
                 $("#chooseID").joyride({ });
             }
@@ -252,7 +244,7 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
 						<li><a href="./about.php" id="about" title="Learn about Course Picker.">About</a></li>
 						<li><a href="./howto.php" id="howto" title="Learn the basics of using Course Picker.">How To</a></li>
                         <li><a id="downloadSchedule" href="#pngModal" data-toggle="modal" title="Add at least 1 section to your schedule to use this feature.">Download</a></li>
-                        <li><a style="cursor:pointer;" id="tourTrigger" title="Click to start a guided tour of CoursePicker">Tour</a></li>
+                        <li><a onclick="startTour();" style="cursor:pointer;" id="tourTrigger" title="Click to start a guided tour of CoursePicker">Tour</a></li>
 					</ul>
 					<ul id="social" class="nav navbar-nav navbar-right">
 						<?php if (isset($session->loggedIn) && $session->loggedIn){ ?>

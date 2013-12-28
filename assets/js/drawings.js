@@ -320,7 +320,7 @@ function getBuildingName(buildingNumber){
  */
 function insertDiv(index,section){
 	var msg = "";
-    msg += "<div class=\"draggable " + section.status + "\"";
+    msg += "<div class=\"draggable " + section.status + "\">";
     msg += "<span class=\"row1 right\">" + section.lecturer + "</span>";
     msg += "<span class=\"row1 left\">" + section.casTaken + "/" + section.casRequired + "</span><br/>";
     msg += "<span class=\"row2 left\">";
@@ -332,6 +332,8 @@ function insertDiv(index,section){
     msg += "</span>";
     if (section.status === 'Available'){
 		msg += "<span title=\"Add " + section.coursePrefix + "-" + section.courseNumber + " to your schedule!\" onclick=\"addSection(" + section.callNumber + ")\" class=\"glyphicon glyphicon-plus pull-right plus-sign\"></span>";
+	}else{
+		msg += "<span class=\"status\">"+ section.status + "</span>";
 	}
     msg += "</div>";
         return msg;

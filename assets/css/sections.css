@@ -8,20 +8,15 @@ span.underline{
 	text-decoration: underline;
 }
 
+/* http://stackoverflow.com/questions/6008324/fade-effect-on-link-hover*/
 .plus-sign{
 	font-size: 140%;
 	color: #428BCA;
-    /* http://stackoverflow.com/questions/6008324/fade-effect-on-link-hover
-     * First we need to help some browsers along for this to work.
-     * Just because a vendor prefix is there, doesn't mean it will
-     * work in a browser made by that vendor either, it's just for
-     * future-proofing purposes I guess. */
-      -o-transition:.5s;
-      -ms-transition:.5s;
-      -moz-transition:.5s;
-      -webkit-transition:.5s;
-      /* ...and now for the proper property */
-      transition:.5s;    
+    -o-transition:.5s;
+    -ms-transition:.5s;
+    -moz-transition:.5s;
+    -webkit-transition:.5s;
+    transition:.5s;    
 }
 
 div.draggable{
@@ -101,6 +96,10 @@ span.meetingTimes{
 	margin: 0 auto;
 }
 
+span.status{
+	text-transform:uppercase;
+	float:right;
+}
 
 span.day{
 	text-align:center;
@@ -127,19 +126,32 @@ span.day:hover{
 	font-weight:bold;
 }
 
-span.available{
-	color:#008789;
+
+
+#AvailableSpan{
+        letter-spacing:2px;
+        color:#004A61;
+}
+
+#FullSpan{
+        letter-spacing:2px;
+        color:#444444;
+}
+
+#CancelledSpan{
+        letter-spacing:2px;
+        color:#221414;
+}
+
+div.Available{
+	color:#004A61;
 	font-weight:bold;
 }
 
-span.full{
-	color:#FC4349;
+div.Full, div.Cancelled{
+	color:#000000;
 	font-weight:bold;
-}
-
-span.cancelled{
-	color:#444444;
-	font-weight:bold;
+	background-color:#f0f0f0;
 }
 
 span.sectionDay{
@@ -162,29 +174,13 @@ span.sectionDay:hover{
 	font-weight:bold;
 }
 
-.panel-heading.available{
-	color:#F0F0F0;
-	background-color:#004A61;
-}
-
-.panel-heading.notavailable{
-	color:#F0F0F0;
-	background-color:#444444;
-}
-
 .rounded-corners {
     -moz-border-radius: 20px;
     -webkit-border-radius: 20px;
     -khtml-border-radius: 20px;
     border-radius: 20px;
-    behavior: url(http://apps.janeullah.com/assets/css/border-radius.htc);
 }
 
-    /* http://stackoverflow.com/questions/6008324/fade-effect-on-link-hover
-     * First we need to help some browsers along for this to work.
-     * Just because a vendor prefix is there, doesn't mean it will
-     * work in a browser made by that vendor either, it's just for
-     * future-proofing purposes I guess. */
 #removeAllButton{
 	text-align:center;
 	width:50%;
@@ -217,33 +213,13 @@ span.sectionDay:hover{
 	margin-right:6px;
 	margin-top:2px;
 	font-size:140%;
-    /* http://stackoverflow.com/questions/6008324/fade-effect-on-link-hover
-     * First we need to help some browsers along for this to work.
-     * Just because a vendor prefix is there, doesn't mean it will
-     * work in a browser made by that vendor either, it's just for
-     * future-proofing purposes I guess. */
-      -o-transition:.5s;
-      -ms-transition:.5s;
-      -moz-transition:.5s;
-      -webkit-transition:.5s;
-      /* ...and now for the proper property */
-      transition:.5s;      
+    -o-transition:.5s;
+    -ms-transition:.5s;
+    -moz-transition:.5s;
+    -webkit-transition:.5s;
+    transition:.5s;      
 }
 
-#AvailableSpan{
-	letter-spacing:2px;
-	color:#004A61;
-}
-
-#FullSpan{
-	letter-spacing:2px;
-	color:#444444;
-}
-
-#CancelledSpan{
-	letter-spacing:2px;
-	color:#221414;
-}
 
 .glyphicon-remove:hover{
     color:#FC4349;
