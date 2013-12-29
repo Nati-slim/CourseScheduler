@@ -51,9 +51,9 @@ $shortdesc = "A course scheuling app for the University of Georgia Computer Scie
 				</div>
 				<div class="collapse navbar-collapse">
 					<ul class="nav navbar-nav">
-						<li class="active"><a href="./">Home</a></li>
+						<li><a href="./">Home</a></li>
 						<li><a href="./about.php" id="about">About</a></li>
-						<li><a href="./howto.php" id="howto">How To</a></li>
+						<li class="active"><a href="./howto.php" id="howto">How To</a></li>
 					</ul>
 					<ul id="social" class="nav navbar-nav navbar-right">
 						

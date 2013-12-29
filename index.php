@@ -177,11 +177,12 @@ $ogdesc = "Plan your UGA class schedule with ease using this course scheduling a
                             uga_buildings = data;
                             lscache.set('uga_buildings', JSON.stringify(data),43200);
                         })
-                        .done(function() {
+                        .done(function(json) {
                             console.log( "second success" );
                         })
-                        .fail(function() {
+                        .fail(function(jqxhr, textStatus, error ) {
                             console.log( "getJSON request failed. :( " );
+                            console.log(textStatus);
                             <?php 
                                 if (isset($session->uga_file)){
                                     $session->uga_file = file_get_contents("assets/json/uga_building_names.json");

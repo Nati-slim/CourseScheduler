@@ -51,8 +51,8 @@ $shortdesc = "Learn how to use Course Picker, a web application for planning the
 				</div>
 				<div class="collapse navbar-collapse">
 					<ul class="nav navbar-nav">
-						<li class="active"><a href="./">Home</a></li>
-						<li><a href="./about.php" id="about">About</a></li>
+						<li><a href="./">Home</a></li>
+						<li class="active"><a href="./about.php" id="about">About</a></li>
 						<li><a href="./howto.php" id="howto">How To</a></li>
 					</ul>
 					<ul id="social" class="nav navbar-nav navbar-right">
@@ -120,6 +120,7 @@ $shortdesc = "Learn how to use Course Picker, a web application for planning the
                                 <li><a href="https://github.com/PHPMailer/PHPMailer" title="PHPMailer">PHP Mailer</a> was used to handle the task of sending emails to users that sign up for the Course Picker site. Eventually, I'd like this task to be outsourced to Mailchimp.</li>
                                 <li><a href="https://www.google.com/recaptcha" title="reCAPTCHA by Google">reCAPTCHA</a> is an "anti-bot service that helps digitize books". I used it in preventing automated submissions of the signup form.</li>
                                 <li><a href="http://simplehtmldom.sourceforge.net/" title="PHP Simple HTML DOM Parser">PHP Simple HTML DOM Parser</a> is another awesome tool that I use a lot for scraping web pages to extract useful information. For parsing HTML with Java, I use <a href="http://jsoup.org/" title="Java HTML Parser">JSoup</a> and I highly recommend that as well.</li>
+                            	<li><a href="http://getbootstrap.com" title="Twitter Bootstrap">Twitter Bootstrap</a> for providing a fun user experience straight out of the box and allowign me to focus on building the internals of the app.</li>
                             </ol>
                         </p>
                     <h4 id="legal">Legal</h4>
